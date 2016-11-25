@@ -46,14 +46,15 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     
     @Inject
-    SensorMonitorService(AppConfig config, Set<SensorHandler> sensorHandlers) {
+    SensorMonitorService(AppConfig config, Set<SensorHandler> sensorHandlers, ScheduledExecutorService scheduler) {
+    	this.scheduler = scheduler;
     	this.sensorHandlers = sensorHandlers;
     	this.brickdaemonHost = (String) config.get(AppConfig.Key.TF_DAEMON_HOST);
     	this.brickdaemonPort = ((Integer) config.get(AppConfig.Key.TF_DAEMON_PORT));
     }
     
 	private IPConnection connection = new IPConnection();
-	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private ScheduledExecutorService scheduler;
 	private ScheduledFuture<?> connStatePrinterHandle;
 	private ScheduledFuture<?> deviceListCollectorHandle;	
 	
