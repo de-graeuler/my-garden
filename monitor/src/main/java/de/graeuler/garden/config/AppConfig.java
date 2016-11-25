@@ -8,7 +8,7 @@ public interface AppConfig{
 		TF_DAEMON_HOST ("tinkerforge.brickdaemon.host",      "localhost"              ), 
 		TF_DAEMON_PORT ("tinkerforge.brickdaemon.port",      4332                     ), 
 		UPLINK_ADRESS  ("uplink.adress"               ,      "http://localhost/garden"), 
-		DC_STORE_PATH  ("datacollector_store_path"    ,      "./data"   ),
+		DC_STORE_PATH  ("datacollector_store_path"    ,      "./data"                 ),
 		DC_STORE_FILE  ("datacollector_store_file"    ,      "data-collector.json"   ),
 		;
 
