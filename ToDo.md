@@ -1,17 +1,17 @@
 System wide
+  * Documentation
+  * Test coverage
   * Client Verification by API Token
     Use salted SHA1 hash of ApiToken in POST-URL
   * support multitenancy
 
 Monitor App:
   * DataCollector should perist data on disk, and load it on program initialization.
-  * Test coverage
-  * Documentation
   * Add file based AppConfig implementation
   * Configurable Scheduler Timings (instead of hard coded ones)
 
 Backend
-  * Daten: -> Sanity Check + Validierung
+  * Data: -> Sanity Check + Validation
   * Test support for MySQL databases (currently sqlite is used)
 
 Frontend
