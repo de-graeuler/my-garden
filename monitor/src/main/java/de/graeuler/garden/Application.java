@@ -5,7 +5,6 @@ import java.util.Set;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.multibindings.Multibinder;
 
 import de.graeuler.garden.interfaces.MonitorService;
 

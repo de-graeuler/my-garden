@@ -35,7 +35,7 @@ public class ApplicationModule extends AbstractModule {
 		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
 		
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
-//		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
+		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
 		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
 
 		// now bind sensor handlers.
@@ -43,8 +43,6 @@ public class ApplicationModule extends AbstractModule {
 		sensorHandlerBinder.addBinding().to(WaterLevelSensor.class);
 		sensorHandlerBinder.addBinding().to(TemperatureSensor.class);
 //		sensorHandlerBinder.addBinding().to(MasterBrickTemperatureSensor.class);
-//		sensorMonitorBinder.addBinding().to(implementation)
-//		bind()
 	}
 
 }
