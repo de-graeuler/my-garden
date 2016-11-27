@@ -41,11 +41,16 @@ public class HttpUplinkService implements Uplink<String> {
 			CloseableHttpResponse response = this.httpclient.execute(postRequest);
 //          optional result content parsing for more verbose result information: @TODO.
 			String resultContent = EntityUtils.toString(response.getEntity());
-			log.info ("Result pushed. {} -> {}", data, resultContent);
 			int httpStatusCode = response.getStatusLine().getStatusCode();
 			response.close();
-			return (200 == httpStatusCode || 201 == httpStatusCode);
+			if (200 == httpStatusCode || 201 == httpStatusCode) {
+				return true;
+			} else {
+				log.error("HTTP ERROR {}: {}", httpStatusCode, resultContent);
+				return false;
+			}
 		} catch (IOException e) {
+			log.error("{}", e);
 			return false;
 		}
 	}

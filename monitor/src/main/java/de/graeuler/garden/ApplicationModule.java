@@ -19,6 +19,7 @@ import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.sensor.TemperatureSensor;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensor;
+import de.graeuler.garden.monitor.service.NetworkTrafficMonitorService;
 import de.graeuler.garden.monitor.service.SensorMonitorService;
 import de.graeuler.garden.uplink.HttpUplinkService;
 import de.graeuler.garden.uplink.Uplink;
@@ -31,9 +32,12 @@ public class ApplicationModule extends AbstractModule {
 		bind(new TypeLiteral<DataConverter<List<DataRecord<?>>, String>>(){}).to(JsonDataConverter.class);
 		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
 		bind(DataCollector.class).to(GardenDataCollector.class);
-		bind(MonitorService.class).to(SensorMonitorService.class);
 		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
 		
+		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
+//		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
+		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
+
 		// now bind sensor handlers.
 		Multibinder<SensorHandler> sensorHandlerBinder = Multibinder.newSetBinder(binder(), SensorHandler.class);
 		sensorHandlerBinder.addBinding().to(WaterLevelSensor.class);
