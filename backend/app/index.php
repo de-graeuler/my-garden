@@ -55,7 +55,6 @@ $app->post('/collect/[{source}]', function (Request $request, Response $response
             $responseCode = 500;
         }
     }
-    $r->responsecode = $responseCode;
     return $response->withJson($r, $responseCode);
 });
 
