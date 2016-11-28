@@ -57,9 +57,10 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 			jsonObjectBuilder = Json.createObjectBuilder();
 			jsonObjectBuilder.add("t", record.getTimestamp().format(isoFormat));
 			switch (record.getValueType()) {
-				case STRING: jsonObjectBuilder.add("v", (String) record.getValue()); break;
-				case NUMBER: jsonObjectBuilder.add("v", (Double) record.getValue()); break;
-				case OBJECT: jsonObjectBuilder.add("v", (String) record.getValue().toString()); break;
+				case STRING:   jsonObjectBuilder.add("v", (String) record.getValue()); break;
+				case NUMBER:   jsonObjectBuilder.add("v", (Double) record.getValue()); break;
+				case OBJECT:   jsonObjectBuilder.add("v", (String) record.getValue().toString()); break;
+				case BOOLEAN:  jsonObjectBuilder.add("v", (Boolean) record.getValue()); break;
 				default: break;
 			}
 

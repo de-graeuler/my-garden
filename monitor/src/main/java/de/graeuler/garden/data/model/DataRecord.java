@@ -8,10 +8,10 @@ public class DataRecord<T> {
 		OBJECT, STRING, NUMBER, BOOLEAN;
 	}
 	
-	ZonedDateTime timestamp;
-	String key;
-	T value;
-	ValueType valueType;
+	private ZonedDateTime timestamp;
+	private String key;
+	private T value;
+	private ValueType valueType;
 	
 	public DataRecord(String key, T value) {
 		this.timestamp = ZonedDateTime.now();
