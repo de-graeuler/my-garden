@@ -1,8 +1,9 @@
 System wide
   * Documentation
-  * Test coverage
-  * Client Verification by API Token
-    Use salted SHA1 hash of ApiToken in POST-URL
+  * Test coverage (PHPUnit)
+  * Client Verification by API Token -- Implemented. See api-token branch. 
+    Use salted SHA1 hash of ApiToken in POST-Content.
+    The Json Data send to the http datacollector has to provide the key 'api-token' with the value hex(sha-1([api-token][salt])':'[salt])
   * support multitenancy
 
 Monitor App:

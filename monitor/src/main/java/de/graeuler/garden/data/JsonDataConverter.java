@@ -10,17 +10,28 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import com.google.inject.Inject;
+
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.data.model.DataRecord;
 import de.graeuler.garden.interfaces.DataConverter;
 
 public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, String> {
 
+	private String apiToken;
+
+	@Inject
+	JsonDataConverter(AppConfig config) {
+		this.apiToken = (String) config.get(AppConfig.Key.API_TOKEN);
+	}
+	
 	DateTimeFormatter isoFormat = DateTimeFormatter.ISO_ZONED_DATE_TIME;
 	
 	/**
 	 *  
 	 *  example for combined result: 
 	 *  { 
+	 *  	"api-token": "0b0c023edeef60cb4b3197934d79755e20001136:feWeF"
 	 *  	"key1" : 
 	 *  	[ 
 	 *  		{
@@ -69,6 +80,7 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 		}
 		
 		jsonObjectBuilder = Json.createObjectBuilder();
+		jsonObjectBuilder.add("api-token", ApiToken.buildApiToken(this.apiToken));
 		for(String jsonGroupKey : jsonKeyGroupArrayBuilderMap.keySet()) {
 			jsonObjectBuilder.add(jsonGroupKey, jsonKeyGroupArrayBuilderMap.get(jsonGroupKey));
 		}

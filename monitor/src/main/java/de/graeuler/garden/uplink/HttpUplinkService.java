@@ -50,7 +50,7 @@ public class HttpUplinkService implements Uplink<String> {
 				return false;
 			}
 		} catch (IOException e) {
-			log.error("{}", e);
+			log.error("{}", e.getMessage());
 			return false;
 		}
 	}
