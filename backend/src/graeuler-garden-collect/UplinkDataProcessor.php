@@ -4,7 +4,7 @@ namespace Graeuler\Garden\Collect;
 
 class UplinkDataProcessor implements DataProcessor 
 {
-    
+    const API_TOKEN_JSON_KEY = "api-token";
     private function fail($message) {
         throw new InvalidDataException('Data Processing Error: ' . $message);
     }
@@ -15,6 +15,7 @@ class UplinkDataProcessor implements DataProcessor
         if ( ! strtolower($source) === 'garden' ) $this->fail('Currently supports processing of garden data.');
         $dataSet = new GardenDataSet();
         foreach($jsonData as $key => $data) {
+            if ($key === self::API_TOKEN_JSON_KEY) continue;
             if ( ! is_array($data) ) $this->fail(sprintf('Value for type %s has to be an array.', $key));
             foreach($data as $set) {
                 if ( ! isset($set['t'] ) ) $this->fail (sprintf('IsoDateTime (t) missing in %s', $key));

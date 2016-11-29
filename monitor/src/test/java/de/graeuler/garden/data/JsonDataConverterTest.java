@@ -16,10 +16,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.StaticAppConfig;
 import de.graeuler.garden.data.model.DataRecord;
 
 public class JsonDataConverterTest {
-
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -38,7 +40,7 @@ public class JsonDataConverterTest {
 
 	@Test
 	public void testConvert() {
-		JsonDataConverter converter = new JsonDataConverter();
+		JsonDataConverter converter = new JsonDataConverter(new StaticAppConfig());
 		List<DataRecord<?>> records = new ArrayList<>();
 		records.add(new DataRecord<String>("stringkey", "stringvalue1"));
 		records.add(new DataRecord<Double>("doublekey", 1.234));
