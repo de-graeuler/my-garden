@@ -44,6 +44,7 @@ public class HttpUplinkService implements Uplink<String> {
 			int httpStatusCode = response.getStatusLine().getStatusCode();
 			response.close();
 			if (200 == httpStatusCode || 201 == httpStatusCode) {
+				log.info("Data pushed to uplink.");
 				return true;
 			} else {
 				log.error("HTTP ERROR {}: {}", httpStatusCode, resultContent);
