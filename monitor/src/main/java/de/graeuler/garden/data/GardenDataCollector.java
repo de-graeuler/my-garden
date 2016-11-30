@@ -75,6 +75,9 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	@Override
 	public void run() {
 		synchronized (this.data) { // adding data records should be synchronized 
+			
+			if (this.data.size() == 0) return;
+			
 			String jsonDataString = converter.convert(this.data);
 			if (this.uplink.pushData(jsonDataString)) {
 				this.data.clear();
