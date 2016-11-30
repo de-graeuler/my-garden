@@ -1,14 +1,8 @@
 <?php
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-
 use Graeuler\Garden\Collect\DataFeedDatastore as DataFeedDatastore;
 use Graeuler\Garden\Collect\UplinkDataProcessor as UplinkDataProcessor;
-use Graeuler\Garden\Collect\InvalidDataException as InvalidDataException;
 use Graeuler\Garden\Collect\ApiToken as ApiToken;
-use Graeuler\Garden\Collect\InvalidTokenException as InvalidTokenException;
-use Graeuler\Garden\Collect\ReportController as ReportController;
 
 require '../vendor/autoload.php';
 
@@ -30,8 +24,9 @@ $container['uplinkDataProcessor'] = new UplinkDataProcessor();
 $container['apiToken'] = new ApiToken();
 
 $app = new \Slim\App($container);
+
 // DEBUG:
-unset($app->getContainer()['errorHandler']);
+// unset($app->getContainer()['errorHandler']);
 
 $app->get('/report/v01/keys/{source}', 
           '\Graeuler\Garden\Collect\ReportController:keys');
