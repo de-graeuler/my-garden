@@ -11,7 +11,7 @@ public class StaticAppConfig implements AppConfig {
 		this.config.put(AppConfig.Key.TF_DAEMON_HOST, "192.168.1.10");
 		this.config.put(AppConfig.Key.TF_DAEMON_PORT, Integer.valueOf(4223));
 		this.config.put(AppConfig.Key.UPLINK_ADRESS, "http://localhost:8081/datafeed/collect/garden");
-		this.config.put(AppConfig.Key.API_TOKEN, "non-working-token");
+		// this.config.put(AppConfig.Key.API_TOKEN, "non-working-token");
 	}
 	
 	@Override
