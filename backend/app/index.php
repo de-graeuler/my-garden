@@ -1,13 +1,14 @@
 <?php
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
 
-use \Graeuler\Garden\Collect\DataFeedDatastore as DataFeedDatastore;
-use \Graeuler\Garden\Collect\UplinkDataProcessor as UplinkDataProcessor;
-use \Graeuler\Garden\Collect\InvalidDataException as InvalidDataException;
-use \Graeuler\Garden\Collect\ApiToken as ApiToken;
-use \Graeuler\Garden\Collect\InvalidTokenException as InvalidTokenException;
+use Graeuler\Garden\Collect\DataFeedDatastore as DataFeedDatastore;
+use Graeuler\Garden\Collect\UplinkDataProcessor as UplinkDataProcessor;
+use Graeuler\Garden\Collect\InvalidDataException as InvalidDataException;
+use Graeuler\Garden\Collect\ApiToken as ApiToken;
+use Graeuler\Garden\Collect\InvalidTokenException as InvalidTokenException;
+use Graeuler\Garden\Collect\ReportController as ReportController;
 
 require '../vendor/autoload.php';
 
@@ -29,44 +30,14 @@ $container['uplinkDataProcessor'] = new UplinkDataProcessor();
 $container['apiToken'] = new ApiToken();
 
 $app = new \Slim\App($container);
+// DEBUG:
+unset($app->getContainer()['errorHandler']);
 
-$app->post('/collect/[{source}]', function (Request $request, Response $response, $arguments) {
-
-    $source = $arguments['source'];
-
-    $dataProcessor = $this->get('uplinkDataProcessor');
-    $dataStore = $this->get('dataStore');
-    $apiToken = $this->get('apiToken');
-    
-    $r = new stdClass();
-    $r->success = false;
-    $parsedBody = $request->getParsedBody();
-    if (is_null($parsedBody) || ! is_array($parsedBody)) {
-        $r->message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(), getJsonErrorConstant(json_last_error()));
-        $responseCode = 400;
-    } else {
-        try {
-            $validTokens = $dataStore->selectTokenBySource($source, $parsedBody);
-            $apiToken->check($parsedBody, $validTokens); // throws InvalidTokenException
-            $dataSet = $dataProcessor->buildDataSet($parsedBody, $source);
-            $r->success = $dataStore->storeDataSet($dataSet);
-            $responseCode = 200;
-        } catch (InvalidDataException $ide) {
-            $r->success = false;
-            $r->message = $ide->getMessage();
-            $responseCode = 400;
-        } catch (InvalidTokenException $ite) {
-            $r->success = false;
-            $r->message = $ite->getMessage();
-            $responseCode = 403;
-        } catch (PDOException $pdoe) {
-            $r->success = false;
-            $r->message = $pdoe->getMessage();
-            $r->code = $pdoe->getCode();
-            $responseCode = 500;
-        } 
-    }
-    return $response->withJson($r, $responseCode);
-});
-
+$app->get('/report/v01/keys/{source}', 
+          '\Graeuler\Garden\Collect\ReportController:keys');
+$app->get('/report/v01/fetch/{source}/{key}[/{iso_datetime_from}[/{iso_datetime_to}]]',
+          '\Graeuler\Garden\Collect\ReportController:fetch');
+$app->post('/collect/{source}', 
+           '\Graeuler\Garden\Collect\CollectController:collect');
+          
 $app->run();

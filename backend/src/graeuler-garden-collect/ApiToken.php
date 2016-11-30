@@ -4,13 +4,17 @@ namespace Graeuler\Garden\Collect;
 
 class ApiToken 
 {
-    public function check($jsonData, $validTokens) {
-        if ( ! isset ($jsonData["api-token"] ) ) throw new InvalidTokenException("api-token key in POST data is missing.");
-        list($hash, $salt) = explode(':',$jsonData["api-token"]);
+    public function checkToken($saltedTokenHash, $validTokens) {
+        list($hash, $salt) = explode(':',$saltedTokenHash);
         foreach($validTokens as $token) {
-            $checkToken = sha1($token.$salt);
-            if ($hash === $checkToken) return;
+            $check= sha1($token.$salt);
+            if ($hash === $check) return;
         }
-        throw new InvalidTokenException("Invalid token submitted.");
+        throw new InvalidTokenException("Invalid token submitted: $saltedTokenHash. ". print_r($validTokens, true));
+    }
+    
+    public function checkJsonData($jsonData, $validTokens) {
+        if ( ! isset ($jsonData["api-token"] ) ) throw new InvalidTokenException("api-token key in POST data is missing.");
+        $this->checkToken($jsonData["api-token"], $validTokens);
     }    
 }
