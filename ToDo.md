@@ -1,6 +1,7 @@
 System wide
   * Documentation
   * Test coverage (PHPUnit)
+  * Http data transfer compression (gzip Encoding)
   * Client Verification by API Token -- Implemented. See api-token branch. 
   
     The Json data send to the http datacollector has to provide the key 'api-token' with the value hex(sha-1([api-token][salt])':'[salt])
