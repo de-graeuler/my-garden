@@ -16,8 +16,22 @@ class CollectController extends BaseController
         $apiToken = $this->ci->get('apiToken');
         
         $r = new \stdClass();
-        $r->success = false;
-        $parsedBody = $request->getParsedBody();
+        $r->success = true; // as long as success is true the program can continue.
+
+        if ("gzip" === $request->getHeaderLine('HTTP_CONTENT_ENCODING')) {
+            // http://php.net/manual/de/function.gzuncompress.php#112202
+            if ( false === ( $content = file_get_contents('php://input') ) ) {
+                $this->setClientError($r, "Unable to read raw POST data.");
+            }
+            elseif ( false === ( $data = @gzinflate(substr(,10,-8)) ) ) {
+                $this->setClientError($r, "Unable to decompress data.");
+            } else {
+                $parsedBody = json_decode($data, true);
+            }
+        } else {
+            $parsedBody = $request->getParsedBody();
+        } 
+
         if (is_null($parsedBody) || ! is_array($parsedBody)) {
             $r->message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(), getJsonErrorConstant(json_last_error()));
             $responseCode = 400;
@@ -29,21 +43,29 @@ class CollectController extends BaseController
                 $r->success = $this->dataStore->storeDataSet($dataSet);
                 $responseCode = 200;
             } catch (InvalidDataException $ide) {
-                $r->success = false;
-                $r->message = $ide->getMessage();
-                $responseCode = 400;
+                $this->setClientError($r, $ide->getMessage());
             } catch (InvalidTokenException $ite) {
-                $r->success = false;
-                $r->message = $ite->getMessage();
-                $responseCode = 403;
+                $this->setClientError($r, $ite->getMessage(), 403);
             } catch (PDOException $pdoe) {
-                $r->success = false;
-                $r->message = $pdoe->getMessage();
+                $this->setServerError($r, $ide->getMessage());
                 $r->code = $pdoe->getCode();
-                $responseCode = 500;
             } 
         } 
         return $response->withJson($r, $responseCode, JSON_PRETTY_PRINT);
     }
+
+    private function setErrorResponse(&$responseContent, $message, $httpStatusCode) {
+        $responseContent->success = false;
+        $responseContent->responseCode = 400;
+        $responseContent->message = $message;
+    }
     
+    private function setClientError(&$responseContent, $message, $httpStatusCode = 400) {
+        $this->setErrorResponse($responseContent, $message, $httpStatusCode)
+    }
+    
+    private function setServerError(&$responseContent, $message, $httpStatusCode = 500) {
+        $this->setErrorResponse($responseContent, $message, $httpStatusCode)
+    }
+
 }
