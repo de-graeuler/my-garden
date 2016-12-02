@@ -27,12 +27,36 @@ class ReportController extends BaseController
         try {
 //            $this->checkApiToken($pApiToken)
             $data = $this->dataStore->selectDataByKey($pSource, $pKey);
+            foreach ($data as &$record) {
+                switch($record['datatype']) {
+                    case "double": $record['value'] = (float) $record['realdata']; break;
+                    case "int":    $record['value'] =   (int) $record['intdata'];  break;
+                    case "string": $record['value'] =         $record['stringdata'];   break;
+                    default: $record['value'] = null; break;
+                    { 
+                          if (is_string($record['stringdata'])) $record['value'] =         $record['stringdata'];
+                      elseif (is_int   ($record['intdata']))    $record['value'] =   (int) $record['intdata'];
+                      elseif (is_float ($record['realdata']))   $record['value'] = (float) $record['realdata'];
+                        else $record['value'] = null;
+                    } break;
+                }
+                unset ($record['realdata']); 
+                unset ($record['intdata']); 
+                unset ($record['stringdata']);
+                unset ($record['datatype']);
+            }
+            unset ($record);
             $r = $data;
         } catch (InvalidTokenException $ite) {
             $r->success = false;
             $r->message = $ite->getMessage();
             $responseCode = 403;
-        }
+        }  catch (PDOException $pdoe) {
+                $r->success = false;
+                $r->message = $pdoe->getMessage();
+                $r->code = $pdoe->getCode();
+                $responseCode = 500;
+        } 
         return $response->withJson($r, 200, JSON_PRETTY_PRINT);
     }
 
