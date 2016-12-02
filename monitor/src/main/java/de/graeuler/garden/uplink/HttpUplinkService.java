@@ -1,10 +1,15 @@
 package de.graeuler.garden.uplink;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -35,16 +40,18 @@ public class HttpUplinkService implements Uplink<String> {
 		if (null == this.postRequest)
 			this.postRequest = new HttpPost(this.uplink);
 		try {
-			HttpEntity entity = new StringEntity(data);
+			byte[] compressedData = this.gZipData(data);
+			HttpEntity entity = new ByteArrayEntity(compressedData, ContentType.APPLICATION_JSON);
+			this.postRequest.setHeader("Content-Encoding", "gzip");
 			this.postRequest.setEntity(entity);
-			this.postRequest.setHeader("Content-Type", "application/json");
 			CloseableHttpResponse response = this.httpclient.execute(postRequest);
-//          optional result content parsing for more verbose result information: @TODO.
 			String resultContent = EntityUtils.toString(response.getEntity());
+//          optional result content parsing for more verbose result information: @TODO.
 			int httpStatusCode = response.getStatusLine().getStatusCode();
 			response.close();
 			if (200 == httpStatusCode || 201 == httpStatusCode) {
-				log.info("Data pushed to uplink.");
+				log.info("{} bytes of data pushed to uplink.", compressedData.length);
+				log.debug("response received: {}", resultContent);
 				return true;
 			} else {
 				log.error("HTTP ERROR {}: {}", httpStatusCode, resultContent);
@@ -54,6 +61,19 @@ public class HttpUplinkService implements Uplink<String> {
 			log.error("{}", e.getMessage());
 			return false;
 		}
+	}
+
+	private byte[] gZipData(String data) {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			GZIPOutputStream gzos = new GZIPOutputStream(baos);
+			gzos.write(data.getBytes("UTF-8"));
+			gzos.close();
+			return baos.toByteArray();
+		} catch (IOException e) {
+			log.error("Error compressing data. {}", e.getMessage());
+		}
+		return new byte[] {};
 	}
 
 }
