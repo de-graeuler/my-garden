@@ -2,6 +2,11 @@ System wide
   * Documentation
   * Test coverage (PHPUnit)
   * Http data transfer compression (gzip Encoding)
+    
+    Implemented using gzip as content encoding header.
+    
+    To Do: Improve it by using the mime type application/json+zip and register a Slim media type parser on it.
+    
   * Client Verification by API Token -- Implemented. See api-token branch. 
   
     The Json data send to the http datacollector has to provide the key 'api-token' with the value hex(sha-1([api-token][salt])':'[salt])
