@@ -41,16 +41,19 @@ class ApiTokenTest extends TestCase
         $failed = $this->apiToken->checkToken($this->goodhash, $invalidTokens); // should not return true in this case.
         $this->assertFalse($failed, "checkToken should throw an exception in this case."); // should not be reached.
     }
-        
-        
 
-    public function testCheckJsonData() {
+    public function testCheckJsonDataSuccess() {
         $validTokens = array ('sample-token', 'another-sample-token', 'unit-test-token', 'yet-another-token');
         $this->assertTrue($this->apiToken->checkJsonData(array("api-token"=>$this->goodhash), $validTokens ));
     }
     
-    public function checkJsonData($jsonData, $validTokens) {
-        if ( ! isset ($jsonData["api-token"] ) ) throw new InvalidTokenException("api-token key in POST data is missing.");
-        $this->checkToken($jsonData["api-token"], $validTokens);
-    }    
+    /**
+     * @expectedException Graeuler\Garden\Collect\InvalidTokenException
+     */
+    public function testCheckJsonDataNoToken() {
+        $validTokens = array ('sample-token', 'another-sample-token', 'unit-test-token', 'yet-another-token');
+        $failed = $this->apiToken->checkJsonData(array(), $validTokens); // should not return true in this case.
+        $this->assertFalse($failed, "checkJsonData should throw an exception in this case."); // should not be reached.
+    }
+    
 }
