@@ -6,16 +6,6 @@ use Graeuler\Garden\Collect\ApiToken as ApiToken;
 
 require '../vendor/autoload.php';
 
-function getJsonErrorConstant($errorCode) {
-    $constants = get_defined_constants(true);
-    foreach ($constants["json"] as $name => $value) {
-        if (!strncmp($name, "JSON_ERROR_", 11)) {
-            $json_errors[$value] = $name;
-        }
-    }
-    return $json_errors[$errorCode];
-}
-
 $dbConnection = new PDO('sqlite:../data.sqlite');
 
 $container = new \Slim\Container;

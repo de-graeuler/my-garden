@@ -32,8 +32,7 @@ class ReportController extends BaseController
                     case "double": $record['value'] = (float) $record['realdata']; break;
                     case "int":    $record['value'] =   (int) $record['intdata'];  break;
                     case "string": $record['value'] =         $record['stringdata'];   break;
-                    default: $record['value'] = null; break;
-                    { 
+                    default: { 
                           if (is_string($record['stringdata'])) $record['value'] =         $record['stringdata'];
                       elseif (is_int   ($record['intdata']))    $record['value'] =   (int) $record['intdata'];
                       elseif (is_float ($record['realdata']))   $record['value'] = (float) $record['realdata'];

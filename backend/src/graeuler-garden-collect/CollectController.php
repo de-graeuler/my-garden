@@ -14,7 +14,6 @@ class CollectController extends BaseController
     
         $dataProcessor = $this->ci->get('uplinkDataProcessor');
         $apiToken = $this->ci->get('apiToken');
-        
         $r = new \stdClass();
         $r->success = true; // as long as success is true the program can continue.
 
@@ -33,7 +32,9 @@ class CollectController extends BaseController
         } 
 
         if (is_null($parsedBody) || ! is_array($parsedBody)) {
-            $r->message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(), getJsonErrorConstant(json_last_error()));
+            $r->success = false;
+            $r->message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(), 
+                    $this->getJsonErrorConstant(json_last_error()));
             $responseCode = 400;
         } else {
             try {
@@ -43,11 +44,11 @@ class CollectController extends BaseController
                 $r->success = $this->dataStore->storeDataSet($dataSet);
                 $responseCode = 200;
             } catch (InvalidDataException $ide) {
-                $this->setClientError($r, $ide->getMessage());
+                $responseCode = $this->setClientError($r, $ide->getMessage());
             } catch (InvalidTokenException $ite) {
-                $this->setClientError($r, $ite->getMessage(), 403);
-            } catch (PDOException $pdoe) {
-                $this->setServerError($r, $ide->getMessage());
+                $responseCode = $this->setClientError($r, $ite->getMessage(), 403);
+            } catch (\PDOException $pdoe) {
+                $responseCode = $this->setServerError($r, $pdoe->getMessage());
                 $r->code = $pdoe->getCode();
             } 
         } 
@@ -56,16 +57,26 @@ class CollectController extends BaseController
 
     private function setErrorResponse(&$responseContent, $message, $httpStatusCode) {
         $responseContent->success = false;
-        $responseContent->responseCode = 400;
         $responseContent->message = $message;
+        return $httpStatusCode;
     }
     
     private function setClientError(&$responseContent, $message, $httpStatusCode = 400) {
-        $this->setErrorResponse($responseContent, $message, $httpStatusCode)
+        $this->setErrorResponse($responseContent, $message, $httpStatusCode);
     }
     
     private function setServerError(&$responseContent, $message, $httpStatusCode = 500) {
-        $this->setErrorResponse($responseContent, $message, $httpStatusCode)
+        $this->setErrorResponse($responseContent, $message, $httpStatusCode);
+    }
+
+    private function getJsonErrorConstant($errorCode) {
+        $constants = get_defined_constants(true);
+        foreach ($constants["json"] as $name => $value) {
+            if (!strncmp($name, "JSON_ERROR_", 11)) {
+                $json_errors[$value] = $name;
+            }
+        }
+        return $json_errors[$errorCode];
     }
 
 }

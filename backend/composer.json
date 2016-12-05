@@ -4,5 +4,8 @@
     } ,
     "autoload": {
         "psr-4": {"Graeuler\\Garden\\Collect\\": "src/graeuler-garden-collect/"}
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.6.*"
     }
 }
