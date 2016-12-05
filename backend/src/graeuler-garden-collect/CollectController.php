@@ -23,7 +23,7 @@ class CollectController extends BaseController
             if ( false === ( $content = file_get_contents('php://input') ) ) {
                 $this->setClientError($r, "Unable to read raw POST data.");
             }
-            elseif ( false === ( $data = @gzinflate(substr(,10,-8)) ) ) {
+            elseif ( false === ( $data = @gzinflate(substr($content,10,-8)) ) ) {
                 $this->setClientError($r, "Unable to decompress data.");
             } else {
                 $parsedBody = json_decode($data, true);
