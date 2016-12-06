@@ -19,6 +19,7 @@ class CollectController extends BaseController
 
         if ("gzip" === $request->getHeaderLine('HTTP_CONTENT_ENCODING')) {
             // http://php.net/manual/de/function.gzuncompress.php#112202
+            // TODO: consider using the mime type application/json+zip and register a Body Parser Middleware.
             if ( false === ( $content = file_get_contents('php://input') ) ) {
                 $this->setClientError($r, "Unable to read raw POST data.");
             }
