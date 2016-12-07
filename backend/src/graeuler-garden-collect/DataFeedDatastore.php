@@ -107,7 +107,7 @@ SQL;
         $q = $this->selectKeysBySource;
         $q->bindValue(":source", $source);
         $q->execute();
-        $result = $q->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $q->fetchAll(\PDO::FETCH_COLUMN, 0);
         return $result;
     }
 }
