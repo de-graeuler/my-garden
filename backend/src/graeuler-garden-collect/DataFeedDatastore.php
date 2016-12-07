@@ -54,7 +54,7 @@ SQL;
    }
 
     private function fail($message) {
-        throw new \PDOException('Data Processing Error: ' . $message);
+        throw new InvalidDataException('Data Processing Error: ' . $message);
     }
     
     public function storeDataSet(DataSet $dataSet) {
