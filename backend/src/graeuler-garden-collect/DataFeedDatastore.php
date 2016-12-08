@@ -57,7 +57,7 @@ SQL;
         throw new InvalidDataException('Data Processing Error: ' . $message);
     }
     
-    public function storeDataSet(DataSet $dataSet) {
+    public function storeDataSet(DataSetInterface $dataSet) {
                 
         $this->db->beginTransaction();
         // if ($dataSet instanceOf GardenDataSet ) ... or: switch (true) {case $dataSet instanceOf GardenDataSet: ... }

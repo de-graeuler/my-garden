@@ -2,7 +2,7 @@
 
 namespace Graeuler\Garden\Collect;
 
-interface DataProcessor
+interface DataProcessorInterface
 {
     /**
      * @param array $jsonData A php array extracted by json_decode on a string.

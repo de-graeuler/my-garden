@@ -2,7 +2,7 @@
 
 namespace Graeuler\Garden\Collect;
 
-class GardenDataSet implements DataSet 
+class GardenDataSet implements DataSetInterface 
 {
     
     private $records = array();

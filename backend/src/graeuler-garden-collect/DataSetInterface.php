@@ -2,7 +2,7 @@
 
 namespace Graeuler\Garden\Collect;
 
-interface DataSet 
+interface DataSetInterface 
 {
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Graeuler\Garden\Collect;
 
-class UplinkDataProcessor implements DataProcessor 
+class UplinkDataProcessor implements DataProcessorInterface 
 {
     const API_TOKEN_JSON_KEY = "api-token";
     private function fail($message) {
