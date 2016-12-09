@@ -58,7 +58,7 @@ public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> i
 	private void updateThreshold(int distance) throws TimeoutException, NotConnectedException {
 		DistanceCallbackThreshold threshold = getBrick().getDistanceCallbackThreshold();
 		if (distance < threshold.min || distance > threshold.max) {
-			int lwrLimit = (int) (distance - 0.5 * THRESHOLD_CM * 10);
+			int lwrLimit = (int) (Math.max(0, distance - 0.5 * THRESHOLD_CM * 10));
 			int uprLimit = (int) (distance + 0.5 * THRESHOLD_CM * 10);
 			log.info("Distance {} left threshold range of {} - {}. Setting threshold range to {} - {}",
 					distance, threshold.min, threshold.max, lwrLimit, uprLimit);
