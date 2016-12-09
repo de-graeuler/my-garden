@@ -14,23 +14,11 @@ class CollectController extends BaseController
     
         $dataProcessor = $this->ci->get('uplinkDataProcessor');
         $apiToken = $this->ci->get('apiToken');
+        
         $r = new \stdClass();
         $r->success = true; // as long as success is true the program can continue.
 
-        if ("gzip" === $request->getHeaderLine('HTTP_CONTENT_ENCODING')) {
-            // http://php.net/manual/de/function.gzuncompress.php#112202
-            // TODO: consider using the mime type application/json+zip and register a Body Parser Middleware.
-            if ( false === ( $content = file_get_contents('php://input') ) ) {
-                $this->setClientError($r, "Unable to read raw POST data.");
-            }
-            elseif ( false === ( $data = @gzinflate(substr($content,10,-8)) ) ) {
-                $this->setClientError($r, "Unable to decompress data.");
-            } else {
-                $parsedBody = json_decode($data, true);
-            }
-        } else {
-            $parsedBody = $request->getParsedBody();
-        } 
+        $parsedBody = $request->getParsedBody();
 
         if (is_null($parsedBody) || ! is_array($parsedBody)) {
             $r->success = false;

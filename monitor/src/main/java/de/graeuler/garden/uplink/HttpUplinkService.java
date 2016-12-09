@@ -2,7 +2,6 @@ package de.graeuler.garden.uplink;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.http.HttpEntity;
@@ -10,7 +9,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -41,8 +39,7 @@ public class HttpUplinkService implements Uplink<String> {
 			this.postRequest = new HttpPost(this.uplink);
 		try {
 			byte[] compressedData = this.gZipData(data);
-			HttpEntity entity = new ByteArrayEntity(compressedData, ContentType.APPLICATION_JSON);
-			this.postRequest.setHeader("Content-Encoding", "gzip");
+			HttpEntity entity = new ByteArrayEntity(compressedData, ContentType.create("application/gzip")); 
 			this.postRequest.setEntity(entity);
 			CloseableHttpResponse response = this.httpclient.execute(postRequest);
 			String resultContent = EntityUtils.toString(response.getEntity());
