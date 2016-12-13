@@ -2,19 +2,13 @@
 
 namespace Graeuler\Garden\Collect;
 
+use Graeuler\Garden\Collect\AbstractDataFeedDatastoreTestBase;
 use PHPUnit\Framework\TestCase;
 
-class DataFeedDatastoreTest extends TestCase {
+class DataFeedDatastoreTestBase extends TestCase {
     
-    private static $db;
-    const DB_SETUP_SCRIPT = 'res/database-schema.sql'; //relative to phpunit execution. 
-        
-    public static function setUpBeforeClass() {
-        self::$db = new \PDO('sqlite::memory:');
-        $setup = file_get_contents(self::DB_SETUP_SCRIPT);
-        $q = self::$db->exec($setup);
-    }
-    
+    protected static $db;
+
     public function tearDown() {
         self::$db->exec("delete from datasets");
         self::$db->exec("delete from apitokens");
@@ -100,16 +94,16 @@ class DataFeedDatastoreTest extends TestCase {
         $data = $dataStore->selectDataByKey("source", "key1");
         $this->assertEmpty($data);
 
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
         
         $data = $dataStore->selectDataByKey("source", "key3");
         $this->assertEmpty($data);
     }
     
     public function testSelectDataByKeySingle() {
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
         
         $dataStore = $this->getDataStoreInstance();
         $data = $dataStore->selectDataByKey("source", "key1");
@@ -118,10 +112,10 @@ class DataFeedDatastoreTest extends TestCase {
     }
     
     public function testSelectDataByKeyMulti() {
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v2")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v3")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v4")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v2")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v3")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v4")');
         
         $dataStore = $this->getDataStoreInstance();
         $data = $dataStore->selectDataByKey("source", "key");
@@ -133,8 +127,8 @@ class DataFeedDatastoreTest extends TestCase {
         $dataStore = $this->getDataStoreInstance();
         $keys = $dataStore->selectKeysBySource("source");
         $this->assertEmpty($keys);
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
         $keys = $dataStore->selectKeysBySource("not-source");
         $this->assertEmpty($keys);
     }
@@ -143,7 +137,7 @@ class DataFeedDatastoreTest extends TestCase {
         $dataStore = $this->getDataStoreInstance();
         $keys = $dataStore->selectKeysBySource("source");
         $this->assertEmpty($keys);
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
         $keys = $dataStore->selectKeysBySource("source");
         $this->assertCount(1, $keys);
         $this->assertEquals("key1", $keys[0], print_r($keys, true));
@@ -151,10 +145,10 @@ class DataFeedDatastoreTest extends TestCase {
     
     public function testSelectKeysBySourceMulti() {
         $dataStore = $this->getDataStoreInstance();
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v2")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v3")');
-        self::$db->exec ('insert into datasets(source, key, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v4")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v1")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key1", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v2")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v3")');
+        self::$db->exec ('insert into datasets(source, `key`, isodatetime, datatype, stringdata) values ("source", "key2", "2016-12-02T01:42:27.283+01:00[Europe/Berlin]", "string", "v4")');
         $keys = $dataStore->selectKeysBySource("source");
         $this->assertCount(2, $keys);
         $this->assertEquals("key2", $keys[1], print_r($keys, true));

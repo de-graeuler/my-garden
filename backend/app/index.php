@@ -7,7 +7,19 @@ use Graeuler\Garden\Collect\JsonGUnzipMiddleware as JsonGUnzipMiddleware;
 
 require '../vendor/autoload.php';
 
-$dbConnection = new PDO('sqlite:../data.sqlite');
+$config = json_decode(file_get_contents('../res/app.config.json'));
+
+if ( is_null($config) ) {
+    die("Config not parseable");
+}
+
+switch ($config->database->type) {
+    case 'mysql': $dbConnection = new PDO(sprintf('mysql:host=%s;dbname=%s', 
+                                            $config->database->host, $config->database->dbname ),
+                                            $config->database->username, $config->database->password ); 
+                  break;
+    default:      $dbConnection = new PDO('sqlite:../data.sqlite'); break;
+}
 
 $container = new \Slim\Container;
 $container['dataStore'] = new DataFeedDatastore($dbConnection);

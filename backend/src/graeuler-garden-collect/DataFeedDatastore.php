@@ -2,8 +2,6 @@
 
 namespace Graeuler\Garden\Collect;
 
-
-
 class DataFeedDatastore {
     
     private $db;
@@ -11,7 +9,7 @@ class DataFeedDatastore {
     
     const INSERT_RECORD_DML =  <<<DML
 INSERT INTO datasets 
-  (source, key, isodatetime, datatype, realdata, intdata, stringdata)
+  (source, `key`, isodatetime, datatype, realdata, intdata, stringdata)
 VALUES
   (:source, :key, :isodatetime, :datatype, :realdata, :intdata, :stringdata)
 DML;
@@ -28,16 +26,16 @@ SQL;
     const SELECT_DATA_BY_KEY = <<<SQL
 SELECT isodatetime, datatype, realdata, intdata, stringdata 
   FROM datasets
- WHERE source = :source AND key = :key
+ WHERE source = :source AND `key` = :key
  ORDER BY isodatetime
 SQL;
 
     private $selectKeysBySource = null;
     const SELECT_KEYS_BY_SOURCE = <<<SQL
-SELECT DISTINCT key 
+SELECT DISTINCT `key` 
   FROM datasets
  WHERE source = :source
- ORDER BY key
+ ORDER BY `key`
 SQL;
     
     public function __construct(\PDO $db) {
