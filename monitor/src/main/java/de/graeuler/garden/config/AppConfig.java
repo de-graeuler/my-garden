@@ -5,14 +5,14 @@ public interface AppConfig{
 	public enum Key {
 
 		// keys and default values
-		TF_DAEMON_HOST ("tinkerforge.brickdaemon.host",      "localhost"              ), 
-		TF_DAEMON_PORT ("tinkerforge.brickdaemon.port",      4332                     ), 
+		TF_DAEMON_HOST ("tinkerforge.brickdaemon.host",      "localhost"           ), 
+		TF_DAEMON_PORT ("tinkerforge.brickdaemon.port",      4223                  ), 
 
-		DC_STORE_PATH  ("datacollector.store-path"    ,      "./data"                 ),
-		DC_STORE_FILE  ("datacollector.store-file"    ,      "data-collector.json"    ), 
+		DC_STORE_PATH  ("datacollector.store-path"    ,      "./data"              ),
+		DC_STORE_FILE  ("datacollector.store-file"    ,      "data-collector.json" ), 
 		
-		UPLINK_ADRESS  ("uplink.adress"               ,      "http://localhost/garden"), 
-		API_TOKEN      ("uplink.api-token"            ,      "default-token"          ),
+		UPLINK_ADRESS  ("uplink.address"              ,      "http://localhost"    ), 
+		API_TOKEN      ("uplink.api-token"            ,      "default-token"       ),
 		;
 
 		private String key;
