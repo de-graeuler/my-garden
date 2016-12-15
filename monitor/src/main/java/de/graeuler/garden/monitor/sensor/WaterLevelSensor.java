@@ -13,18 +13,27 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TFDevice;
 
 public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> implements SensorHandler, DistanceReachedListener {
 
-	private final static short THRESHOLD_CM = 20;
+	private int thresholdCm = 20;
+	private short movingAverage = 60;
+	private int debouncePeriodMs = 10000;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Inject
-	WaterLevelSensor(DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		super(dataCollector, scheduler);
+	WaterLevelSensor(AppConfig config,DataCollector dataCollector, ScheduledExecutorService scheduler) {
+		super(config, dataCollector, scheduler);
+		this.thresholdCm = (int) config.get(AppConfig.Key.WATERLVL_CHG_THD);
+		int ma = (int) config.get(AppConfig.Key.WATERLVL_MOVING_AVG);
+		if (ma >= 0 || ma <= 100) {
+			this.movingAverage = (short) ma;
+		}
+		this.debouncePeriodMs = (int) config.get(AppConfig.Key.WATERLVL_DEBOUNCE);
 	}
 
 	@Override
@@ -37,7 +46,8 @@ public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> i
 		BrickletDistanceUS b = new BrickletDistanceUS(device.getUid(), conn);
 		setBrick(b);
 		b.addDistanceReachedListener(this);
-		b.setDebouncePeriod(10000);
+		b.setDebouncePeriod(this.debouncePeriodMs);
+		b.setMovingAverage(this.movingAverage);
 		int distance = b.getDistanceValue();
 		updateThreshold(distance);
 		sendToCollector(distance);
@@ -58,8 +68,8 @@ public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> i
 	private void updateThreshold(int distance) throws TimeoutException, NotConnectedException {
 		DistanceCallbackThreshold threshold = getBrick().getDistanceCallbackThreshold();
 		if (distance < threshold.min || distance > threshold.max) {
-			int lwrLimit = (int) (Math.max(0, distance - 0.5 * THRESHOLD_CM * 10));
-			int uprLimit = (int) (distance + 0.5 * THRESHOLD_CM * 10);
+			int lwrLimit = (int) (Math.max(0, distance - 0.5 * thresholdCm * 10));
+			int uprLimit = (int) (distance + 0.5 * thresholdCm * 10);
 			log.info("Distance {} left threshold range of {} - {}. Setting threshold range to {} - {}",
 					distance, threshold.min, threshold.max, lwrLimit, uprLimit);
 			getBrick().setDistanceCallbackThreshold('o', lwrLimit, uprLimit);

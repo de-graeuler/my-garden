@@ -17,6 +17,7 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 import com.tinkerforge.TinkerforgeException;
 
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TFDevice;
@@ -27,10 +28,12 @@ public abstract class SchedulerSensorBrick<T extends Device> implements SensorHa
 	private ScheduledExecutorService scheduler;
 	private List<ScheduledFuture<?>> futures = new ArrayList<>();
 	private T brick = null;
+	private AppConfig config;
 	private DataCollector dataCollector;
 		
 	@Inject
-	SchedulerSensorBrick(DataCollector dataCollector, ScheduledExecutorService scheduler) {
+	SchedulerSensorBrick(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
+		this.config = config;
 		this.dataCollector = dataCollector;
 		this.scheduler = scheduler;
 	}

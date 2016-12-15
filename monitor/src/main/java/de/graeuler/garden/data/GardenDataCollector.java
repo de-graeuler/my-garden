@@ -33,11 +33,18 @@ public class GardenDataCollector implements DataCollector, Runnable {
 
 	private Uplink<String> uplink;
 
+	private int collectTimeRate;
+
+	private TimeUnit collectTimeUnit;
+
 	@Inject
 	GardenDataCollector(AppConfig config, DataConverter<List<DataRecord<?>>, String> converter, Uplink<String> uplink, ScheduledExecutorService scheduler) {
 		this.uplink = uplink;
 		this.scheduler = scheduler;
 		this.converter = converter;
+		
+		this.collectTimeUnit = TimeUnit.valueOf(((String) config.get(AppConfig.Key.COLLECT_TIME_UNIT)).toUpperCase());
+		this.collectTimeRate = (int) config.get(AppConfig.Key.COLLECT_TIME_RATE);
 		
 		this.dataLocationPath = FileSystems.getDefault().getPath(
 				(String) config.get(AppConfig.Key.DC_STORE_PATH), 
@@ -48,9 +55,10 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	}
 	
 	private void initialize() {
-		this.scheduler.scheduleAtFixedRate(this, 5, 10, TimeUnit.SECONDS);
-		log.info("Load data from {}", this.dataLocationPath);
-		log.warn("Loading data from location path not yet implemented.");
+//		log.info("Load data from {}", this.dataLocationPath);
+//		log.warn("Loading data from location path not yet implemented.");
+		log.info("Uploading collected data every {} {}", this.collectTimeRate, this.collectTimeUnit);
+		this.scheduler.scheduleAtFixedRate(this, 0, this.collectTimeRate, this.collectTimeUnit);
 	}
 
 

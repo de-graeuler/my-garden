@@ -12,6 +12,7 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TFDevice;
@@ -20,8 +21,8 @@ public class MasterBrickTemperatureSensor extends SchedulerSensorBrick<BrickMast
 // Mentioning the interface, because implementing it is required. Extending the abstract base class is not.
 
 	@Inject
-	MasterBrickTemperatureSensor(DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		super(dataCollector, scheduler);
+	MasterBrickTemperatureSensor(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
+		super(config, dataCollector, scheduler);
 	}
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());

@@ -13,17 +13,21 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.monitor.model.TFDevice;
 
 public class TemperatureSensor extends SchedulerSensorBrick<BrickletTemperature> implements TemperatureReachedListener {
 
-	private final static short THRESHOLD_DEGREE_C = 1;
+	private int thresholdDegC = 1;
+	private int debouncePeriodMs = 1000;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Inject
-	TemperatureSensor(DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		super(dataCollector, scheduler);
+	TemperatureSensor(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
+		super(config, dataCollector, scheduler);
+		this.thresholdDegC    = (int) config.get(AppConfig.Key.TEMP_CHG_THD);
+		this.debouncePeriodMs = (int) config.get(AppConfig.Key.TEMP_DEBOUNCE);
 	}
 
 	@Override
@@ -36,7 +40,7 @@ public class TemperatureSensor extends SchedulerSensorBrick<BrickletTemperature>
 		BrickletTemperature b = new BrickletTemperature(device.getUid(), conn);
 		setBrick(b);
 		b.addTemperatureReachedListener(this);
-		b.setDebouncePeriod(10000);
+		b.setDebouncePeriod(this.debouncePeriodMs);
 		short temperature = b.getTemperature();
 		updateTemperatureThreshold(temperature);
 		sendToCollector(temperature);
@@ -61,8 +65,8 @@ public class TemperatureSensor extends SchedulerSensorBrick<BrickletTemperature>
 	protected void updateTemperatureThreshold(short temperature) throws TimeoutException, NotConnectedException {
 		TemperatureCallbackThreshold threshold = getBrick().getTemperatureCallbackThreshold();
 		if (temperature < threshold.min || temperature > threshold.max) {
-			short lwrLimit = (short) (temperature - 0.5 * THRESHOLD_DEGREE_C * 100);
-			short uprLimit = (short) (temperature + 0.5 * THRESHOLD_DEGREE_C * 100);
+			short lwrLimit = (short) (temperature - 0.5 * thresholdDegC * 100);
+			short uprLimit = (short) (temperature + 0.5 * thresholdDegC * 100);
 			log.info("Temperature {} left threshold range of {} - {}. Setting threshold range to {} - {}",
 					temperature, threshold.min, threshold.max, lwrLimit, uprLimit);
 			getBrick().setTemperatureCallbackThreshold('o', lwrLimit, uprLimit);

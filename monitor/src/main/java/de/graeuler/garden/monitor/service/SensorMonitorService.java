@@ -41,7 +41,7 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 	
 	private String brickdaemonHost;
     private int brickdaemonPort;
-    private long WAIT_FOR_CONNECT_RETRY = 10000;
+    private long CONNECT_RETRY_WAIT_TIME = 5;
     
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     
@@ -77,7 +77,7 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 					log.warn("Unknown host: {}", e.getMessage());
 				} catch (IOException e) {
 					log.info("Unable to connect. Retrying in 10s...");
-					Thread.sleep(WAIT_FOR_CONNECT_RETRY);
+					TimeUnit.SECONDS.sleep(CONNECT_RETRY_WAIT_TIME);
 				}
 			}
 			System.in.read();

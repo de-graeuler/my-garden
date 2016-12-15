@@ -18,6 +18,7 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
+import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.monitor.model.TFDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
@@ -32,13 +33,27 @@ public class SchedulerSensorBrickTest {
 		@Override
 		public void collect(Map<String, Object> data) {}
 	};
+	
+	private static AppConfig appConfig = new AppConfig() {
+
+		@Override
+		public Object get(Key key) {
+			return key.getDefaultValue();
+		}
+
+		@Override
+		public Object get(Key key, Object defaultValue) {
+			return key.getDefaultValue();
+		}
+		
+	};
 
 	private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	private static SchedulerSensorBrick<BrickletTemperature> schedulerSensorBrick;  
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		schedulerSensorBrick = new SchedulerSensorBrick<BrickletTemperature>(mockCollector, scheduler) {
+		schedulerSensorBrick = new SchedulerSensorBrick<BrickletTemperature>(appConfig, mockCollector, scheduler) {
 			@Override
 			protected Class<BrickletTemperature> getBrickClass() {
 				return BrickletTemperature.class;
