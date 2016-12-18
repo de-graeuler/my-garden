@@ -19,7 +19,8 @@ class CollectController extends BaseController
         $r->success = true; // as long as success is true the program can continue.
 
         $parsedBody = $request->getParsedBody();
-
+        
+        $responseCode = 500;
         if (is_null($parsedBody) || ! is_array($parsedBody)) {
             $r->success = false;
             $r->message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(), 
@@ -51,11 +52,11 @@ class CollectController extends BaseController
     }
     
     private function setClientError(&$responseContent, $message, $httpStatusCode = 400) {
-        $this->setErrorResponse($responseContent, $message, $httpStatusCode);
+        return $this->setErrorResponse($responseContent, $message, $httpStatusCode);
     }
     
     private function setServerError(&$responseContent, $message, $httpStatusCode = 500) {
-        $this->setErrorResponse($responseContent, $message, $httpStatusCode);
+        return $this->setErrorResponse($responseContent, $message, $httpStatusCode);
     }
 
     private function getJsonErrorConstant($errorCode) {

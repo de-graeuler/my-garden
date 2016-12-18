@@ -67,6 +67,7 @@ class CollectControllerTest extends TestCase
     
     public function testCollectInvalidData() {
         $this->response->method('withJson')->will($this->returnArgument(0));
+        $this->response->expects($this->once())->method('withJson')->with($this->anything(),$this->equalTo(400), $this->anything());
         $this->request->method('getParsedBody')->willReturn(array());
 
         $this->apiToken->method('checkJsonData')->willReturn(true);
@@ -84,6 +85,7 @@ class CollectControllerTest extends TestCase
     
     public function testCollectInvalidToken() {
         $this->response->method('withJson')->will($this->returnArgument(0));
+        $this->response->expects($this->once())->method('withJson')->with($this->anything(),$this->equalTo(403), $this->anything());
         $this->request->method('getParsedBody')->willReturn(array());
 
         $this->apiToken->method('checkJsonData')->will($this->throwException(

@@ -12,7 +12,7 @@ class ApiToken
                 return true;
             }
         }
-        throw new InvalidTokenException("Invalid token submitted: $saltedTokenHash. ". print_r($validTokens, true));
+        throw new InvalidTokenException("Invalid token submitted: $saltedTokenHash.");
     }
     
     public function checkJsonData($jsonData, $validTokens) {
