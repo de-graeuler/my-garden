@@ -49,8 +49,8 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
     SensorMonitorService(AppConfig config, Set<SensorHandler> sensorHandlers, ScheduledExecutorService scheduler) {
     	this.scheduler = scheduler;
     	this.sensorHandlers = sensorHandlers;
-    	this.brickdaemonHost = (String) config.get(AppConfig.Key.TF_DAEMON_HOST);
-    	this.brickdaemonPort = ((Integer) config.get(AppConfig.Key.TF_DAEMON_PORT));
+    	this.brickdaemonHost = (String) AppConfig.Key.TF_DAEMON_HOST.from(config);
+    	this.brickdaemonPort = (Integer) AppConfig.Key.TF_DAEMON_PORT.from(config);
     }
     
 	private IPConnection connection = new IPConnection();

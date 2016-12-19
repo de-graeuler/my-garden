@@ -22,10 +22,10 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 
 	@Inject
 	JsonDataConverter(AppConfig config) {
-		this.apiToken = (String) config.get(AppConfig.Key.API_TOKEN);
+		this.apiToken = (String) AppConfig.Key.API_TOKEN.from(config);
 	}
 	
-	DateTimeFormatter isoFormat = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+	DateTimeFormatter isoFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 	
 	/**
 	 *  

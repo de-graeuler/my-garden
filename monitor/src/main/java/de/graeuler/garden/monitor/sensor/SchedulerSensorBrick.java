@@ -28,12 +28,10 @@ public abstract class SchedulerSensorBrick<T extends Device> implements SensorHa
 	private ScheduledExecutorService scheduler;
 	private List<ScheduledFuture<?>> futures = new ArrayList<>();
 	private T brick = null;
-	private AppConfig config;
 	private DataCollector dataCollector;
 		
 	@Inject
 	SchedulerSensorBrick(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		this.config = config;
 		this.dataCollector = dataCollector;
 		this.scheduler = scheduler;
 	}

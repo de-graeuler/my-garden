@@ -28,12 +28,12 @@ public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> i
 	@Inject
 	WaterLevelSensor(AppConfig config,DataCollector dataCollector, ScheduledExecutorService scheduler) {
 		super(config, dataCollector, scheduler);
-		this.thresholdCm = (int) config.get(AppConfig.Key.WATERLVL_CHG_THD);
-		int ma = (int) config.get(AppConfig.Key.WATERLVL_MOVING_AVG);
+		this.thresholdCm = (int) AppConfig.Key.WATERLVL_CHG_THD.from(config);
+		int ma = (int) AppConfig.Key.WATERLVL_MOVING_AVG.from(config);
 		if (ma >= 0 || ma <= 100) {
 			this.movingAverage = (short) ma;
 		}
-		this.debouncePeriodMs = (int) config.get(AppConfig.Key.WATERLVL_DEBOUNCE);
+		this.debouncePeriodMs = (int) AppConfig.Key.WATERLVL_DEBOUNCE.from(config);
 	}
 
 	@Override

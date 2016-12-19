@@ -1,6 +1,8 @@
 package de.graeuler.garden.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -16,7 +18,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.StaticAppConfig;
 import de.graeuler.garden.data.model.DataRecord;
 

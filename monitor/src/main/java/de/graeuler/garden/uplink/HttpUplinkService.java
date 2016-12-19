@@ -21,7 +21,6 @@ import de.graeuler.garden.config.AppConfig;
 
 public class HttpUplinkService implements Uplink<String> {
 
-	private AppConfig config;
 	private String uplink;
 	CloseableHttpClient httpclient = HttpClients.createDefault();
 	HttpPost postRequest;
@@ -29,8 +28,7 @@ public class HttpUplinkService implements Uplink<String> {
 
 	@Inject
 	public HttpUplinkService(AppConfig config) {
-		this.config = config;
-		this.uplink = (String) this.config.get(AppConfig.Key.UPLINK_ADRESS);
+		this.uplink = (String) AppConfig.Key.UPLINK_ADRESS.from(config);
 	}
 	
 	@Override
@@ -43,7 +41,7 @@ public class HttpUplinkService implements Uplink<String> {
 			this.postRequest.setEntity(entity);
 			CloseableHttpResponse response = this.httpclient.execute(postRequest);
 			String resultContent = EntityUtils.toString(response.getEntity());
-//          optional result content parsing for more verbose result information: @TODO.
+//          TODO optional resultContent parsing for more verbose result information.
 			int httpStatusCode = response.getStatusLine().getStatusCode();
 			response.close();
 			if (200 == httpStatusCode || 201 == httpStatusCode) {

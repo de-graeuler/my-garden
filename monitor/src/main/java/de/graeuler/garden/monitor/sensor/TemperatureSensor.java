@@ -26,8 +26,8 @@ public class TemperatureSensor extends SchedulerSensorBrick<BrickletTemperature>
 	@Inject
 	TemperatureSensor(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
 		super(config, dataCollector, scheduler);
-		this.thresholdDegC    = (int) config.get(AppConfig.Key.TEMP_CHG_THD);
-		this.debouncePeriodMs = (int) config.get(AppConfig.Key.TEMP_DEBOUNCE);
+		this.thresholdDegC    = (int) AppConfig.Key.TEMP_CHG_THD.from(config);
+		this.debouncePeriodMs = (int) AppConfig.Key.TEMP_DEBOUNCE.from(config);
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.sensor.TemperatureSensor;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensor;
+import de.graeuler.garden.monitor.service.NetworkTrafficMonitorService;
 import de.graeuler.garden.monitor.service.SensorMonitorService;
 import de.graeuler.garden.uplink.HttpUplinkService;
 import de.graeuler.garden.uplink.Uplink;
@@ -57,8 +58,9 @@ public class ApplicationModule extends AbstractModule {
 		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
 		
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
+		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
+		// FIXME calling monitor of this service does not return. Currently the workaround is to call it last.
 		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
-//		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
 
 		// now bind sensor handlers.
 		Multibinder<SensorHandler> sensorHandlerBinder = Multibinder.newSetBinder(binder(), SensorHandler.class);

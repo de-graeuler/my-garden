@@ -1,7 +1,5 @@
 package de.graeuler.garden.data;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +24,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
-	private Path dataLocationPath;
+//	private Path dataLocationPath;
 	private List<DataRecord<?>> data = Collections.synchronizedList(new ArrayList<> ());
 	private ScheduledExecutorService scheduler;
 	private DataConverter<List<DataRecord<?>>, String> converter;
@@ -43,13 +41,14 @@ public class GardenDataCollector implements DataCollector, Runnable {
 		this.scheduler = scheduler;
 		this.converter = converter;
 		
-		this.collectTimeUnit = TimeUnit.valueOf(((String) config.get(AppConfig.Key.COLLECT_TIME_UNIT)).toUpperCase());
-		this.collectTimeRate = (int) config.get(AppConfig.Key.COLLECT_TIME_RATE);
-		
-		this.dataLocationPath = FileSystems.getDefault().getPath(
-				(String) config.get(AppConfig.Key.DC_STORE_PATH), 
-				(String) config.get(AppConfig.Key.DC_STORE_FILE)
-				);
+		this.collectTimeUnit = (TimeUnit) AppConfig.Key.COLLECT_TIME_UNIT.from(config);
+		this.collectTimeRate = (Integer)  AppConfig.Key.COLLECT_TIME_RATE.from(config);
+
+		// TODO persist collected records to storage on collcet and load them from file on initialize.
+//		this.dataLocationPath = FileSystems.getDefault().getPath(
+//				(String) config.get(AppConfig.Key.DC_STORE_PATH), 
+//				(String) config.get(AppConfig.Key.DC_STORE_FILE)
+//				);
 
 		initialize();
 	}
@@ -57,7 +56,6 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	private void initialize() {
 //		log.info("Load data from {}", this.dataLocationPath);
 //		log.warn("Loading data from location path not yet implemented.");
-		log.info("Uploading collected data every {} {}", this.collectTimeRate, this.collectTimeUnit);
 		this.scheduler.scheduleAtFixedRate(this, 0, this.collectTimeRate, this.collectTimeUnit);
 	}
 
