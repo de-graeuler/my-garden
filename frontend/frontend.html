@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        
+        var backendUrlBase = "http://localhost:8081/datafeed";
+    
+        google.charts.load('current', {'packages': ['corechart', 'controls']});
+        
+        google.charts.setOnLoadCallback(drawDashboard);
+
+        var dataTable;
+        function drawDashboard() {
+        
+            var dataTable = new google.visualization.DataTable();
+            var dashboard = new google.visualization.Dashboard($("#garden-dashboard").get(0));
+            var dateRangeSlider = new google.visualization.ControlWrapper({
+                'controlType': 'DateRangeFilter',
+                'containerId': 'date-range-filter',
+                'options': {
+                    'filterColumnLabel': 'Date',
+                    'ui': {
+                        'format': { 'pattern': 'dd.MM.yyyy' }
+                    } 
+                }
+            });
+            var chart = new google.visualization.ChartWrapper({
+                'chartType':'LineChart',
+                'containerId': 'linechart-outside-temperature',
+                'options': {
+                    'title': 'Heating Temperature',
+                    'curveType': 'function',
+                    'animation': {'startup': true,'duration': 1000, 'easing': 'out'},
+                    'chartArea': {'width': '80%', 'height': '80%'},
+                    'legend': { 'position': 'bottom' }
+                }
+            });
+            
+            dataTable.addColumn('datetime', 'Date');
+            dataTable.addColumn('number',   'Temperature');
+
+            dashboard.bind(dateRangeSlider, chart);
+                        
+            $.getJSON(backendUrlBase + "/report/v01/fetch/garden/outside-temperature", 
+            function ( data ) {
+                $.each(
+                    data, 
+                    function( key, value ) {
+                        dataTable.addRow([
+                            new Date(value.isodatetime.substring(0,23)),
+                            value.value
+                            ]);
+                    }
+                );
+                dashboard.draw(dataTable);
+            }).fail(function() {alert('no-data');});
+        }
+    </script>
+</head>
+<body>
+    <div id="garden-dashboard">
+        <div id="linechart-outside-temperature" style="border:1px black solid;width:800px;height:420px;"></div>
+        <div id="date-range-filter"></div>
+    </div>
+</body>
+</html>
