@@ -1,7 +1,6 @@
 package de.graeuler.garden.monitor.service;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,11 +72,9 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 					break;
 				} catch (AlreadyConnectedException e) {
 					log.warn("Already connected: {}", e.getMessage());
-				} catch (UnknownHostException e) {
-					log.warn("Unknown host: {}", e.getMessage());
 				} catch (IOException e) {
-					log.info("Unable to connect. Retrying in 10s...");
 					TimeUnit.SECONDS.sleep(CONNECT_RETRY_WAIT_TIME);
+					log.warn("Brick daemon not available: {}. Retrying in 10s...", e.getMessage());
 				}
 			}
 			System.in.read();

@@ -34,7 +34,7 @@ import de.graeuler.garden.uplink.Uplink;
 
 public class ApplicationModule extends AbstractModule {
 
-	static final Logger log = LoggerFactory.getLogger(ApplicationModule.class);
+	final Logger log = LoggerFactory.getLogger(ApplicationModule.class);
 	
 	static final String filename = "res/app.config.properties";
 
@@ -43,6 +43,7 @@ public class ApplicationModule extends AbstractModule {
 	protected void configure() {
 		Properties properties = new Properties();
 		try {
+			log.info("Loading configuration from {}", filename);
 			InputStream inputStream  = new FileInputStream(filename);
 			properties.load(inputStream);
 		} catch (IOException e) {
