@@ -88,7 +88,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 			if (this.uplink.pushData(jsonDataString)) {
 				this.data.clear();
 			} else {
-				log.error("Unable to push data to the uplink.");
+				log.error("Unable to push data to the uplink. Keeping {} records in memory.", this.data.size());
 			}
 		}
 		

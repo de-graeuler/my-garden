@@ -83,7 +83,7 @@ public class WaterLevelSensor extends SchedulerSensorBrick<BrickletDistanceUS> i
 		try {
 			updateThreshold(distance);
 		} catch (TimeoutException | NotConnectedException e) {
-			// This very unlikely, because a connectivity issue must have occurred immediately after this 
+			// This is very unlikely, because a connectivity issue must have occurred immediately after this 
 			// method was called. For this reason a proper exception handling is quite hard to do. So: 
 			super.logError(e);
 		}
