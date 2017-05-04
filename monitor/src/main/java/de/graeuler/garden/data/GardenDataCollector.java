@@ -25,7 +25,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 //	private Path dataLocationPath;
-	private List<DataRecord<?>> data = Collections.synchronizedList(new ArrayList<> ());
+	private final List<DataRecord<?>> data = Collections.synchronizedList(new ArrayList<> ());
 	private ScheduledExecutorService scheduler;
 	private DataConverter<List<DataRecord<?>>, String> converter;
 
@@ -59,39 +59,33 @@ public class GardenDataCollector implements DataCollector, Runnable {
 		this.scheduler.scheduleAtFixedRate(this, 0, this.collectTimeRate, this.collectTimeUnit);
 	}
 
-
-
-
-
 	@Override
 	public void collect(Map<String, Object> data) {
-		for(String key : data.keySet()) {
-			this.collect(key, data.get(key));
+		synchronized (this.data) {
+			for(String key : data.keySet()) {
+				this.collect(key, data.get(key));
+			}
 		}
 	}
 
 	@Override
 	public void collect(String string, Object value) {
-		DataRecord<Object> record = new DataRecord<Object>(string, value);
-		synchronized (this.data) {
-			this.data.add(record);
-		}
+		DataRecord<Object> record = new DataRecord<>(string, value);
+		this.data.add(record);
 	}
 
 	@Override
 	public void run() {
-		synchronized (this.data) { // adding data records should be synchronized 
 			
-			if (this.data.size() == 0) return;
-			
-			String jsonDataString = converter.convert(this.data);
-			if (this.uplink.pushData(jsonDataString)) {
-				this.data.clear();
-			} else {
-				log.error("Unable to push data to the uplink. Keeping {} records in memory.", this.data.size());
-			}
+		if (this.data.isEmpty()) return;
+
+		String jsonDataString = converter.convert(this.data);
+		if (this.uplink.pushData(jsonDataString)) {
+			this.data.clear();
+		} else {
+			log.error("Unable to push data to the uplink. Keeping {} records in memory.", this.data.size());
 		}
-		
+
 	}
 	
 }

@@ -15,6 +15,9 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.monitor.util.Bytes;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 
@@ -24,9 +27,9 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private TimeUnit netCheckTimeUnit;
 	private Integer netCheckTimeRate;
-	private double upperTrafficThreshold;
-	private double lowerTrafficThreshold;
 	private double bytesThreshold;
+	private double upperTrafficThreshold = 0.0;
+	private double lowerTrafficThreshold = 0.0;
 	
 	@Inject
 	public NetworkTrafficMonitorService(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
@@ -48,6 +51,8 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		double bytes = readTrafficBytes();
 		if (0 < bytes) {
 			setNewThresholds(bytes); 
+			log.info ("Network threshold initialized: {} to {}", 
+					Bytes.format(this.lowerTrafficThreshold), Bytes.format(this.upperTrafficThreshold));
 		}
 	}
 
@@ -64,12 +69,15 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		MONTH_TS, MONTH_RX, MONTH_TX, MONTH_TOTAL, MONTH_AVG,
 		ALL_TS,   ALL_RX,   ALL_TX,   ALL_TOTAL
 	}
+	private final int VNSTAT_MAX_VALUES = 16; // increase accordingly, if you add things to VNSTAT_POS!
 	
 	@Override
 	public void run() {
 		double bytes = readTrafficBytes();
 		if (bytes > 0) {
 			if(hasLeftThresholds(bytes)) {
+				log.info("Monthly network traffic {} left threshold range of {} to {}", Bytes.format(bytes), 
+						Bytes.format(this.lowerTrafficThreshold), Bytes.format(this.upperTrafficThreshold));
 				dataCollector.collect("month-total-traffic", bytes);
 				setNewThresholds(bytes); 
 			}
@@ -87,7 +95,7 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 			BufferedReader stdInput = new BufferedReader(new 
 	                 InputStreamReader(p.getInputStream()));
 			String output = stdInput.readLine();
-			if (null != output ) {
+			if (null != output && output.split(";").length + 1 >= VNSTAT_MAX_VALUES) { //
 				// vnstat --oneline returns an output like this:
 				// 1;wlan0;2016-11-26;4.69 MB;424 KB;5.10 MB;0.52 kbit/s;2016-11;129.53 MB;25.61 MB;155.14 MB;0.57 kbit/s;129.53 MB;25.61 MB;155.14 MB
 				String[] vnStatResult = output.split(";");
@@ -95,8 +103,9 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 				// monthTotal now should hold two entries: the traffic consumption and the unit. 
 				// In the above example: {"155.14", "MB"}
 				String unit = Character.toString(monthTotal[1].charAt(0));
-				bytes = Bytes.valueOf(unit).getBytes(Double.valueOf(monthTotal[0]));
-				log.info("{} kilobytes transferred on wlan0.", Bytes.K.convertBytes(bytes));
+				NumberFormat decFormat = DecimalFormat.getInstance();
+				bytes = Bytes.valueOf(unit).getBytes(decFormat.parse(monthTotal[0]).doubleValue());
+				log.debug("{} transferred on {}.", Bytes.format(bytes), vnStatResult[1]);
 			} else {
 				log.error("Unable to read result of process execution for {}", vnstat_oneline);
 			}
@@ -111,6 +120,8 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 			log.error("Unable to execute vnstat. {} ", e.getMessage());
 		} catch (InterruptedException e) {
 			log.error("Waiting for vnstat to terminate was interrupted.");
+		} catch (ParseException ex) {
+			log.error("Unable to parse monthTotal: {}", ex.getMessage());
 		}
 		return bytes;
 	}

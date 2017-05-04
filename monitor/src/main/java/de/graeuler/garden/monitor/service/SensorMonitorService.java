@@ -125,7 +125,7 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 			List<String> uids = deviceList.values().stream().filter(d -> connectedToUid.equals(d.getConnectedTo())).map(TFDevice::getUid).collect(Collectors.toList());
 			for(String uid : uids) {
 				TFDevice d = deviceList.get(uid);
-				log.info(" {} [{}]: {} at position {}", indent, d.getUid(), d.getDeviceClass().getSimpleName(), d.getPosition());
+				log.info(String.format(" %-6s[%-6s]: %-30s at position %s", indent, d.getUid(), d.getDeviceClass().getSimpleName(), d.getPosition()));
 				printRecursive(uid, indent + indentString);
 			}
 		}

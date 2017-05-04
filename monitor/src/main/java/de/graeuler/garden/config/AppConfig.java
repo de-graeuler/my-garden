@@ -48,7 +48,7 @@ public interface AppConfig {
 		COLLECT_TIME_RATE   ("collect.time.rate"                 , 6                       , new IntegerConverter()),
 		COLLECT_TIME_UNIT   ("collect.time.unit"                 , TimeUnit.HOURS          , new TimeUnitConverter()),
 
-		WATERLVL_CHG_THD    ("waterlevel.change.threshold.cm"    , 40                      , new IntegerConverter()),
+		WATERLVL_CHG_THD    ("waterlevel.change.threshold.cm"    , 2                       , new IntegerConverter()),
 		WATERLVL_DEBOUNCE   ("waterlevel.debounce.period.ms"     , 10000                   , new IntegerConverter()),
 		WATERLVL_MOVING_AVG ("waterlevel.moving.average"         , 60                      , new IntegerConverter()),
 		
@@ -57,7 +57,7 @@ public interface AppConfig {
 		
 		NETWORK_VNSTAT_CMD  ("net.vnstat.oneline.command"        , "vnstat --oneline"      , null),
 		NET_TIME_RATE       ("net.check.time.rate"               , 1                       , new IntegerConverter()),
-		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.HOURS          , new TimeUnitConverter()),
+		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.MINUTES        , new TimeUnitConverter()),
 		NET_VOL_CHG_THD     ("net.volume.change.threshold.bytes" , 102400                  , new IntegerConverter()),
 		;
 
