@@ -30,6 +30,13 @@ SELECT isodatetime, datatype, realdata, intdata, stringdata
  ORDER BY isodatetime
 SQL;
 
+    private $selectSources = null;
+    const SELECT_SOURCES = <<<SQL
+SELECT DISTINCT `source`
+  FROM datasets
+ ORDER BY `source`
+SQL;
+
     private $selectKeysBySource = null;
     const SELECT_KEYS_BY_SOURCE = <<<SQL
 SELECT DISTINCT `key` 
@@ -47,6 +54,7 @@ SQL;
     protected function prepareStatements() {
         $this->insertRecord = $this->db->prepare(self::INSERT_RECORD_DML);
         $this->selectTokenBySource = $this->db->prepare(self::SELECT_TOKEN_BY_SOURCE);
+        $this->selectSources = $this->db->prepare(self::SELECT_SOURCES);
         $this->selectKeysBySource = $this->db->prepare(self::SELECT_KEYS_BY_SOURCE);
         $this->selectDataByKey = $this->db->prepare(self::SELECT_DATA_BY_KEY);
    }
@@ -101,6 +109,13 @@ SQL;
         return $result;
     }
     
+    public function selectSources() {
+		$q = $this->selectSources;
+		$q->execute();
+		$result = $q->fetchAll(\PDO::FETCH_ASSOC);
+		return $result;
+	}
+
     public function selectKeysBySource($source) {
         $q = $this->selectKeysBySource;
         $q->bindValue(":source", $source);

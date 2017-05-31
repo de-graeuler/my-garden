@@ -6,64 +6,121 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         
-        var backendUrlBase = "http://localhost:8081/datafeed";
+        var backendUrl = "http://cloud.fernhost.de/report/v01/fetch/garden/";
+//        var backendUrl = "./fetch.garden/";
+        var dataKeys   = [ { 'key': 'outside-temperature', 'name': 'Temperature' },
+                           { 'key': 'water-lvl-distance' , 'name': 'Water Level' },
+                           { 'key': 'month-total-traffic', 'name': 'Network Traffic' } ];
+                           
+        var MAX_WATER_VOLUME  = 250;  // liters == water level distance of 21.0
+        var WATER_LEVEL_WHEN_FULL = 21.0;
+        var WATER_VOLUME_RATE = 8.7; // 20l = 24.4 - 22.1 => xl = 20/2.3 = 8.7
     
-        google.charts.load('current', {'packages': ['corechart', 'controls']});
+        google.charts.load('current', {'packages': ['corechart', 'controls'], 'language': 'de'});
         
         google.charts.setOnLoadCallback(drawDashboard);
 
         var dataTable;
+        
+        function calcWaterVolume ( waterLevel ) {
+			return MAX_WATER_VOLUME - (waterLevel - WATER_LEVEL_WHEN_FULL) * WATER_VOLUME_RATE;
+		}
+        
         function drawDashboard() {
         
-            var dataTable = new google.visualization.DataTable();
             var dashboard = new google.visualization.Dashboard($("#garden-dashboard").get(0));
+
+            var dataTable = new google.visualization.DataTable();
+
             var dateRangeSlider = new google.visualization.ControlWrapper({
                 'controlType': 'DateRangeFilter',
                 'containerId': 'date-range-filter',
                 'options': {
                     'filterColumnLabel': 'Date',
                     'ui': {
-                        'format': { 'pattern': 'dd.MM.yyyy' }
+                        'format': { 'pattern': 'dd.MM.yyyy' },
+                        'label': 'Datum'
                     } 
                 }
             });
-            var chart = new google.visualization.ChartWrapper({
+            var startDate = new Date();
+            startDate.setDate(startDate.getDate() - 1);
+            var chartRangeFilter = new google.visualization.ControlWrapper({
+				'controlType': 'ChartRangeFilter',
+				'containerId': 'chart-range-filter',
+				'state': {
+					'range': {
+						'start': startDate
+					}
+				},
+				'options': {
+					'filterColumnLabel': 'Date'
+				}
+			});
+
+            var temperatureChart = new google.visualization.ChartWrapper({
                 'chartType':'LineChart',
-                'containerId': 'linechart-outside-temperature',
+                'containerId': "linechart-outside-temperature",
                 'options': {
-                    'title': 'Heating Temperature',
+                    'title': 'Sonnenwinkel',
                     'curveType': 'function',
                     'animation': {'startup': true,'duration': 1000, 'easing': 'out'},
                     'chartArea': {'width': '80%', 'height': '80%'},
-                    'legend': { 'position': 'bottom' }
+                    'legend': { 'position': 'bottom' },
+                    'series': {
+						0: {targetAxisIndex: 0},
+						1: {targetAxisIndex: 1}
+					}
                 }
             });
             
             dataTable.addColumn('datetime', 'Date');
             dataTable.addColumn('number',   'Temperature');
+            dataTable.addColumn('number',   'Water Level');
 
-            dashboard.bind(dateRangeSlider, chart);
+//            dashboard.bind(dateRangeSlider,chartRangeFilter);
+//            dashboard.bind([dateRangeSlider,chartRangeFilter], temperatureChart);
+            dashboard.bind(dateRangeSlider, temperatureChart);
+
+//			dashboard.draw(dataTable);
                         
-            $.getJSON(backendUrlBase + "/report/v01/fetch/garden/outside-temperature", 
-            function ( data ) {
+            $.getJSON(backendUrl + "outside-temperature", 
+            function addTemperaturesToDataTable( data ) {
                 $.each(
                     data, 
-                    function( key, value ) {
+                    function newTRow( key, value ) {
                         dataTable.addRow([
-                            new Date(value.isodatetime.substring(0,23)),
-                            value.value
+                            new Date(value.isodatetime),
+                            value.value,
+                            null
                             ]);
                     }
                 );
-                dashboard.draw(dataTable);
+				dashboard.draw(dataTable);
+            }).fail(function() {alert('no-data');});
+
+            $.getJSON(backendUrl + "water-lvl-distance", 
+            function addWaterLevelsToDataTable( data ) {
+                $.each(
+                    data, 
+                    function newWLRows ( key, value ) {
+                        dataTable.addRow([
+                            new Date(value.isodatetime),
+                            null, 
+                            calcWaterVolume(value.value)
+                            ]);
+                    }
+                );
+				dashboard.draw(dataTable);
             }).fail(function() {alert('no-data');});
         }
     </script>
 </head>
 <body>
     <div id="garden-dashboard">
-        <div id="linechart-outside-temperature" style="border:1px black solid;width:800px;height:420px;"></div>
         <div id="date-range-filter"></div>
+        <div id="linechart-outside-temperature" style="width:800px;height:420px;"></div>
+        <div id="chart-range-filter" style="width:800px;height:60px;"></div>
     </div>
 </body>
 </html>

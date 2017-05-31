@@ -14,6 +14,12 @@ class ReportController extends BaseController
         return $response->withJson($data, 200, JSON_PRETTY_PRINT);
     }
     
+    public function sources (Request $request, Response $response, $arguments)
+    {
+		$data = $this->dataStore->selectSources();
+		return $response->withJson($data, 200, JSON_PRETTY_PRINT);
+	}
+    
     public function fetch (Request $request, Response $response, $arguments) 
     {
         $pSource   = $arguments['source'];
