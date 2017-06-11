@@ -18,6 +18,7 @@ import de.graeuler.garden.data.model.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.uplink.Uplink;
+import java.io.Serializable;
 
 @Singleton
 public class GardenDataCollector implements DataCollector, Runnable {
@@ -60,7 +61,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	}
 
 	@Override
-	public void collect(Map<String, Object> data) {
+	public void collect(Map<String, Serializable> data) {
 		synchronized (this.data) {
 			for(String key : data.keySet()) {
 				this.collect(key, data.get(key));
@@ -69,8 +70,8 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	}
 
 	@Override
-	public void collect(String string, Object value) {
-		DataRecord<Object> record = new DataRecord<>(string, value);
+	public void collect(String string, Serializable value) {
+		DataRecord<Serializable> record = new DataRecord<>(string, value);
 		this.data.add(record);
 	}
 

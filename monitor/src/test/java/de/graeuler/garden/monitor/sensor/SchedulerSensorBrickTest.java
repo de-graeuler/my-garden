@@ -22,16 +22,17 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.monitor.model.TFDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
+import java.io.Serializable;
 
 public class SchedulerSensorBrickTest {
 
 	MockIPConnection conn = new MockIPConnection();
 	private static DataCollector mockCollector = new DataCollector() {
 		@Override
-		public void collect(String string, Object valueOf) {}
+		public void collect(String string, Serializable valueOf) {}
 		
 		@Override
-		public void collect(Map<String, Object> data) {}
+		public void collect(Map<String, Serializable> data) {}
 	};
 	
 	private static AppConfig appConfig = new AppConfig() {

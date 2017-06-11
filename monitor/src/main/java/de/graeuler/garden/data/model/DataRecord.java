@@ -1,8 +1,9 @@
 package de.graeuler.garden.data.model;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public class DataRecord<T> {
+public class DataRecord<T extends Serializable> implements Serializable {
 
 	public enum ValueType {
 		OBJECT, STRING, NUMBER, BOOLEAN;

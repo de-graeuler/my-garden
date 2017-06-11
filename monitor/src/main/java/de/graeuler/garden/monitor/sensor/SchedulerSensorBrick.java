@@ -21,6 +21,7 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TFDevice;
+import java.io.Serializable;
 
 public abstract class SchedulerSensorBrick<T extends Device> implements SensorHandler{
 	
@@ -74,11 +75,11 @@ public abstract class SchedulerSensorBrick<T extends Device> implements SensorHa
 		this.futures.add(this.scheduler.scheduleAtFixedRate(runnable, 0, period, unit));
 	}
 	
-	protected void sendToCollector(Map<String, Object> data) {
+	protected void sendToCollector(Map<String, Serializable> data) {
 		dataCollector.collect(data);
 	}
 
-	protected void sendToCollector(String string, Object valueOf) {
+	protected void sendToCollector(String string, Serializable valueOf) {
 		dataCollector.collect(string, valueOf);
 	}
 
