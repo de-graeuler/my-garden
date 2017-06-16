@@ -1,9 +1,9 @@
 package de.graeuler.garden.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +18,6 @@ import de.graeuler.garden.data.model.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.uplink.Uplink;
-import java.io.Serializable;
 
 @Singleton
 public class GardenDataCollector implements DataCollector, Runnable {
@@ -29,6 +28,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	private final List<DataRecord<?>> data = Collections.synchronizedList(new ArrayList<> ());
 	private ScheduledExecutorService scheduler;
 	private DataConverter<List<DataRecord<?>>, String> converter;
+	private DataPersister<DataRecord<Serializable>> persister;
 
 	private Uplink<String> uplink;
 
@@ -37,10 +37,11 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	private TimeUnit collectTimeUnit;
 
 	@Inject
-	GardenDataCollector(AppConfig config, DataConverter<List<DataRecord<?>>, String> converter, Uplink<String> uplink, ScheduledExecutorService scheduler) {
+	GardenDataCollector(AppConfig config, DataConverter<List<DataRecord<?>>, String> converter, Uplink<String> uplink, ScheduledExecutorService scheduler, DataPersister<DataRecord<Serializable>> persister) {
 		this.uplink = uplink;
 		this.scheduler = scheduler;
 		this.converter = converter;
+		this.persister = persister;
 		
 		this.collectTimeUnit = (TimeUnit) AppConfig.Key.COLLECT_TIME_UNIT.from(config);
 		this.collectTimeRate = (Integer)  AppConfig.Key.COLLECT_TIME_RATE.from(config);
@@ -57,21 +58,14 @@ public class GardenDataCollector implements DataCollector, Runnable {
 	private void initialize() {
 //		log.info("Load data from {}", this.dataLocationPath);
 //		log.warn("Loading data from location path not yet implemented.");
+		this.data.addAll(persister.readAll());
 		this.scheduler.scheduleAtFixedRate(this, 0, this.collectTimeRate, this.collectTimeUnit);
-	}
-
-	@Override
-	public void collect(Map<String, Serializable> data) {
-		synchronized (this.data) {
-			for(String key : data.keySet()) {
-				this.collect(key, data.get(key));
-			}
-		}
 	}
 
 	@Override
 	public void collect(String string, Serializable value) {
 		DataRecord<Serializable> record = new DataRecord<>(string, value);
+		persister.write(record);
 		this.data.add(record);
 	}
 
@@ -83,6 +77,7 @@ public class GardenDataCollector implements DataCollector, Runnable {
 		String jsonDataString = converter.convert(this.data);
 		if (this.uplink.pushData(jsonDataString)) {
 			this.data.clear();
+			this.persister.deleteAll();
 		} else {
 			log.error("Unable to push data to the uplink. Keeping {} records in memory.", this.data.size());
 		}

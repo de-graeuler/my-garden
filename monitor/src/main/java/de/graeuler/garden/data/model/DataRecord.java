@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 
 public class DataRecord<T extends Serializable> implements Serializable {
 
+	private static final long serialVersionUID = -2801357326272785940L;
+
 	public enum ValueType {
 		OBJECT, STRING, NUMBER, BOOLEAN;
 	}

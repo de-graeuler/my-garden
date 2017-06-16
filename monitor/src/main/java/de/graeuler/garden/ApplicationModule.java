@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Executors;
@@ -18,6 +19,8 @@ import com.google.inject.multibindings.Multibinder;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.PropertyFileAppConfig;
+import de.graeuler.garden.data.DataPersister;
+import de.graeuler.garden.data.DerbyDataPersister;
 import de.graeuler.garden.data.GardenDataCollector;
 import de.graeuler.garden.data.JsonDataConverter;
 import de.graeuler.garden.data.model.DataRecord;
@@ -57,6 +60,7 @@ public class ApplicationModule extends AbstractModule {
 		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
 		bind(DataCollector.class).to(GardenDataCollector.class);
 		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
+		bind(new TypeLiteral<DataPersister<DataRecord<Serializable>>>(){}).to(DerbyDataPersister.class);
 		
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
 		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
