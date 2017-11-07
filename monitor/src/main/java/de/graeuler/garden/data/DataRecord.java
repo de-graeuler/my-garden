@@ -1,4 +1,4 @@
-package de.graeuler.garden.data.model;
+package de.graeuler.garden.data;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -33,6 +33,7 @@ public class DataRecord<T extends Serializable> implements Serializable {
 			this.valueType = ValueType.OBJECT;
 		}
 	}
+	
 	public ZonedDateTime getTimestamp() {
 		return timestamp;
 	}

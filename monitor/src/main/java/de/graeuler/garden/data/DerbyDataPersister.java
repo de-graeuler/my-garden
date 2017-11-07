@@ -14,53 +14,66 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.graeuler.garden.data.model.DataRecord;
+import com.google.inject.Inject;
+
+import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.interfaces.RecordHashDelegate;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtil;
 
 /**
  *
  * @author media
  */
-public class DerbyDataPersister implements DataPersister <DataRecord<Serializable>>{
+public class DerbyDataPersister implements DataPersister<DataRecord<Serializable>> {
 	
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
-	Connection dbConnection;
+	private Connection dbConnection;
 
 	private final PreparedStatement insertPersistedRecords;
 	private final PreparedStatement queryPersistedRecords;
 	private final PreparedStatement deletePersistedRecords;
-	
-	ObjectSerializationUtil oSerial = new ObjectSerializationUtil();
-	
-	public DerbyDataPersister() throws ClassNotFoundException, SQLException {
+	private final PreparedStatement deleteOnePersistedRecord;
 
-		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-			
-		this.dbConnection = DriverManager.getConnection("jdbc:derby:data;create=true");
+	private ObjectSerializationUtil oSerial = new ObjectSerializationUtil();
+	private final RecordHashDelegate<InputStream> hashService;
+
+	@Inject
+	DerbyDataPersister(RecordHashDelegate<InputStream> hashService, AppConfig config) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException {
+
+		this.hashService = hashService;
+		
+		log.debug("Derby Initialization");
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
+		
+		this.dbConnection = DriverManager.getConnection((String)AppConfig.Key.DC_JDBC_DERBY_URL.from(config));
 		dbConnection.setAutoCommit(false);
-			
-		PreparedStatement stmt = dbConnection.prepareStatement("CREATE TABLE persistedrecords (fqcn VARCHAR(32000), object BLOB)");
+
+		log.debug("DB Setup");
+		PreparedStatement stmt = dbConnection.prepareStatement("CREATE TABLE persistedrecords (fqcn VARCHAR(32000), objecthash VARCHAR(64), object BLOB)");
 		try {stmt.execute();} catch(SQLException e) {}; // should only fail if table exists.
 
-		insertPersistedRecords = dbConnection.prepareStatement("INSERT INTO persistedrecords (fqcn, object) values (?, ?)");
+		log.debug("Peparing");
+		insertPersistedRecords = dbConnection.prepareStatement("INSERT INTO persistedrecords (fqcn, objecthash, object) values (?, ?, ?)");
 		queryPersistedRecords  = dbConnection.prepareStatement("SELECT object FROM persistedrecords where fqcn = ?");
 		deletePersistedRecords = dbConnection.prepareStatement("DELETE FROM persistedrecords where fqcn = ?");
+		deleteOnePersistedRecord = dbConnection.prepareStatement("DELETE FROM persistedrecords where fqcn = ? and objecthash = ?");
 		
+		log.info("Database ready");
 	}
 	
 	public void shutdown() {
 		try {
 			dbConnection.close();
-			DriverManager.getConnection(
-				    "jdbc:derby:;shutdown=true");
+			DriverManager.getConnection("jdbc:derby:;shutdown=true");
 		} catch (SQLException e) {
-			if ("XJ015".equals(e.getSQLState()))
+			if ("XJ015".equals(e.getSQLState())) // is thrown by Derby DB on system shutdown.
 				log.info("DB shutdown successfully");
 			else
 				log.error(e.getMessage());
@@ -81,6 +94,27 @@ public class DerbyDataPersister implements DataPersister <DataRecord<Serializabl
 	}
 
 	@Override
+	public int deleteAll(final Collection<DataRecord<Serializable>> records) {
+		try{
+			for(DataRecord<Serializable> r : records) {
+				InputStream stream = oSerial.serializeToByteStream(r);
+				if( stream == null ) {
+					return -1;
+				}
+				deleteOnePersistedRecord.setString(1, r.getClass().getCanonicalName());
+				deleteOnePersistedRecord.setString(2, hashService.hash(stream));
+				deleteOnePersistedRecord.addBatch();
+			}
+			int[] resultCounts = deleteOnePersistedRecord.executeBatch();
+			dbConnection.commit();
+			return Arrays.stream(resultCounts).filter(i -> i >= 0).sum();
+		} catch ( SQLException ex) {
+			log.error(ex.getMessage());
+			return -1;
+		}
+	}
+
+	@Override
 	public void write(DataRecord<Serializable> r) {
 		try {
 			InputStream stream = oSerial.serializeToByteStream(r);
@@ -88,15 +122,29 @@ public class DerbyDataPersister implements DataPersister <DataRecord<Serializabl
 			if( stream == null ) 
 				return;
 
+			String hash;
+			if (stream.markSupported()) {
+				stream.mark(Integer.MAX_VALUE); 
+				hash = hashService.hash(stream);
+				stream.reset();
+			} else {
+				InputStream streamForHash = oSerial.serializeToByteStream(r);
+				hash = hashService.hash(streamForHash);
+			}
+			// else read second stream... or read stream a second time!
+			
 			insertPersistedRecords.setString(1, r.getClass().getCanonicalName());
-			insertPersistedRecords.setBinaryStream(2, stream);
-
+			insertPersistedRecords.setString(2, hash);
+			insertPersistedRecords.setBinaryStream(3, stream);
 			insertPersistedRecords.execute();
 
 			dbConnection.commit();
 			
 		} catch (SQLException e) {
 			log.error("Database error while writing objects.", e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.error("Unable to reset ByteStream for db insert after hashing.", e);
 		}
 	}
 

@@ -11,29 +11,33 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.graeuler.garden.data.model.DataRecord;
+import de.graeuler.garden.data.DataRecord;
 
 public class ObjectSerializationUtil {
 
-	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public DataRecord<Serializable> deserializeFromByteStream(InputStream stream) {
+	public DataRecord<Serializable> deserializeFromByteStream(InputStream stream) throws ClassCastException{
 		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] chunk = new byte[1024];
+			ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
+			byte[] chunk = new byte[4096];
 			int nRead;
 			bos.reset();
-			while ((nRead = stream.read(chunk)) > 0){
-				bos.write(chunk,0, nRead);
+			while ((nRead = stream.read(chunk)) != -1){
+				bos.write(chunk, 0, nRead);
 			}
 			bos.flush();
 			byte [] buf = bos.toByteArray();
 			ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 			ObjectInputStream ois = new ObjectInputStream(bis);
 			Object o = ois.readObject();
-			@SuppressWarnings("unchecked")
-			DataRecord<Serializable> dr =  (DataRecord<Serializable>) o;
-			return dr;
+			if (o instanceof DataRecord) {
+				@SuppressWarnings("unchecked")
+				DataRecord<Serializable> dr =  (DataRecord<Serializable>) o;
+				return dr;
+			} else {
+				throw new ClassCastException("Deserialized object is not an instance of DataRecord.");
+			}
 		}
 		catch (IOException e) {
 			log.error("Unable to read bytes from stream", e);
@@ -49,7 +53,7 @@ public class ObjectSerializationUtil {
 
 	public InputStream serializeToByteStream(DataRecord<Serializable> record) {
 		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(bos);
 			oos.writeObject(record);

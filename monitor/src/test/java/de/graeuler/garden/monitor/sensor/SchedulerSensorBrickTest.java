@@ -1,19 +1,15 @@
 package de.graeuler.garden.monitor.sensor;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.tinkerforge.BrickletAccelerometer;
 import com.tinkerforge.BrickletTemperature;
@@ -25,59 +21,39 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.monitor.model.TFDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
+import de.graeuler.garden.testhelpers.TestConfig;
 
 public class SchedulerSensorBrickTest {
 
 	MockIPConnection conn = new MockIPConnection();
-	private static DataCollector mockCollector = new DataCollector() {
-		@Override
-		public void collect(String string, Serializable valueOf) {}
-		
-	};
+	private DataCollector mockCollector = Mockito.mock(DataCollector.class); 
+
+	private AppConfig appConfig = new TestConfig();
+
+	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private AbstractSensorHandler<BrickletTemperature> schedulerSensorBrick;  
 	
-	private static AppConfig appConfig = new AppConfig() {
-
-		@Override
-		public Object get(Key key) {
-			return key.getDefaultValue();
-		}
-
-		@Override
-		public Object get(Key key, Object defaultValue) {
-			return key.getDefaultValue();
-		}
-		
-	};
-
-	private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	private static SchedulerSensorBrick<BrickletTemperature> schedulerSensorBrick;  
-	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		schedulerSensorBrick = new SchedulerSensorBrick<BrickletTemperature>(appConfig, mockCollector, scheduler) {
+	@Before
+	public void setUp() throws Exception {
+		schedulerSensorBrick = new AbstractSensorHandler<BrickletTemperature>(appConfig, mockCollector) {
 			@Override
 			protected Class<BrickletTemperature> getBrickClass() {
 				return BrickletTemperature.class;
 			}
 			@Override
-			protected void initBrick(TFDevice device, IPConnection conn)
+			protected void initBrick()
 					throws TimeoutException, NotConnectedException {
+			}
+			@Override
+			protected BrickletTemperature constructBrick(String uid, IPConnection conn) {
+				return new BrickletTemperature(uid, conn);
 			}
 		};
 	}
 
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		scheduler.shutdown();
-	}
-
-	@Before
-	public void setUp() throws Exception {
-		schedulerSensorBrick.setBrick(null);
-	}
-
 	@After
 	public void tearDown() throws Exception {
+		scheduler.shutdown();
 	}
 
 	@Test
@@ -92,21 +68,13 @@ public class SchedulerSensorBrickTest {
 		this.conn.setConnected(true);
 		assertFalse(schedulerSensorBrick.isAccepted(nokDevice, conn));
 		assertTrue(schedulerSensorBrick.isAccepted(okDevice, conn));
+		assertFalse(schedulerSensorBrick.isAccepted(null, conn));
 	}
 
 	@Test
-	public void testGetBrick() {
-		schedulerSensorBrick.setBrick(new BrickletTemperature("123", conn));
-		assertTrue(schedulerSensorBrick.getBrick() instanceof BrickletTemperature);
+	public void testDataCollectorcall() {
+		this.schedulerSensorBrick.sendToCollector("ABCD", "EFGH");
+		Mockito.verify(mockCollector).collect("ABCD", "EFGH");
 	}
-
-	@Test
-	public void testSetBrick() {
-		BrickletTemperature in =new BrickletTemperature("1234", conn);
-		schedulerSensorBrick.setBrick(in);
-		BrickletTemperature out = schedulerSensorBrick.getBrick();
-		assertNotNull(out);
-		assertEquals(in, out);
-	}
-
+	
 }

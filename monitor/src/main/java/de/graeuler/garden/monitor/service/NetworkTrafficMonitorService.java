@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -46,6 +47,11 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		initThresholds();
 		scheduleBandwidthConsumptionCheck();
 	}
+	
+	@Override
+	public void shutdown() {
+		cancelBandwidthConsumptionCheck();
+	}
 
 	private void initThresholds() {
 		double bytes = readTrafficBytes();
@@ -70,6 +76,7 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		ALL_TS,   ALL_RX,   ALL_TX,   ALL_TOTAL
 	}
 	private final int VNSTAT_MAX_VALUES = 16; // increase accordingly, if you add things to VNSTAT_POS!
+	private ScheduledFuture<?> scheduledConsumptionCheckHandle;
 	
 	@Override
 	public void run() {
@@ -125,10 +132,13 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		}
 		return bytes;
 	}
-;
 	
 	private void scheduleBandwidthConsumptionCheck() {
-		this.scheduler.scheduleAtFixedRate(this, 0, this.netCheckTimeRate, this.netCheckTimeUnit);
+		this.scheduledConsumptionCheckHandle = this.scheduler.scheduleAtFixedRate(this, 0, this.netCheckTimeRate, this.netCheckTimeUnit);
+	}
+	
+	private void cancelBandwidthConsumptionCheck() {
+		this.scheduledConsumptionCheckHandle.cancel(false);
 	}
 	
 }

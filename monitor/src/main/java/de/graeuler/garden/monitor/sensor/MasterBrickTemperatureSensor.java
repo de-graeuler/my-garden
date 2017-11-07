@@ -1,6 +1,9 @@
 package de.graeuler.garden.monitor.sensor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -15,14 +18,16 @@ import com.tinkerforge.TimeoutException;
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TFDevice;
 
-public class MasterBrickTemperatureSensor extends SchedulerSensorBrick<BrickMaster> implements SensorHandler { 
+public class MasterBrickTemperatureSensor extends AbstractSensorHandler<BrickMaster> implements SensorHandler { 
 // Mentioning the interface, because implementing it is required. Extending the abstract base class is not.
+
+	private ScheduledExecutorService scheduler;
+	private List<ScheduledFuture<?>> futures = new ArrayList<>();
 
 	@Inject
 	MasterBrickTemperatureSensor(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		super(config, dataCollector, scheduler);
+		super(config, dataCollector);
 	}
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -33,10 +38,9 @@ public class MasterBrickTemperatureSensor extends SchedulerSensorBrick<BrickMast
 	}
 
 	@Override
-	protected void initBrick(TFDevice device, IPConnection conn) throws TimeoutException, NotConnectedException {
-		setBrick(new BrickMaster(device.getUid(), conn));
-
-		super.schedule(new Runnable() {
+	protected void initBrick() throws TimeoutException, NotConnectedException {
+		
+		this.schedule(new Runnable() {
 
 			@Override
 			public void run() {
@@ -50,4 +54,20 @@ public class MasterBrickTemperatureSensor extends SchedulerSensorBrick<BrickMast
 		}, 10, TimeUnit.SECONDS);
 	}
 
+	@Override
+	protected BrickMaster constructBrick(String uid, IPConnection conn) {
+		return new BrickMaster(uid, conn);
+	}
+
+	protected void schedule(Runnable runnable, long period, TimeUnit unit) {
+		this.futures.add(this.scheduler.scheduleAtFixedRate(runnable, 0, period, unit));
+	}
+
+	public void halt() {
+		for(ScheduledFuture<?> future : futures) {
+			future.cancel(true);
+		}
+	}
+	
+	
 }

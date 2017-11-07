@@ -1,11 +1,6 @@
 package de.graeuler.garden.monitor.sensor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,23 +17,47 @@ import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TFDevice;
 
-public abstract class SchedulerSensorBrick<T extends Device> implements SensorHandler{
+/**
+ * @author bernhard
+ *
+ * @param <T>
+ */
+public abstract class AbstractSensorHandler<T extends Device> implements SensorHandler {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private ScheduledExecutorService scheduler;
-	private List<ScheduledFuture<?>> futures = new ArrayList<>();
 	private T brick = null;
 	private DataCollector dataCollector;
 		
 	@Inject
-	SchedulerSensorBrick(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
+	AbstractSensorHandler(AppConfig config, DataCollector dataCollector) {
 		this.dataCollector = dataCollector;
-		this.scheduler = scheduler;
 	}
 
+	/**
+	 * This is used by isAccepted to get the Tinkerforge device class this sensor is responsible for. 
+	 * @return class of the Tinkerforge device this Sensor accepts.
+	 */
 	protected abstract Class<T> getBrickClass();
-	protected abstract void initBrick(TFDevice device, IPConnection conn) throws TimeoutException, NotConnectedException;
+	
+	/**
+	 * This is called by isAccepted, if the device is accepted by this Sensor. It should be used to 
+	 * setup the brick <T>, for example by setting thresholds and/or adding value change listeners.
+	 * To get the Device instance accepted by isAccepted(...) call getBrick().    
+	 *    
+	 * @param device
+	 * @param conn
+	 * @throws TimeoutException
+	 * @throws NotConnectedException
+	 */
+	protected abstract void initBrick() throws TimeoutException, NotConnectedException;
 
+	/**
+	 * Returns an instance of the generic type T. 
+	 * @param uid unique id of the device
+	 * @param conn connection to the brick daemon
+	 * @return new "T"(uid, conn)
+	 */
+	protected abstract T constructBrick(String uid, IPConnection conn);
 
 	@Override
 	public boolean isAccepted(TFDevice device, IPConnection conn) {
@@ -52,7 +71,8 @@ public abstract class SchedulerSensorBrick<T extends Device> implements SensorHa
 			return false;
 		}
 		try {
-			initBrick(device, conn);
+			this.brick = constructBrick(device.getUid(), conn);
+			initBrick();
 		} catch (TimeoutException | NotConnectedException e) {
 			logError(e);
 		}
@@ -64,26 +84,12 @@ public abstract class SchedulerSensorBrick<T extends Device> implements SensorHa
 	}
 	
 	@Override
-	public void halt() {
-		for(ScheduledFuture<?> future : futures) {
-			future.cancel(true);
-		}
-	}
-	
-	protected void schedule(Runnable runnable, long period, TimeUnit unit) {
-		this.futures.add(this.scheduler.scheduleAtFixedRate(runnable, 0, period, unit));
-	}
-	
-	protected void sendToCollector(String string, Serializable valueOf) {
+	public void sendToCollector(String string, Serializable valueOf) {
 		dataCollector.collect(string, valueOf);
 	}
 
 	public T getBrick() {
 		return brick;
-	}
-
-	public void setBrick(T brick) {
-		this.brick = brick;
 	}
 
 }

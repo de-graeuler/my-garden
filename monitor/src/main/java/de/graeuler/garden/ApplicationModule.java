@@ -10,6 +10,8 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,16 +21,19 @@ import com.google.inject.multibindings.Multibinder;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.PropertyFileAppConfig;
+import de.graeuler.garden.config.StreamToSha256;
 import de.graeuler.garden.data.DataPersister;
+import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.data.DerbyDataPersister;
 import de.graeuler.garden.data.GardenDataCollector;
 import de.graeuler.garden.data.JsonDataConverter;
-import de.graeuler.garden.data.model.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.interfaces.MonitorService;
+import de.graeuler.garden.interfaces.RecordHashDelegate;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.sensor.TemperatureSensor;
+import de.graeuler.garden.monitor.sensor.VoltageCurrentSensor;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensor;
 import de.graeuler.garden.monitor.service.NetworkTrafficMonitorService;
 import de.graeuler.garden.monitor.service.SensorMonitorService;
@@ -39,7 +44,7 @@ public class ApplicationModule extends AbstractModule {
 
 	final Logger log = LoggerFactory.getLogger(ApplicationModule.class);
 	
-	static final String filename = "res/app.config.properties";
+	static final String filename = "test/app.config.properties";
 
 
 	@Override
@@ -56,10 +61,12 @@ public class ApplicationModule extends AbstractModule {
 		
 		bind(Properties.class).toInstance(properties);
 		bind(AppConfig.class).to(PropertyFileAppConfig.class);
+		bind(CloseableHttpClient.class).toInstance(HttpClients.createDefault());
 		bind(new TypeLiteral<DataConverter<List<DataRecord<?>>, String>>(){}).to(JsonDataConverter.class);
 		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
 		bind(DataCollector.class).to(GardenDataCollector.class);
 		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
+		bind(new TypeLiteral<RecordHashDelegate<InputStream>>(){}).to(StreamToSha256.class);
 		bind(new TypeLiteral<DataPersister<DataRecord<Serializable>>>(){}).to(DerbyDataPersister.class);
 		
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
@@ -71,6 +78,7 @@ public class ApplicationModule extends AbstractModule {
 		Multibinder<SensorHandler> sensorHandlerBinder = Multibinder.newSetBinder(binder(), SensorHandler.class);
 		sensorHandlerBinder.addBinding().to(WaterLevelSensor.class);
 		sensorHandlerBinder.addBinding().to(TemperatureSensor.class);
+		sensorHandlerBinder.addBinding().to(VoltageCurrentSensor.class);
 //		sensorHandlerBinder.addBinding().to(MasterBrickTemperatureSensor.class);
 	}
 

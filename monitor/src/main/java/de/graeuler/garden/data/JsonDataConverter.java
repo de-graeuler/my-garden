@@ -13,8 +13,8 @@ import javax.json.JsonObjectBuilder;
 import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
-import de.graeuler.garden.data.model.DataRecord;
 import de.graeuler.garden.interfaces.DataConverter;
+import de.graeuler.garden.monitor.util.ApiToken;
 
 public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, String> {
 

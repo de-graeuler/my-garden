@@ -11,4 +11,6 @@ public interface DataPersister<T extends Serializable> {
 
 	int deleteAll();
 
+	int deleteAll(Collection<T> records);
+
 }

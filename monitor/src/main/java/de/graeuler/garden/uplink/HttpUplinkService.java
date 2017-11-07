@@ -10,7 +10,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +21,19 @@ import de.graeuler.garden.config.AppConfig;
 public class HttpUplinkService implements Uplink<String> {
 
 	private String uplink;
-	CloseableHttpClient httpclient = HttpClients.createDefault();
+	CloseableHttpClient httpclient;
 	HttpPost postRequest;
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Inject
-	public HttpUplinkService(AppConfig config) {
+	public HttpUplinkService(AppConfig config, CloseableHttpClient httpclient) {
 		this.uplink = (String) AppConfig.Key.UPLINK_ADRESS.from(config);
+		this.httpclient = httpclient;
 	}
 	
 	@Override
 	public boolean pushData(String data) {
-		if (null == this.postRequest)
+		if (this.postRequest == null)
 			this.postRequest = new HttpPost(this.uplink);
 		try {
 			byte[] compressedData = this.gZipData(data);
@@ -41,7 +41,7 @@ public class HttpUplinkService implements Uplink<String> {
 			this.postRequest.setEntity(entity);
 			CloseableHttpResponse response = this.httpclient.execute(postRequest);
 			String resultContent = EntityUtils.toString(response.getEntity());
-//          TODO optional resultContent parsing for more verbose result information.
+//          TODO resultContent parsing for more verbose result information.
 			int httpStatusCode = response.getStatusLine().getStatusCode();
 			response.close();
 			if (200 == httpStatusCode || 201 == httpStatusCode) {

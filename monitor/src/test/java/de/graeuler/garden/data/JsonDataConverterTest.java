@@ -19,7 +19,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.graeuler.garden.config.StaticAppConfig;
-import de.graeuler.garden.data.model.DataRecord;
 
 public class JsonDataConverterTest {
 	
@@ -46,7 +45,6 @@ public class JsonDataConverterTest {
 		records.add(new DataRecord<String>("stringkey", "stringvalue1"));
 		records.add(new DataRecord<Double>("doublekey", 1.234));
 		records.add(new DataRecord<Boolean>("boolkey", false));
-		try {Thread.sleep(1000);} catch(InterruptedException e) {};
 		records.add(new DataRecord<String>("stringkey", "stringvalue2"));
 		records.add(new DataRecord<Double>("doublekey", 2.345));
 		records.add(new DataRecord<Boolean>("boolkey", true));

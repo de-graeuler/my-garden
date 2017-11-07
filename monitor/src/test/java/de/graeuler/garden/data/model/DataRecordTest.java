@@ -6,6 +6,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import de.graeuler.garden.data.DataRecord;
+
 public class DataRecordTest {
 	
 	@Test

@@ -44,6 +44,13 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
     
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     
+	private IPConnection connection = new IPConnection();
+	private ScheduledExecutorService scheduler;
+	private ScheduledFuture<?> connStatePrinterHandle;
+	private ScheduledFuture<?> deviceListCollectorHandle;	
+	
+	private Map<String,TFDevice> deviceList = new HashMap<>();
+
     @Inject
     SensorMonitorService(AppConfig config, Set<SensorHandler> sensorHandlers, ScheduledExecutorService scheduler) {
     	this.scheduler = scheduler;
@@ -52,45 +59,43 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
     	this.brickdaemonPort = (Integer) AppConfig.Key.TF_DAEMON_PORT.from(config);
     }
     
-	private IPConnection connection = new IPConnection();
-	private ScheduledExecutorService scheduler;
-	private ScheduledFuture<?> connStatePrinterHandle;
-	private ScheduledFuture<?> deviceListCollectorHandle;	
-	
-	private Map<String,TFDevice> deviceList = new HashMap<>();
-
 	@Override
 	public void monitor() {
-		try {
-			connection.addConnectedListener(this);
-			connection.addEnumerateListener(this);
-			connection.addDisconnectedListener(this);
-			scheduleConnectionStatePrinter();
-			while(true) {
+		connection.addConnectedListener(this);
+		connection.addEnumerateListener(this);
+		connection.addDisconnectedListener(this);
+		scheduleConnectionStatePrinter();
+		while(true) {
+			try {
+				connection.connect(brickdaemonHost, brickdaemonPort);
+				break;
+			} catch (AlreadyConnectedException e) {
+				log.warn("Already connected: {}", e.getMessage());
+			} catch (IOException e) {
+				log.warn("Brick daemon not available: {}. Retrying in 10s...", e.getMessage());
 				try {
-					connection.connect(brickdaemonHost, brickdaemonPort);
-					break;
-				} catch (AlreadyConnectedException e) {
-					log.warn("Already connected: {}", e.getMessage());
-				} catch (IOException e) {
 					TimeUnit.SECONDS.sleep(CONNECT_RETRY_WAIT_TIME);
-					log.warn("Brick daemon not available: {}. Retrying in 10s...", e.getMessage());
+				} catch (InterruptedException ie) {
+					log.error("Interrupted during wait for reconnect period.");
 				}
 			}
-			System.in.read();
-			connection.close();
-		} catch (IOException | InterruptedException e) {
-			log.error(e.getMessage());
-			cancelConnStatePrinter();
-			connection.removeDisconnectedListener(this);
-			connection.removeEnumerateListener(this);
-			connection.removeConnectedListener(this);
 		}
-		this.scheduler.shutdown();
-		
 	}
-
-
+	
+	@Override
+	public void shutdown() {
+		cancelDeviceListCollector();
+		cancelConnStatePrinter();
+		try {
+			connection.close();
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+		connection.removeDisconnectedListener(this);
+		connection.removeEnumerateListener(this);
+		connection.removeConnectedListener(this);
+	}
+	
 	
 	private Runnable connStatePrinter = new Runnable() {
 		ConnectionState lastState = null;
@@ -112,8 +117,6 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 	private void cancelConnStatePrinter() {
 		this.connStatePrinterHandle.cancel(false);
 	}
-
-	
 	
 	private Runnable deviceListCollector = new Runnable() {
 
@@ -162,21 +165,29 @@ public class SensorMonitorService implements MonitorService, EnumerateListener, 
 		this.deviceListCollectorHandle.cancel(false);
 	}
 	
+	/**
+	 * This is triggered by the connection.enumerate() call. The method is called for each device responding to the enumerate trigger.
+	 * 
+	 * @see com.tinkerforge.IPConnection.EnumerateListener#enumerate(java.lang.String, java.lang.String, char, short[], short[], int, short)
+	 */
 	@Override
 	public void enumerate(String uid, String connectedUid, char position, short[] hwv,
 			short[] fwv, int deviceIdentifier, short enumerationType) {
 		if (enumerationType == IPConnection.ENUMERATION_TYPE_DISCONNECTED) {
 			log.error("Device with uid {} was disconnected.", uid);
-			this.deviceList.clear();
 			return;
 		}
 		TFDevice device = TFDevice.create(uid, connectedUid, position, hwv, fwv, deviceIdentifier, enumerationType);
 		if (null != device) {
 			deviceList.put(uid, device);
+			boolean accepted = false;
 			for(SensorHandler h : this.sensorHandlers) {
-				if (h.isAccepted(device, connection)) { 
+				if (accepted = h.isAccepted(device, connection)) { 
 					break;
 				}
+			}
+			if ( ! accepted ) {
+				log.info("no handler found for device {}", uid);
 			}
 		}
 	}

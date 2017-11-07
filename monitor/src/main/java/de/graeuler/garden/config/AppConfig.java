@@ -21,7 +21,7 @@ public interface AppConfig {
 	
 	/**
 	 * @param key The key of the configuration value 
-	 * @return Returns the value assigned to the key, 
+	 * @return Must return the configuration value assigned to the key. 
 	 */
 	public Object get(Key key);
 	public Object get(Key key, Object defaultValue);
@@ -35,30 +35,33 @@ public interface AppConfig {
 	 */
 	public enum Key {
 
-		// keys,             external property names               and default values      , converter
-		TF_DAEMON_HOST      ("tinkerforge.brickdaemon.host"      , "localhost"             , null), 
-		TF_DAEMON_PORT      ("tinkerforge.brickdaemon.port"      , 4223                    , new IntegerConverter()), 
+		// keys,             external property names               and default values      , converter   , { Validator,... }
+		TF_DAEMON_HOST      ("tinkerforge.brickdaemon.host"      , "localhost"             , null        , null), 
+		TF_DAEMON_PORT      ("tinkerforge.brickdaemon.port"      , 4223                    , new IntegerConverter(), null), 
 
-		DC_STORE_PATH       ("datacollector.store-path"          , "./data"                , null),
-		DC_STORE_FILE       ("datacollector.store-file"          , "data-collector.json"   , null), 
+		DC_JDBC_DERBY_URL   ("datacollector.jdbc-derby-url"      , "jdbc:derby:data;create=true", null   , null),
 		
-		UPLINK_ADRESS       ("uplink.address"                    , "http://localhost/collect/garden" , null), 
-		API_TOKEN           ("uplink.api-token"                  , "default-token"         , null),
+		UPLINK_ADRESS       ("uplink.address"                    , "http://localhost/collect/garden" , null, null), 
+		API_TOKEN           ("uplink.api-token"                  , "default-token"         , null        , null),
 		
-		COLLECT_TIME_RATE   ("collect.time.rate"                 , 6                       , new IntegerConverter()),
-		COLLECT_TIME_UNIT   ("collect.time.unit"                 , TimeUnit.HOURS          , new TimeUnitConverter()),
+		COLLECT_TIME_RATE   ("collect.time.rate"                 , 6                       , new IntegerConverter(), null),
+		COLLECT_TIME_UNIT   ("collect.time.unit"                 , TimeUnit.HOURS          , new TimeUnitConverter(), null),
 
-		WATERLVL_CHG_THD    ("waterlevel.change.threshold.cm"    , 2                       , new IntegerConverter()),
-		WATERLVL_DEBOUNCE   ("waterlevel.debounce.period.ms"     , 10000                   , new IntegerConverter()),
-		WATERLVL_MOVING_AVG ("waterlevel.moving.average"         , 60                      , new IntegerConverter()),
+		WATERLVL_CHG_THD    ("waterlevel.change.threshold.cm"    , 2                       , new IntegerConverter(), null),
+		WATERLVL_DEBOUNCE   ("waterlevel.debounce.period.ms"     , 10000                   , new IntegerConverter(), null),
+		WATERLVL_MOVING_AVG ("waterlevel.moving.average"         , 60                      , new IntegerConverter(), 
+				new ConfigValueValidator[] { new IntLimitValidator(0, 100) }),
 		
-		TEMP_CHG_THD        ("temperature.change.threshold.degc" , 1                       , new IntegerConverter()),
-		TEMP_DEBOUNCE       ("temperature.debounce.period.ms"    , 1000                    , new IntegerConverter()),
+		TEMP_CHG_THD        ("temperature.change.threshold.degc" , 1                       , new IntegerConverter(), null),
+		TEMP_DEBOUNCE       ("temperature.debounce.period.ms"    , 1000                    , new IntegerConverter(), null),
 		
-		NETWORK_VNSTAT_CMD  ("net.vnstat.oneline.command"        , "vnstat --oneline"      , null),
-		NET_TIME_RATE       ("net.check.time.rate"               , 1                       , new IntegerConverter()),
-		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.MINUTES        , new TimeUnitConverter()),
-		NET_VOL_CHG_THD     ("net.volume.change.threshold.bytes" , 102400                  , new IntegerConverter()),
+		NETWORK_VNSTAT_CMD  ("net.vnstat.oneline.command"        , "vnstat --oneline"      , null        , null),
+		NET_TIME_RATE       ("net.check.time.rate"               , 1                       , new IntegerConverter(), null),
+		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.MINUTES        , new TimeUnitConverter(), null),
+		NET_VOL_CHG_THD     ("net.volume.change.threshold.bytes" , 102400                  , new IntegerConverter(), null),
+		
+		CURRENT_CHG_THD     ("voltage.change.threshold.mvolt"    , 1000                    , new IntegerConverter(), null),
+		VOLTAGE_CHG_THD     ("current.change.threshold.mamp"     , 10                      , new IntegerConverter(), null)
 		;
 
 		private Logger log = LoggerFactory.getLogger(Key.class);
@@ -67,16 +70,33 @@ public interface AppConfig {
 		private Object defaultValue;
 		private ConfigValueConverter configKeyConverter;
 
+		private ConfigValueValidator[] configValueValidators;
+
 		public String getKey() {return key;}
 		public Object getDefaultValue() {return defaultValue;}
 		
+		/**
+		 * 
+		 * @param key Identifier of this configuration key 
+		 * @param defaultValue
+		 * @param converter
+		 * @param validators Are used to check the returned configuration value.
+		 */
+		Key(String key, Object defaultValue, ConfigValueConverter converter, ConfigValueValidator[] validators) {
+			this.key = key;
+			this.defaultValue = defaultValue;
+			this.configKeyConverter = converter;
+			this.configValueValidators = validators;
+		}
+
 		/**
 		 * Reads the value of this key from the given configuration.
 		 * @param configuration where the value should be read from.
 		 * @return the configuration value converted by this Keys converter.
 		 */
 		public Object from(AppConfig configuration) {
-			return this.getConvertedValue(configuration.get(this));
+			Object value = this.getConvertedValue(configuration.get(this));
+			return validate(value);
 		}
 
 		/**
@@ -86,13 +106,8 @@ public interface AppConfig {
 		 * @return the converted (given default) value
 		 */
 		public Object from(AppConfig config, Object defaultValue) {
-			return this.getConvertedValue(config.get(this, defaultValue));
-		}
-		
-		Key(String key, Object defaultValue, ConfigValueConverter configKeyConverter) {
-			this.key = key;
-			this.defaultValue = defaultValue;
-			this.configKeyConverter = configKeyConverter;
+			Object value = this.getConvertedValue(config.get(this, defaultValue));
+			return validate(value);
 		}
 
 		private Object getConvertedValue(Object value) {
@@ -110,6 +125,32 @@ public interface AppConfig {
 			}
 		}
 		
+		private Object validate(Object value) {
+			ConfigValueValidator[] validators = this.getConfigValidators();
+			boolean isValid = true;
+			for ( ConfigValueValidator v : validators ) {
+				if ( v.isValid(value) ) {
+					continue;
+				} else {
+					isValid = false;
+					break;
+				}
+			}
+			if ( isValid ) {
+				return value;
+			} else {
+				log.warn("Invalid configuration value provided for {}. Using the default.", this.getKey());
+				return this.getDefaultValue();
+			}
+		}
+	
+		private ConfigValueValidator[] getConfigValidators() {
+			if ( null == this.configValueValidators ) {
+				return new ConfigValueValidator[] {};
+			} else {
+				return this.configValueValidators;
+			}
+		}			
 	}
 
 }

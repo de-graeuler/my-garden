@@ -1,4 +1,4 @@
-package de.graeuler.garden.data;
+package de.graeuler.garden.monitor.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -24,6 +24,12 @@ public class ApiToken {
 		return sb.toString();
 	}
 
+	/**
+	 * Build salted hash of given apiToken
+	 * 
+	 * @param apiToken
+	 * @return
+	 */
 	public static String buildApiToken(String apiToken) {
 		String salt = getRandomSalt(SALT_LENGTH);
 		String encoding = "UTF-8";
@@ -37,7 +43,7 @@ public class ApiToken {
 		} catch (UnsupportedEncodingException e) {
 			log.error("This JVM does not support {} encoding.", encoding);
 		} catch (NoSuchAlgorithmException e) {
-			log.error("This JVM does not support {} halgorithm.", algorithm);
+			log.error("This JVM does not support {} algorithm.", algorithm);
 		}
 		return String.format("%s:%s", saltedApiTokenHash, salt);
 	}

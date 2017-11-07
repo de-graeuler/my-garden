@@ -9,9 +9,9 @@
 
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
-apply plugin: 'jacoco'
 apply plugin: 'eclipse'
 apply plugin: 'application'
+apply plugin: 'jacoco'
 
 mainClassName = "de.graeuler.garden.Application"
 
@@ -21,11 +21,11 @@ jar {
     }
 }
 
-test {
+//test {
 //	useTestNG()
 // 	excludes ['**/*Test'] as Set
-	include 'de/graeuler/garden/AllTests.class'
-}
+//	include 'de/graeuler/garden/AllTests.class'
+//}
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -36,6 +36,7 @@ repositories {
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
+
     // The production code uses the SLF4J logging API at compile time
     // compile group: 'org.slf4j', name: 'slf4j-api',    version: '1.7.21'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.21'
@@ -56,5 +57,7 @@ dependencies {
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
-    testCompile 'junit:junit:4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.8.47'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 }

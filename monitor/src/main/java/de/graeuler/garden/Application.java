@@ -1,6 +1,9 @@
 package de.graeuler.garden;
 
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +21,30 @@ public class Application {
 	private Set<MonitorService> monitorServices;
 	private AppConfig config;
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private ScheduledExecutorService executor;
 
 	@Inject
-	Application(AppConfig config, Set<MonitorService> monitorServices)
+	Application(AppConfig config, Set<MonitorService> monitorServices, ScheduledExecutorService executor)
 	{
 		this.config = config;
 		this.monitorServices = monitorServices;
+		this.executor = executor;
 	}
 	
 	
 	private void start() {
 		this.logConfigSettings();
-		for(MonitorService service : this.monitorServices) {
-			service.monitor();
+		monitorServices.forEach(s -> s.monitor());
+	}
+	
+	private void stop() {
+		log.info("Shutdown sequence");
+		this.monitorServices.forEach(s -> s.shutdown());
+		try {
+			this.executor.shutdown();
+			this.executor.awaitTermination(1, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			log.error("Scheduler shutdown interrupted. Remaining tasks were aborted.");
 		}
 	}
 	
@@ -51,7 +65,12 @@ public class Application {
 		Application app = injector.getInstance(Application.class);
 		app.start();
 		
-				    
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				app.stop();
+			}
+		});
 	}
 
 }

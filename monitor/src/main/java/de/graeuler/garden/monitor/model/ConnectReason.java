@@ -13,6 +13,7 @@ public enum ConnectReason {
 		this.reason = reason;
 		this.output = output;
 	}
+	
 	public static ConnectReason by (short reason) {
 		for (ConnectReason r : ConnectReason.values()) {
 			if (r.reason != reason) continue;
