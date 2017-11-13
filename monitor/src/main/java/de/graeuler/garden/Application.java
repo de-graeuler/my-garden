@@ -1,6 +1,5 @@
 package de.graeuler.garden;
 
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;

@@ -68,7 +68,7 @@ public class DerbyDataPersisterTest {
 		Collection<DataRecord<Serializable>> all = dataPersister.readAll();
 		assertTrue(all.size() == 1);
 		for (DataRecord<Serializable> r : all) {
-			assertEquals("1234", record.getValue());
+			assertEquals("1234", r.getValue());
 		}
 	}
 

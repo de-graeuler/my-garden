@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
+import com.tinkerforge.IPConnection;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.PropertyFileAppConfig;
@@ -44,7 +45,7 @@ public class ApplicationModule extends AbstractModule {
 
 	final Logger log = LoggerFactory.getLogger(ApplicationModule.class);
 	
-	static final String filename = "test/app.config.properties";
+	static final String filename = "res/app.config.properties";
 
 
 	@Override
@@ -61,19 +62,22 @@ public class ApplicationModule extends AbstractModule {
 		
 		bind(Properties.class).toInstance(properties);
 		bind(AppConfig.class).to(PropertyFileAppConfig.class);
-		bind(CloseableHttpClient.class).toInstance(HttpClients.createDefault());
+
 		bind(new TypeLiteral<DataConverter<List<DataRecord<?>>, String>>(){}).to(JsonDataConverter.class);
-		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
-		bind(DataCollector.class).to(GardenDataCollector.class);
-		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
 		bind(new TypeLiteral<RecordHashDelegate<InputStream>>(){}).to(StreamToSha256.class);
+
+		bind(DataCollector.class).to(GardenDataCollector.class);
+
+		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
+		bind(CloseableHttpClient.class).toInstance(HttpClients.createDefault());
+		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
 		bind(new TypeLiteral<DataPersister<DataRecord<Serializable>>>(){}).to(DerbyDataPersister.class);
 		
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
-		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
-		// FIXME calling monitor of this service does not return. Currently the workaround is to call it last.
 		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
+		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
 
+		bind(IPConnection.class).toInstance(new IPConnection());
 		// now bind sensor handlers.
 		Multibinder<SensorHandler> sensorHandlerBinder = Multibinder.newSetBinder(binder(), SensorHandler.class);
 		sensorHandlerBinder.addBinding().to(WaterLevelSensor.class);

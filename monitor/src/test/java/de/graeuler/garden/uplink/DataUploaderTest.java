@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +42,7 @@ public class DataUploaderTest {
 	@Test
 	public final void testEmptyDataCollector() {
 		when(dataCollector.dataIsEmpty()).thenReturn(true);
-		DataUploader uploader = new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
+		new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
 		wait(2, TimeUnit.SECONDS);
 		verifyZeroInteractions(dataconverter, uplink);
 	}
@@ -54,7 +53,7 @@ public class DataUploaderTest {
 		when(dataCollector.getCollectedDataset()).thenReturn(sample);
 		when(dataconverter.convert(sample)).thenReturn("1234");
 		when(uplink.pushData("1234")).thenReturn(true);
-		DataUploader uploader = new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
+		new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
 		wait(1, TimeUnit.SECONDS);
 		verify(dataconverter).convert(sample);
 		verify(dataCollector).removeDataset(sample);
@@ -62,7 +61,7 @@ public class DataUploaderTest {
 	
 	@Test
 	public final void testUploadFails() {
-		DataUploader uploader = new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
+		new DataUploader(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
 		when(dataCollector.dataIsEmpty()).thenReturn(false,true);
 		when(uplink.pushData("1234")).thenReturn(false);
 		wait(1, TimeUnit.SECONDS);

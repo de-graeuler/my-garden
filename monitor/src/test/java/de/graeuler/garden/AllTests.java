@@ -5,9 +5,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import de.graeuler.garden.config.AppConfigKeyTest;
+import de.graeuler.garden.data.DataRecordTest;
 import de.graeuler.garden.data.DerbyDataPersisterTest;
 import de.graeuler.garden.data.JsonDataConverterTest;
-import de.graeuler.garden.data.model.DataRecordTest;
 import de.graeuler.garden.monitor.config.IntLimitValidatorTest;
 import de.graeuler.garden.monitor.model.ConnectReasonTest;
 import de.graeuler.garden.monitor.model.ConnectionStateTest;
@@ -17,6 +17,8 @@ import de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest;
 import de.graeuler.garden.monitor.sensor.TemperatureSensorTest;
 import de.graeuler.garden.monitor.sensor.VoltageCurrentSensorTest;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensorTest;
+import de.graeuler.garden.monitor.service.BrickDaemonManagerTest;
+import de.graeuler.garden.monitor.service.SensorMonitorServiceTest;
 import de.graeuler.garden.monitor.util.BytesTest;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtilTest;
 import de.graeuler.garden.uplink.DataUploaderTest;
@@ -29,7 +31,8 @@ import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 		TFDeviceTest.class, SchedulerSensorBrickTest.class, 
 		VoltageCurrentSensorTest.class, TemperatureSensorTest.class, WaterLevelSensorTest.class, 
 		DataRecordTest.class, BytesTest.class, ObjectSerializationUtilTest.class, 
-		DerbyDataPersisterTest.class, DataUploaderTest.class
+		DerbyDataPersisterTest.class, DataUploaderTest.class,
+		SensorMonitorServiceTest.class, BrickDaemonManagerTest.class
 	})
 public class AllTests {
 	// JUnit Test suite

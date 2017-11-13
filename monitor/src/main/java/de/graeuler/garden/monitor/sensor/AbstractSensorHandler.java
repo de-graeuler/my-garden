@@ -61,16 +61,19 @@ public abstract class AbstractSensorHandler<T extends Device> implements SensorH
 
 	@Override
 	public boolean isAccepted(TFDevice device, IPConnection conn) {
-		if (getBrick() != null) {
-			return false;
-		}
-		if ( ! ( conn.getConnectionState() == IPConnection.CONNECTION_STATE_CONNECTED) ) {
-			return false;
-		}
-		if ( ! device.classIsA(getBrickClass())) {
+		if( device == null ) {
 			return false;
 		}
 		try {
+			if (getBrick() != null) {
+				return device.getUid().equals(getBrick().getIdentity().uid);
+			}
+			if ( ! ( conn.getConnectionState() == IPConnection.CONNECTION_STATE_CONNECTED) ) {
+				return false;
+			}
+			if ( ! device.classIsA(getBrickClass())) {
+				return false;
+			}
 			this.brick = constructBrick(device.getUid(), conn);
 			initBrick();
 		} catch (TimeoutException | NotConnectedException e) {

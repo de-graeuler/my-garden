@@ -1,4 +1,4 @@
-package de.graeuler.garden.data.model;
+package de.graeuler.garden.data;
 
 import static org.junit.Assert.*;
 

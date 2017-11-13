@@ -81,7 +81,7 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 	protected void updateCurrentThreshold(int current) {
 		int lwrLimit = current - (currentThreshold / 2);
 		int uprLimit = current + (currentThreshold / 2);
-		log.info("Setting current threshold range to {} - {}", lwrLimit, uprLimit);
+		log.info("{} mA: Setting current threshold range to {} - {}", current, lwrLimit, uprLimit);
 		try {
 			getBrick().setCurrentCallbackThreshold(BrickletVoltageCurrent.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
 		} catch (TimeoutException | NotConnectedException e) {
@@ -93,9 +93,9 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 		BrickletVoltageCurrent b = getBrick();
 		try {
 			int lwrLimit = voltage - (voltageThreshold / 2);
-			int uprLimit = voltage + (currentThreshold / 2);
+			int uprLimit = voltage + (voltageThreshold / 2);
 			b.setVoltageCallbackThreshold(BrickletVoltageCurrent.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
-			log.info("Setting voltage threshold range to {} - {}", lwrLimit, uprLimit);
+			log.info("{} mV: Setting voltage threshold range to {} - {}", voltage, lwrLimit, uprLimit);
 		} catch (TimeoutException | NotConnectedException e) {
 			logError(e);
 		}
