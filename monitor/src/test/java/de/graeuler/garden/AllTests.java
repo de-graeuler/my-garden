@@ -21,7 +21,7 @@ import de.graeuler.garden.monitor.service.BrickDaemonManagerTest;
 import de.graeuler.garden.monitor.service.SensorMonitorServiceTest;
 import de.graeuler.garden.monitor.util.BytesTest;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtilTest;
-import de.graeuler.garden.uplink.DataUploaderTest;
+import de.graeuler.garden.uplink.DataCollectionMonitorTest;
 import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 
 @RunWith(Suite.class)
@@ -31,7 +31,7 @@ import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 		TFDeviceTest.class, SchedulerSensorBrickTest.class, 
 		VoltageCurrentSensorTest.class, TemperatureSensorTest.class, WaterLevelSensorTest.class, 
 		DataRecordTest.class, BytesTest.class, ObjectSerializationUtilTest.class, 
-		DerbyDataPersisterTest.class, DataUploaderTest.class,
+		DerbyDataPersisterTest.class, DataCollectionMonitorTest.class,
 		SensorMonitorServiceTest.class, BrickDaemonManagerTest.class
 	})
 public class AllTests {

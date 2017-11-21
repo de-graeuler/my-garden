@@ -38,6 +38,7 @@ import de.graeuler.garden.monitor.sensor.VoltageCurrentSensor;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensor;
 import de.graeuler.garden.monitor.service.NetworkTrafficMonitorService;
 import de.graeuler.garden.monitor.service.SensorMonitorService;
+import de.graeuler.garden.uplink.DataCollectionMonitor;
 import de.graeuler.garden.uplink.HttpUplinkService;
 import de.graeuler.garden.uplink.Uplink;
 
@@ -50,15 +51,7 @@ public class ApplicationModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		Properties properties = new Properties();
-		try {
-			log.info("Loading configuration from {}", filename);
-			InputStream inputStream  = new FileInputStream(filename);
-			properties.load(inputStream);
-		} catch (IOException e) {
-			log.error("Unable to load configuration file: {}", e.getMessage());
-			log.error("Property file {} required in {}", filename, new File("").getAbsolutePath());
-		}
+		Properties properties = buildProperties();
 		
 		bind(Properties.class).toInstance(properties);
 		bind(AppConfig.class).to(PropertyFileAppConfig.class);
@@ -68,7 +61,7 @@ public class ApplicationModule extends AbstractModule {
 
 		bind(DataCollector.class).to(GardenDataCollector.class);
 
-		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(4));
+		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(8));
 		bind(CloseableHttpClient.class).toInstance(HttpClients.createDefault());
 		bind(new TypeLiteral<Uplink<String>>(){}).to(HttpUplinkService.class);
 		bind(new TypeLiteral<DataPersister<DataRecord<Serializable>>>(){}).to(DerbyDataPersister.class);
@@ -76,6 +69,7 @@ public class ApplicationModule extends AbstractModule {
 		Multibinder<MonitorService> monitorServiceBinder = Multibinder.newSetBinder(binder(), MonitorService.class);
 		monitorServiceBinder.addBinding().to(SensorMonitorService.class);
 		monitorServiceBinder.addBinding().to(NetworkTrafficMonitorService.class);
+		monitorServiceBinder.addBinding().to(DataCollectionMonitor.class);
 
 		bind(IPConnection.class).toInstance(new IPConnection());
 		// now bind sensor handlers.
@@ -84,6 +78,20 @@ public class ApplicationModule extends AbstractModule {
 		sensorHandlerBinder.addBinding().to(TemperatureSensor.class);
 		sensorHandlerBinder.addBinding().to(VoltageCurrentSensor.class);
 //		sensorHandlerBinder.addBinding().to(MasterBrickTemperatureSensor.class);
+	}
+
+
+	private Properties buildProperties() {
+		Properties properties = new Properties();
+		try {
+			log.info("Loading configuration from {}", filename);
+			InputStream inputStream  = new FileInputStream(filename);
+			properties.load(inputStream);
+		} catch (IOException e) {
+			log.error("Unable to load configuration file: {}", e.getMessage());
+			log.error("Property file {} required in {}", filename, new File("").getAbsolutePath());
+		}
+		return properties;
 	}
 
 }
