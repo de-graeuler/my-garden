@@ -21,9 +21,10 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.data.JsonDataConverter;
 import de.graeuler.garden.interfaces.DataCollector;
+import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.testhelpers.TestConfig;
 
-public class DataUploaderTest {
+public class DataCollectionMonitorTest {
 
 	private TestConfig config = new TestConfig();
 	private DataCollector dataCollector = mock(DataCollector.class);
@@ -53,7 +54,8 @@ public class DataUploaderTest {
 		when(dataCollector.getCollectedDataset()).thenReturn(sample);
 		when(dataconverter.convert(sample)).thenReturn("1234");
 		when(uplink.pushData("1234")).thenReturn(true);
-		new DataCollectionMonitor(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
+		MonitorService dataCollectionMonitor = new DataCollectionMonitor(this.config, this.dataCollector, this.dataconverter, this.uplink, this.scheduler);
+		dataCollectionMonitor.monitor();
 		wait(1, TimeUnit.SECONDS);
 		verify(dataconverter).convert(sample);
 		verify(dataCollector).removeDataset(sample);

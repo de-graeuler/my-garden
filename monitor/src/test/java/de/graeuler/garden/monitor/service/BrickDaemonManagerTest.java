@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,10 +58,18 @@ public class BrickDaemonManagerTest {
 	public final void testEnumerate() {
 		short[] hwv = {1, 2, 3};
 		short[] fwv = hwv;
-		daemonManager.enumerate("123", "234", '2', hwv, fwv, 15, (short)1);
+		daemonManager.enumerate("123", "234", '2', hwv, fwv, 15, IPConnection.ENUMERATION_TYPE_CONNECTED);
 		ArgumentCaptor<TFDevice> deviceArgCaptor = ArgumentCaptor.forClass(TFDevice.class);
 		verify(deviceListCallback).onDeviceFound(deviceArgCaptor.capture(), eq(connection));
 		assertEquals("123", deviceArgCaptor.getValue().getUid());
+	}
+	
+	@Test
+	public final void testEnumerateDisconnectedDevice() {
+		short[] hwv = {1, 2, 3};
+		short[] fwv = hwv;
+		daemonManager.enumerate("123", "234", '2', hwv, fwv, 15, IPConnection.ENUMERATION_TYPE_DISCONNECTED);
+		verifyZeroInteractions(deviceListCallback);
 	}
 
 	@Test

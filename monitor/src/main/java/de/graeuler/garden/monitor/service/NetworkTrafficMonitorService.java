@@ -75,7 +75,7 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		MONTH_TS, MONTH_RX, MONTH_TX, MONTH_TOTAL, MONTH_AVG,
 		ALL_TS,   ALL_RX,   ALL_TX,   ALL_TOTAL
 	}
-	private final int VNSTAT_MAX_VALUES = 16; // increase accordingly, if you add things to VNSTAT_POS!
+
 	private ScheduledFuture<?> scheduledConsumptionCheckHandle;
 	
 	@Override
@@ -102,11 +102,11 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 			BufferedReader stdInput = new BufferedReader(new 
 	                 InputStreamReader(p.getInputStream()));
 			String output = stdInput.readLine();
-			if (null != output && output.split(";").length + 1 >= VNSTAT_MAX_VALUES) { //
+			if (null != output && output.split(";").length + 1 >= VNSTAT_POS.values().length) { //
 				// vnstat --oneline returns an output like this:
 				// 1;wlan0;2016-11-26;4.69 MB;424 KB;5.10 MB;0.52 kbit/s;2016-11;129.53 MB;25.61 MB;155.14 MB;0.57 kbit/s;129.53 MB;25.61 MB;155.14 MB
 				String[] vnStatResult = output.split(";");
-				String[] monthTotal = vnStatResult[NetworkTrafficMonitorService.VNSTAT_POS.MONTH_TOTAL.ordinal()].split("\\s");
+				String[] monthTotal = vnStatResult[VNSTAT_POS.MONTH_TOTAL.ordinal()].split("\\s");
 				// monthTotal now should hold two entries: the traffic consumption and the unit. 
 				// In the above example: {"155.14", "MB"}
 				String unit = Character.toString(monthTotal[1].charAt(0));
