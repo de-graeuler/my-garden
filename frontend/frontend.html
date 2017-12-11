@@ -2,37 +2,43 @@
 <html lang="de">
 <head>
     <meta charset="utf-8" />
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
     <script type="text/javascript">
         
-        var backendUrl = "http://cloud.fernhost.de/report/v01/fetch/garden/";
-//        var backendUrl = "./fetch.garden/";
+        var backendUrl = "./fetch.garden/";
         var dataKeys   = [ { 'key': 'outside-temperature', 'name': 'Temperature' },
                            { 'key': 'water-lvl-distance' , 'name': 'Water Level' },
                            { 'key': 'month-total-traffic', 'name': 'Network Traffic' } ];
                            
-        var MAX_WATER_VOLUME  = 250;  // liters == water level distance of 21.0
-        var WATER_LEVEL_WHEN_FULL = 21.0;
-        var WATER_VOLUME_RATE = 8.7; // 20l = 24.4 - 22.1 => xl = 20/2.3 = 8.7
-    
+        var MAX_WATER_VOLUME  = 600;  // liters 
+        var WATER_LEVEL_WHEN_FULL = 21.0; // water level distance
+        var WATER_VOLUME_FACTOR = 8.7; 
+        // 20 liters = 24.4 - 22.1  <= measured values
+        //           = 20/2.3 = 8.7 liters / measured distance unit
+
         google.charts.load('current', {'packages': ['corechart', 'controls'], 'language': 'de'});
         
         google.charts.setOnLoadCallback(drawDashboard);
 
         var dataTable;
+        var dateRangeSlider;
         
         function calcWaterVolume ( waterLevel ) {
-			return MAX_WATER_VOLUME - (waterLevel - WATER_LEVEL_WHEN_FULL) * WATER_VOLUME_RATE;
-		}
+            return MAX_WATER_VOLUME - (waterLevel - WATER_LEVEL_WHEN_FULL) * WATER_VOLUME_FACTOR;
+        }
         
         function drawDashboard() {
-        
-            var dashboard = new google.visualization.Dashboard($("#garden-dashboard").get(0));
+            dashboard = new google.visualization.Dashboard($("#garden-dashboard").get(0));
+            dataTable = new google.visualization.DataTable();
 
-            var dataTable = new google.visualization.DataTable();
-
-            var dateRangeSlider = new google.visualization.ControlWrapper({
+            dateRangeSlider = new google.visualization.ControlWrapper({
                 'controlType': 'DateRangeFilter',
                 'containerId': 'date-range-filter',
                 'options': {
@@ -43,20 +49,21 @@
                     } 
                 }
             });
+			
             var startDate = new Date();
             startDate.setDate(startDate.getDate() - 1);
             var chartRangeFilter = new google.visualization.ControlWrapper({
-				'controlType': 'ChartRangeFilter',
-				'containerId': 'chart-range-filter',
-				'state': {
-					'range': {
-						'start': startDate
-					}
-				},
-				'options': {
-					'filterColumnLabel': 'Date'
-				}
-			});
+                'controlType': 'ChartRangeFilter',
+                'containerId': 'chart-range-filter',
+                'state': {
+                    'range': {
+                        'start': startDate
+                    }
+                },
+                'options': {
+                    'filterColumnLabel': 'Date'
+                }
+            });
 
             var temperatureChart = new google.visualization.ChartWrapper({
                 'chartType':'LineChart',
@@ -68,9 +75,9 @@
                     'chartArea': {'width': '80%', 'height': '80%'},
                     'legend': { 'position': 'bottom' },
                     'series': {
-						0: {targetAxisIndex: 0},
-						1: {targetAxisIndex: 1}
-					}
+                        0: {targetAxisIndex: 0},
+                        1: {targetAxisIndex: 1}
+                    }
                 }
             });
             
@@ -82,7 +89,7 @@
 //            dashboard.bind([dateRangeSlider,chartRangeFilter], temperatureChart);
             dashboard.bind(dateRangeSlider, temperatureChart);
 
-//			dashboard.draw(dataTable);
+//            dashboard.draw(dataTable);
                         
             $.getJSON(backendUrl + "outside-temperature", 
             function addTemperaturesToDataTable( data ) {
@@ -93,10 +100,10 @@
                             new Date(value.isodatetime),
                             value.value,
                             null
-                            ]);
+                        ]);
                     }
                 );
-				dashboard.draw(dataTable);
+                dashboard.draw(dataTable);
             }).fail(function() {alert('no-data');});
 
             $.getJSON(backendUrl + "water-lvl-distance", 
@@ -111,16 +118,32 @@
                             ]);
                     }
                 );
-				dashboard.draw(dataTable);
+                dashboard.draw(dataTable);
             }).fail(function() {alert('no-data');});
+        }
+
+        function setRange(startDiffFromToday, endDiffFromToday) {
+            var lowDate = new Date();
+            lowDate.setDate(lowDate.getDate() - startDiffFromToday);
+            var highDate = new Date();
+            highDate.setDate(highDate.getDate() - endDiffFromToday);
+            dateRangeSlider.setState({'lowValue': lowDate, 'highValue': highDate});
+            dateRangeSlider.draw();
         }
     </script>
 </head>
 <body>
-    <div id="garden-dashboard">
-        <div id="date-range-filter"></div>
-        <div id="linechart-outside-temperature" style="width:800px;height:420px;"></div>
-        <div id="chart-range-filter" style="width:800px;height:60px;"></div>
+    <div data-role="page">
+    <div role="main" class="ui-content">
+        <button data-mini="true" class="ui-btn ui-btn-inline ui-corner-all" onClick="setRange(0,0)">heute</button>
+        <button data-mini="true" class="ui-btn ui-btn-inline ui-corner-all" onClick="setRange(7,0)">letzte 7 Tage</button>
+
+        <div id="garden-dashboard">
+            <div id="date-range-filter"></div>
+            <div id="linechart-outside-temperature" style="width:800px;height:420px;"></div>
+            <div id="chart-range-filter" style="width:800px;height:60px;"></div>
+        </div>
+    </div>
     </div>
 </body>
 </html>
