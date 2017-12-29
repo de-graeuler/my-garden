@@ -17,22 +17,36 @@ import de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest;
 import de.graeuler.garden.monitor.sensor.TemperatureSensorTest;
 import de.graeuler.garden.monitor.sensor.VoltageCurrentSensorTest;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensorTest;
-import de.graeuler.garden.monitor.service.BrickDaemonManagerTest;
+import de.graeuler.garden.monitor.service.BrickDaemonFacadeTest;
 import de.graeuler.garden.monitor.service.SensorMonitorServiceTest;
 import de.graeuler.garden.monitor.util.BytesTest;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtilTest;
+import de.graeuler.garden.monitor.util.VnStatPosTest;
 import de.graeuler.garden.uplink.DataCollectionMonitorTest;
 import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-		AppConfigKeyTest.class, IntLimitValidatorTest.class, HttpUplinkServiceTest.class, JsonDataConverterTest.class, 
-		ConnectionStateTest.class, ConnectReasonTest.class, DisconnectReasonTest.class,
-		TFDeviceTest.class, SchedulerSensorBrickTest.class, 
-		VoltageCurrentSensorTest.class, TemperatureSensorTest.class, WaterLevelSensorTest.class, 
-		DataRecordTest.class, BytesTest.class, ObjectSerializationUtilTest.class, 
-		DerbyDataPersisterTest.class, DataCollectionMonitorTest.class,
-		SensorMonitorServiceTest.class, BrickDaemonManagerTest.class
+		AppConfigKeyTest.class, 
+		BrickDaemonFacadeTest.class,
+		BytesTest.class, 
+		ConnectionStateTest.class, 
+		ConnectReasonTest.class, 
+		DataCollectionMonitorTest.class,
+		DataRecordTest.class, 
+		DerbyDataPersisterTest.class, 
+		DisconnectReasonTest.class,
+		HttpUplinkServiceTest.class, 
+		IntLimitValidatorTest.class, 
+		JsonDataConverterTest.class, 
+		ObjectSerializationUtilTest.class, 
+		SchedulerSensorBrickTest.class, 
+		SensorMonitorServiceTest.class, 
+		TemperatureSensorTest.class, 
+		TFDeviceTest.class, 
+		VnStatPosTest.class,
+		VoltageCurrentSensorTest.class, 
+		WaterLevelSensorTest.class, 
 	})
 public class AllTests {
 	// JUnit Test suite

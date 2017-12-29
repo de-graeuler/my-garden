@@ -23,17 +23,17 @@ import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.monitor.model.TFDevice;
 import de.graeuler.garden.testhelpers.TestConfig;
 
-public class BrickDaemonManagerTest {
+public class BrickDaemonFacadeTest {
 
 	IPConnection connection = mock(IPConnection.class);
 	DeviceListCallback deviceListCallback = mock(DeviceListCallback.class);
 	TestConfig config = new TestConfig();
 	ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
-	private BrickDaemonManager daemonManager;
+	private BrickDaemonFacade daemonManager;
 	
 	@Before
-	public void setUp() throws Exception {
-		daemonManager = new BrickDaemonManager(config, scheduler, connection);
+	public void lenov() throws Exception {
+		daemonManager = new BrickDaemonFacade(config, scheduler, connection);
 		daemonManager.setDeviceListCallback(deviceListCallback);
 	}
 

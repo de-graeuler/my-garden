@@ -56,34 +56,35 @@ public interface AppConfig {
 		TEMP_DEBOUNCE       ("temperature.debounce.period.ms"    , 1000                    , new IntegerConverter(), null),
 		
 		NETWORK_VNSTAT_CMD  ("net.vnstat.oneline.command"        , "vnstat --oneline"      , null        , null),
+		NETWORK_VNSTAT_LANG_TAG("net.vnstat.language.tag"        , "en"                    , null        , null),
 		NET_TIME_RATE       ("net.check.time.rate"               , 1                       , new IntegerConverter(), null),
 		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.MINUTES        , new TimeUnitConverter(), null),
 		NET_VOL_CHG_THD     ("net.volume.change.threshold.bytes" , 102400                  , new IntegerConverter(), null),
 		
 		CURRENT_CHG_THD     ("voltage.change.threshold.mvolt"    , 1000                    , new IntegerConverter(), null),
-		VOLTAGE_CHG_THD     ("current.change.threshold.mamp"     , 10                      , new IntegerConverter(), null)
+		VOLTAGE_CHG_THD     ("current.change.threshold.mamp"     , 10                      , new IntegerConverter(), null), 
 		;
 
 		private Logger log = LoggerFactory.getLogger(Key.class);
 		
-		private String key;
+		private String propertyName;
 		private Object defaultValue;
 		private ConfigValueConverter configKeyConverter;
 
 		private ConfigValueValidator[] configValueValidators;
 
-		public String getKey() {return key;}
+		public String getPropertyName() {return propertyName;}
 		public Object getDefaultValue() {return defaultValue;}
 		
 		/**
 		 * 
-		 * @param key Identifier of this configuration key 
+		 * @param propertyName Identifier of this configuration key 
 		 * @param defaultValue
 		 * @param converter
 		 * @param validators Are used to check the returned configuration value.
 		 */
-		Key(String key, Object defaultValue, ConfigValueConverter converter, ConfigValueValidator[] validators) {
-			this.key = key;
+		Key(String propertyName, Object defaultValue, ConfigValueConverter converter, ConfigValueValidator[] validators) {
+			this.propertyName = propertyName;
 			this.defaultValue = defaultValue;
 			this.configKeyConverter = converter;
 			this.configValueValidators = validators;
@@ -139,7 +140,7 @@ public interface AppConfig {
 			if ( isValid ) {
 				return value;
 			} else {
-				log.warn("Invalid configuration value provided for {}. Using the default.", this.getKey());
+				log.warn("Invalid configuration value provided for {}. Using the default.", this.getPropertyName());
 				return this.getDefaultValue();
 			}
 		}

@@ -32,13 +32,13 @@ public class SensorMonitorService implements MonitorService, DeviceListCallback 
 	private final long DEVICE_LIST_PRINT_DELAY = 1;
 
 	private Map<String,TFDevice> deviceList = new HashMap<>();
-	private BrickDaemonManager brickDaemonManager;
+	private BrickDaemonFacade brickDaemonManager;
 	private ScheduledFuture<?> deviceListCollectorHandle;
 
 	private ScheduledExecutorService scheduler;
 
 	@Inject
-    SensorMonitorService(BrickDaemonManager brickDaemonManager, Set<SensorHandler> sensorHandlers, ScheduledExecutorService scheduler) {
+    SensorMonitorService(BrickDaemonFacade brickDaemonManager, Set<SensorHandler> sensorHandlers, ScheduledExecutorService scheduler) {
     	this.sensorHandlers = sensorHandlers;
     	this.brickDaemonManager = brickDaemonManager;
     	this.brickDaemonManager.setDeviceListCallback(this);

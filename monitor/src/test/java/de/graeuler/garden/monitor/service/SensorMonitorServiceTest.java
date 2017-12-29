@@ -23,7 +23,7 @@ public class SensorMonitorServiceTest {
 
 	private Set<SensorHandler> sensorHandlers = new HashSet<>();
 	private ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
-	private BrickDaemonManager brickDaemonManager = mock(BrickDaemonManager.class);
+	private BrickDaemonFacade brickDaemonManager = mock(BrickDaemonFacade.class);
 	private IPConnection connection = mock(IPConnection.class);
 
 	@Before

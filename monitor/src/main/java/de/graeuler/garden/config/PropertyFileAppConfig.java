@@ -15,12 +15,12 @@ public class PropertyFileAppConfig implements AppConfig {
 	
 	@Override
 	public Object get(Key key) {
-		return properties.getOrDefault(key.getKey(), key.getDefaultValue());
+		return properties.getOrDefault(key.getPropertyName(), key.getDefaultValue());
 	}
 
 	@Override
 	public Object get(Key key, Object defaultValue) {
-		return properties.getOrDefault(key.getKey(), defaultValue);
+		return properties.getOrDefault(key.getPropertyName(), defaultValue);
 	}
 
 }

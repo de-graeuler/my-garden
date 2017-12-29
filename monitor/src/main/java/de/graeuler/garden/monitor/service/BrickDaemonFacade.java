@@ -22,7 +22,7 @@ import de.graeuler.garden.monitor.model.ConnectionState;
 import de.graeuler.garden.monitor.model.DisconnectReason;
 import de.graeuler.garden.monitor.model.TFDevice;
 
-public class BrickDaemonManager implements EnumerateListener, ConnectedListener, DisconnectedListener {
+public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, DisconnectedListener {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     
@@ -41,7 +41,7 @@ public class BrickDaemonManager implements EnumerateListener, ConnectedListener,
 
 
 	@Inject
-	public BrickDaemonManager(AppConfig config, ScheduledExecutorService scheduler, IPConnection connection) {
+	public BrickDaemonFacade(AppConfig config, ScheduledExecutorService scheduler, IPConnection connection) {
 		this.connection = connection;
     	this.scheduler = scheduler;
     	this.brickdaemonHost = (String) AppConfig.Key.TF_DAEMON_HOST.from(config);

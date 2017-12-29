@@ -50,7 +50,7 @@ public class Application {
 	private void logConfigSettings() {
 		log.info("Configuration settings used:");
 		for(Key k : AppConfig.Key.values()) {
-			log.info("{}: {}", String.format("%35s",  k.getKey()), k.from(this.config));
+			log.info("{}: {}", String.format("%35s",  k.getPropertyName()), k.from(this.config));
 		}
 	}
 
