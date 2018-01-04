@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Garden-Backend" default="dist">
+
     <fileset dir="." id="fsBuildCode">
         <include name="app/**"/>
         <include name="res/**"/>
@@ -27,6 +28,7 @@
         <copy toDir="build">
             <fileset refid="fsBuildCode" />
         </copy>
+		<autoloader />
         <composer>
             <arg value="install" />
             <arg value="--no-dev" />
@@ -38,17 +40,22 @@
     
     <target name="test" depends="build" description="Run unit tests. Fails, if not all units are tested sucessfully.">
         <echo msg="Executing PHPUnit..." />
-        <exec command="phpunit" dir="build" outputProperty="testreport" returnProperty="testresult" />
-        <if>
-            <equals arg1="${testresult}" arg2="1" />
-            <then>
-                <echo msg="${testreport}" />
-                <fail msg="Unittest(s) failed." />
-            </then>
-            <else>
-                <echo msg="All tests passed." />
-            </else>
-        </if>
+		<mkdir dir="build/reports" />
+		<coverage-setup database="build/coverage.db">
+		  <fileset dir="src">
+			<include name="**/*.php"/>
+		  </fileset>
+		</coverage-setup>
+		<phpunit codecoverage="true" printsummary="true">
+			<formatter type="xml" todir="build" />
+			<batchtest>
+				<fileset dir="build/test" includes="**/*Test.php" />
+			</batchtest> 
+		</phpunit>
+		<phpunitreport infile="build/testsuites.xml" todir="build/reports" />
+		<coverage-report>
+			<report todir="build/reports" />
+		</coverage-report>
     </target>
     
     <target name="dist" depends="test,build" description="Create distributable packages after the build.">

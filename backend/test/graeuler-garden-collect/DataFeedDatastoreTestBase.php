@@ -10,6 +10,7 @@ class DataFeedDatastoreTestBase extends TestCase {
     protected static $db;
 
     public function tearDown() {
+		if (null == self::$db) return;
         self::$db->exec("delete from datasets");
         self::$db->exec("delete from apitokens");
     }

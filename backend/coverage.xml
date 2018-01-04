@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<snapshot methodcount="25" methodscovered="19" statementcount="172" statementscovered="117" totalcount="197" totalcovered="136">
+  <package name="Graeuler\Garden\Collect" methodcount="25" methodscovered="19" statementcount="172" statementscovered="117" totalcount="197" totalcovered="136">
+    <class name="ApiToken" methodcount="2" methodscovered="2" statementcount="10" statementscovered="10" totalcount="12" totalcovered="12">
+      <sourcefile name="ApiToken.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\ApiToken.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class ApiToken</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0">    public function checkToken($saltedTokenHash, $validTokens) {</sourceline>
+        <sourceline coveredcount="4">        list($hash, $salt) = explode(':',$saltedTokenHash);</sourceline>
+        <sourceline coveredcount="4">        foreach($validTokens as $token) {</sourceline>
+        <sourceline coveredcount="4">            $check= sha1($token.$salt);</sourceline>
+        <sourceline coveredcount="4">            if ($hash === $check) {</sourceline>
+        <sourceline coveredcount="2">                return true;</sourceline>
+        <sourceline coveredcount="0">            }</sourceline>
+        <sourceline coveredcount="4">        }</sourceline>
+        <sourceline coveredcount="2">        throw new InvalidTokenException("Invalid token submitted: $saltedTokenHash.");</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function checkJsonData($jsonData, $validTokens) {</sourceline>
+        <sourceline coveredcount="2">        if ( ! isset ($jsonData["api-token"] ) ) {</sourceline>
+        <sourceline coveredcount="1">            throw new InvalidTokenException("api-token key in POST data is missing.");</sourceline>
+        <sourceline coveredcount="0">        }</sourceline>
+        <sourceline coveredcount="1">        return $this-&gt;checkToken($jsonData["api-token"], $validTokens);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="BaseController" methodcount="1" methodscovered="1" statementcount="2" statementscovered="2" totalcount="3" totalcovered="3">
+      <sourcefile name="BaseController.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\BaseController.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">use \Interop\Container\ContainerInterface;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class BaseController</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0">    protected $ci;</sourceline>
+        <sourceline coveredcount="0">    protected $dataStore;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function __construct (ContainerInterface $ci) {</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;ci = $ci;</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;dataStore = $ci-&gt;get('dataStore');</sourceline>
+        <sourceline coveredcount="0">//        $this-&gt;apiToken = $this-&gt;get('apiToken');</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="CollectController" methodcount="5" methodscovered="5" statementcount="38" statementscovered="38" totalcount="43" totalcovered="43">
+      <sourcefile name="CollectController.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\CollectController.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ServerRequestInterface as Request;</sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ResponseInterface as Response;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class CollectController extends BaseController</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function collect (Request $request, Response $response, $arguments) {</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $source = $arguments['source'];</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $dataProcessor = $this-&gt;ci-&gt;get('uplinkDataProcessor');</sourceline>
+        <sourceline coveredcount="5">        $apiToken = $this-&gt;ci-&gt;get('apiToken');</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $r = new \stdClass();</sourceline>
+        <sourceline coveredcount="5">        $r-&gt;success = true; // as long as success is true the program can continue.</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $parsedBody = $request-&gt;getParsedBody();</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $responseCode = 500;</sourceline>
+        <sourceline coveredcount="5">        if (is_null($parsedBody) || ! is_array($parsedBody)) {</sourceline>
+        <sourceline coveredcount="1">            $r-&gt;success = false;</sourceline>
+        <sourceline coveredcount="1">            $r-&gt;message = sprintf('Error decoding body. %s (%s)', json_last_error_msg(),</sourceline>
+        <sourceline coveredcount="1">                    $this-&gt;getJsonErrorConstant(json_last_error()));</sourceline>
+        <sourceline coveredcount="1">            $responseCode = 400;</sourceline>
+        <sourceline coveredcount="1">        } else {</sourceline>
+        <sourceline coveredcount="0">            try {</sourceline>
+        <sourceline coveredcount="4">                $validTokens = $this-&gt;dataStore-&gt;selectTokenBySource($source, $parsedBody);</sourceline>
+        <sourceline coveredcount="4">                $apiToken-&gt;checkJsonData($parsedBody, $validTokens); // throws InvalidTokenException</sourceline>
+        <sourceline coveredcount="3">                $dataSet = $dataProcessor-&gt;buildDataSet($parsedBody, $source);</sourceline>
+        <sourceline coveredcount="2">                $r-&gt;success = $this-&gt;dataStore-&gt;storeDataSet($dataSet);</sourceline>
+        <sourceline coveredcount="1">                $responseCode = 200;</sourceline>
+        <sourceline coveredcount="4">            } catch (InvalidDataException $ide) {</sourceline>
+        <sourceline coveredcount="1">                $responseCode = $this-&gt;setClientError($r, $ide-&gt;getMessage());</sourceline>
+        <sourceline coveredcount="3">            } catch (InvalidTokenException $ite) {</sourceline>
+        <sourceline coveredcount="1">                $responseCode = $this-&gt;setClientError($r, $ite-&gt;getMessage(), 403);</sourceline>
+        <sourceline coveredcount="2">            } catch (\PDOException $pdoe) {</sourceline>
+        <sourceline coveredcount="1">                $responseCode = $this-&gt;setServerError($r, $pdoe-&gt;getMessage());</sourceline>
+        <sourceline coveredcount="1">                $r-&gt;code = $pdoe-&gt;getCode();</sourceline>
+        <sourceline coveredcount="0">            }</sourceline>
+        <sourceline coveredcount="0">        }</sourceline>
+        <sourceline coveredcount="5">        return $response-&gt;withJson($r, $responseCode, JSON_PRETTY_PRINT);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private function setErrorResponse(&amp;$responseContent, $message, $httpStatusCode) {</sourceline>
+        <sourceline coveredcount="3">        $responseContent-&gt;success = false;</sourceline>
+        <sourceline coveredcount="3">        $responseContent-&gt;message = $message;</sourceline>
+        <sourceline coveredcount="3">        return $httpStatusCode;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private function setClientError(&amp;$responseContent, $message, $httpStatusCode = 400) {</sourceline>
+        <sourceline coveredcount="2">        return $this-&gt;setErrorResponse($responseContent, $message, $httpStatusCode);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private function setServerError(&amp;$responseContent, $message, $httpStatusCode = 500) {</sourceline>
+        <sourceline coveredcount="1">        return $this-&gt;setErrorResponse($responseContent, $message, $httpStatusCode);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private function getJsonErrorConstant($errorCode) {</sourceline>
+        <sourceline coveredcount="1">        $constants = get_defined_constants(true);</sourceline>
+        <sourceline coveredcount="1">        foreach ($constants["json"] as $name =&gt; $value) {</sourceline>
+        <sourceline coveredcount="1">            if (!strncmp($name, "JSON_ERROR_", 11)) {</sourceline>
+        <sourceline coveredcount="1">                $json_errors[$value] = $name;</sourceline>
+        <sourceline coveredcount="1">            }</sourceline>
+        <sourceline coveredcount="1">        }</sourceline>
+        <sourceline coveredcount="1">        return $json_errors[$errorCode];</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="DataFeedDatastore" methodcount="8" methodscovered="7" statementcount="51" statementscovered="47" totalcount="59" totalcovered="54">
+      <sourcefile name="DataFeedDatastore.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\DataFeedDatastore.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class DataFeedDatastore {</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $db;</sourceline>
+        <sourceline coveredcount="0">    private $insertRecord = null;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    const INSERT_RECORD_DML =  &lt;&lt;&lt;DML</sourceline>
+        <sourceline coveredcount="0">INSERT INTO datasets</sourceline>
+        <sourceline coveredcount="0">  (source, `key`, isodatetime, datatype, realdata, intdata, stringdata)</sourceline>
+        <sourceline coveredcount="0">VALUES</sourceline>
+        <sourceline coveredcount="0">  (:source, :key, :isodatetime, :datatype, :realdata, :intdata, :stringdata)</sourceline>
+        <sourceline coveredcount="0">DML;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $selectTokenBySource = null;</sourceline>
+        <sourceline coveredcount="0">    const SELECT_TOKEN_BY_SOURCE = &lt;&lt;&lt;SQL</sourceline>
+        <sourceline coveredcount="0">SELECT token</sourceline>
+        <sourceline coveredcount="0">  FROM apitokens</sourceline>
+        <sourceline coveredcount="0"> WHERE source = :source</sourceline>
+        <sourceline coveredcount="0"> ORDER BY token asc</sourceline>
+        <sourceline coveredcount="0">SQL;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $selectDataByKey = null;</sourceline>
+        <sourceline coveredcount="0">    const SELECT_DATA_BY_KEY = &lt;&lt;&lt;SQL</sourceline>
+        <sourceline coveredcount="0">SELECT isodatetime, datatype, realdata, intdata, stringdata</sourceline>
+        <sourceline coveredcount="0">  FROM datasets</sourceline>
+        <sourceline coveredcount="0"> WHERE source = :source AND `key` = :key</sourceline>
+        <sourceline coveredcount="0"> ORDER BY isodatetime</sourceline>
+        <sourceline coveredcount="0">SQL;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $selectSources = null;</sourceline>
+        <sourceline coveredcount="0">    const SELECT_SOURCES = &lt;&lt;&lt;SQL</sourceline>
+        <sourceline coveredcount="0">SELECT DISTINCT `source`</sourceline>
+        <sourceline coveredcount="0">  FROM datasets</sourceline>
+        <sourceline coveredcount="0"> ORDER BY `source`</sourceline>
+        <sourceline coveredcount="0">SQL;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $selectKeysBySource = null;</sourceline>
+        <sourceline coveredcount="0">    const SELECT_KEYS_BY_SOURCE = &lt;&lt;&lt;SQL</sourceline>
+        <sourceline coveredcount="0">SELECT DISTINCT `key`</sourceline>
+        <sourceline coveredcount="0">  FROM datasets</sourceline>
+        <sourceline coveredcount="0"> WHERE source = :source</sourceline>
+        <sourceline coveredcount="0"> ORDER BY `key`</sourceline>
+        <sourceline coveredcount="0">SQL;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function __construct(\PDO $db) {</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;db = $db;</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;db-&gt;setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;prepareStatements();</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    protected function prepareStatements() {</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;insertRecord = $this-&gt;db-&gt;prepare(self::INSERT_RECORD_DML);</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;selectTokenBySource = $this-&gt;db-&gt;prepare(self::SELECT_TOKEN_BY_SOURCE);</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;selectSources = $this-&gt;db-&gt;prepare(self::SELECT_SOURCES);</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;selectKeysBySource = $this-&gt;db-&gt;prepare(self::SELECT_KEYS_BY_SOURCE);</sourceline>
+        <sourceline coveredcount="14">        $this-&gt;selectDataByKey = $this-&gt;db-&gt;prepare(self::SELECT_DATA_BY_KEY);</sourceline>
+        <sourceline coveredcount="0">   }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private function fail($message) {</sourceline>
+        <sourceline coveredcount="1">        throw new InvalidDataException('Data Processing Error: ' . $message);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function storeDataSet(DataSetInterface $dataSet) {</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        $this-&gt;db-&gt;beginTransaction();</sourceline>
+        <sourceline coveredcount="0">        // if ($dataSet instanceOf GardenDataSet ) ... or: switch (true) {case $dataSet instanceOf GardenDataSet: ... }</sourceline>
+        <sourceline coveredcount="5">        $source = $key = $isoDateTime = $datatype = $realvalue = $intvalue = $stringvalue = null;</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':source',      $source);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':key',         $key);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':isodatetime', $isoDateTime);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':datatype',    $datatype);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':realdata',    $realvalue);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':intdata',     $intvalue);</sourceline>
+        <sourceline coveredcount="5">        $this-&gt;insertRecord-&gt;bindParam(':stringdata',  $stringvalue);</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="5">        foreach($dataSet-&gt;asIterableList() as list($source, $key,  $isoDateTime, $value)) {</sourceline>
+        <sourceline coveredcount="5">            $datatype = gettype($value);</sourceline>
+        <sourceline coveredcount="5">            $bindName = $realvalue = $intvalue = $stringvalue = null;</sourceline>
+        <sourceline coveredcount="0">            switch ($datatype) {</sourceline>
+        <sourceline coveredcount="5">                case 'integer': $intvalue = $value; break;</sourceline>
+        <sourceline coveredcount="4">                case 'double':  $realvalue = $value; break;</sourceline>
+        <sourceline coveredcount="3">                case 'boolean':</sourceline>
+        <sourceline coveredcount="3">                case 'string':  $stringvalue = $value; break;</sourceline>
+        <sourceline coveredcount="1">                default: $this-&gt;fail('Unsupported datatype.'); break;</sourceline>
+        <sourceline coveredcount="1">            }</sourceline>
+        <sourceline coveredcount="4">            $this-&gt;insertRecord-&gt;execute();</sourceline>
+        <sourceline coveredcount="4">        }</sourceline>
+        <sourceline coveredcount="4">        $this-&gt;db-&gt;commit();</sourceline>
+        <sourceline coveredcount="4">        return true;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function selectTokenBySource($source) {</sourceline>
+        <sourceline coveredcount="3">        $q = $this-&gt;selectTokenBySource;</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;bindValue(":source", $source);</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;execute();</sourceline>
+        <sourceline coveredcount="3">        $result = $q-&gt;fetchAll(\PDO::FETCH_COLUMN, 0);</sourceline>
+        <sourceline coveredcount="3">        return $result;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function selectDataByKey($source, $key) {</sourceline>
+        <sourceline coveredcount="3">        $q = $this-&gt;selectDataByKey;</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;bindValue(":source", $source);</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;bindValue(":key", $key);</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;execute();</sourceline>
+        <sourceline coveredcount="3">        $result = $q-&gt;fetchAll(\PDO::FETCH_ASSOC);</sourceline>
+        <sourceline coveredcount="3">        return $result;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function selectSources() {</sourceline>
+        <sourceline coveredcount="-1">		$q = $this-&gt;selectSources;</sourceline>
+        <sourceline coveredcount="-1">		$q-&gt;execute();</sourceline>
+        <sourceline coveredcount="-1">		$result = $q-&gt;fetchAll(\PDO::FETCH_ASSOC);</sourceline>
+        <sourceline coveredcount="-1">		return $result;</sourceline>
+        <sourceline coveredcount="0">	}</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function selectKeysBySource($source) {</sourceline>
+        <sourceline coveredcount="3">        $q = $this-&gt;selectKeysBySource;</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;bindValue(":source", $source);</sourceline>
+        <sourceline coveredcount="3">        $q-&gt;execute();</sourceline>
+        <sourceline coveredcount="3">        $result = $q-&gt;fetchAll(\PDO::FETCH_COLUMN, 0);</sourceline>
+        <sourceline coveredcount="3">        return $result;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="GardenDataSet" methodcount="2" methodscovered="2" statementcount="4" statementscovered="4" totalcount="6" totalcovered="6">
+      <sourcefile name="GardenDataSet.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\GardenDataSet.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class GardenDataSet implements DataSetInterface</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    private $records = array();</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    /**</sourceline>
+        <sourceline coveredcount="0">     * @param mixed - source, key, isodatetime, value</sourceline>
+        <sourceline coveredcount="0">     **/</sourceline>
+        <sourceline coveredcount="0">    public function addValue($mixed) { // in PHP 5.6 we should refactor this to ...$mixed</sourceline>
+        <sourceline coveredcount="10">        $args = func_get_args();</sourceline>
+        <sourceline coveredcount="10">        if (sizeof($args) == 4)</sourceline>
+        <sourceline coveredcount="10">            $this-&gt;records[] = $args;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function asIterableList() {</sourceline>
+        <sourceline coveredcount="9">        return $this-&gt;records;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="InvalidDataException" methodcount="0" methodscovered="0" statementcount="0" statementscovered="0" totalcount="0" totalcovered="0">
+      <sourcefile name="InvalidDataException.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\InvalidDataException.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class InvalidDataException extends \Exception { }</sourceline>
+      </sourcefile>
+    </class>
+    <class name="InvalidTokenException" methodcount="0" methodscovered="0" statementcount="0" statementscovered="0" totalcount="0" totalcovered="0">
+      <sourcefile name="InvalidTokenException.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\InvalidTokenException.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class InvalidTokenException extends \Exception { }</sourceline>
+      </sourcefile>
+    </class>
+    <class name="JsonGUnzipMiddleware" methodcount="1" methodscovered="0" statementcount="6" statementscovered="0" totalcount="7" totalcovered="0">
+      <sourcefile name="JsonGUnzipMiddleware.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\JsonGUnzipMiddleware.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ServerRequestInterface as Request;</sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ResponseInterface as Response;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">/**</sourceline>
+        <sourceline coveredcount="0"> * This Slim Middleware registers a media type parser for gzip compressed json data.</sourceline>
+        <sourceline coveredcount="0"> **/</sourceline>
+        <sourceline coveredcount="0" startclass="1">class JsonGUnzipMiddleware {</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function __invoke(Request $request, Response $response, $next) {</sourceline>
+        <sourceline coveredcount="-1">        $request-&gt;registerMediaTypeParser(</sourceline>
+        <sourceline coveredcount="-1">            "application/gzip",</sourceline>
+        <sourceline coveredcount="0">            function($input) {</sourceline>
+        <sourceline coveredcount="-1">                return json_decode(@gzinflate(substr($input,10,-8)), true);</sourceline>
+        <sourceline coveredcount="-1">            }</sourceline>
+        <sourceline coveredcount="-1">        );</sourceline>
+        <sourceline coveredcount="-1">        return $next($request, $response);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+      </sourcefile>
+    </class>
+    <class name="ReportController" methodcount="4" methodscovered="0" statementcount="45" statementscovered="0" totalcount="49" totalcovered="0">
+      <sourcefile name="ReportController.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\ReportController.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ServerRequestInterface as Request;</sourceline>
+        <sourceline coveredcount="0">use Psr\Http\Message\ResponseInterface as Response;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class ReportController extends BaseController</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0">    public function keys (Request $request, Response $response, $arguments)</sourceline>
+        <sourceline coveredcount="-1">    {</sourceline>
+        <sourceline coveredcount="-1">        $pSource   = $arguments['source'];</sourceline>
+        <sourceline coveredcount="-1">        $data = $this-&gt;dataStore-&gt;selectKeysBySource($pSource);</sourceline>
+        <sourceline coveredcount="-1">        return $response-&gt;withJson($data, 200, JSON_PRETTY_PRINT);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function sources (Request $request, Response $response, $arguments)</sourceline>
+        <sourceline coveredcount="-1">    {</sourceline>
+        <sourceline coveredcount="-1">		$data = $this-&gt;dataStore-&gt;selectSources();</sourceline>
+        <sourceline coveredcount="-1">		return $response-&gt;withJson($data, 200, JSON_PRETTY_PRINT);</sourceline>
+        <sourceline coveredcount="0">	}</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    public function fetch (Request $request, Response $response, $arguments)</sourceline>
+        <sourceline coveredcount="-1">    {</sourceline>
+        <sourceline coveredcount="-1">        $pSource   = $arguments['source'];</sourceline>
+        <sourceline coveredcount="-1">        $pKey      = $arguments['key'];</sourceline>
+        <sourceline coveredcount="0">//        $pDateFrom = $arguments['iso_datetime_from'];</sourceline>
+        <sourceline coveredcount="0">//        $pDateTo   = $arguments['iso_datetime_to'];</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">//        $pApiToken = $arguments['apitoken'];</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="-1">        $r = new \stdClass();</sourceline>
+        <sourceline coveredcount="-1">        try {</sourceline>
+        <sourceline coveredcount="0">//            $this-&gt;checkApiToken($pApiToken)</sourceline>
+        <sourceline coveredcount="-1">            $data = $this-&gt;dataStore-&gt;selectDataByKey($pSource, $pKey);</sourceline>
+        <sourceline coveredcount="-1">            foreach ($data as &amp;$record) {</sourceline>
+        <sourceline coveredcount="-1">                switch($record['datatype']) {</sourceline>
+        <sourceline coveredcount="-1">                    case "double": $record['value'] = (float) $record['realdata']; break;</sourceline>
+        <sourceline coveredcount="-1">                    case "int":    $record['value'] =   (int) $record['intdata'];  break;</sourceline>
+        <sourceline coveredcount="-1">                    case "string": $record['value'] =         $record['stringdata'];   break;</sourceline>
+        <sourceline coveredcount="-1">                    default: {</sourceline>
+        <sourceline coveredcount="-1">                          if (is_string($record['stringdata'])) $record['value'] =         $record['stringdata'];</sourceline>
+        <sourceline coveredcount="-1">                      elseif (is_int   ($record['intdata']))    $record['value'] =   (int) $record['intdata'];</sourceline>
+        <sourceline coveredcount="-1">                      elseif (is_float ($record['realdata']))   $record['value'] = (float) $record['realdata'];</sourceline>
+        <sourceline coveredcount="-1">                        else $record['value'] = null;</sourceline>
+        <sourceline coveredcount="-1">                    } break;</sourceline>
+        <sourceline coveredcount="-1">                }</sourceline>
+        <sourceline coveredcount="-1">                unset ($record['realdata']);</sourceline>
+        <sourceline coveredcount="-1">                unset ($record['intdata']);</sourceline>
+        <sourceline coveredcount="-1">                unset ($record['stringdata']);</sourceline>
+        <sourceline coveredcount="-1">                unset ($record['datatype']);</sourceline>
+        <sourceline coveredcount="-1">            }</sourceline>
+        <sourceline coveredcount="-1">            unset ($record);</sourceline>
+        <sourceline coveredcount="-1">            $r = $data;</sourceline>
+        <sourceline coveredcount="-1">        } catch (InvalidTokenException $ite) {</sourceline>
+        <sourceline coveredcount="-1">            $r-&gt;success = false;</sourceline>
+        <sourceline coveredcount="-1">            $r-&gt;message = $ite-&gt;getMessage();</sourceline>
+        <sourceline coveredcount="-1">            $responseCode = 403;</sourceline>
+        <sourceline coveredcount="-1">        }  catch (PDOException $pdoe) {</sourceline>
+        <sourceline coveredcount="-1">                $r-&gt;success = false;</sourceline>
+        <sourceline coveredcount="-1">                $r-&gt;message = $pdoe-&gt;getMessage();</sourceline>
+        <sourceline coveredcount="-1">                $r-&gt;code = $pdoe-&gt;getCode();</sourceline>
+        <sourceline coveredcount="-1">                $responseCode = 500;</sourceline>
+        <sourceline coveredcount="-1">        }</sourceline>
+        <sourceline coveredcount="-1">        return $response-&gt;withJson($r, 200, JSON_PRETTY_PRINT);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    protected function checkApiToken ($tokenHash) {</sourceline>
+        <sourceline coveredcount="-1">        $validTokens = $this-&gt;dataStore-&gt;selectTokenBySource($source, $parsedBody);</sourceline>
+        <sourceline coveredcount="-1">        $this-&gt;apiToken-&gt;check($pApiToken, $validTokens);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+    <class name="UplinkDataProcessor" methodcount="2" methodscovered="2" statementcount="16" statementscovered="16" totalcount="18" totalcovered="18">
+      <sourcefile name="UplinkDataProcessor.php" sourcefile="C:\Users\bernhard\Eigene Projekte\my-garden\backend\src\graeuler-garden-collect\UplinkDataProcessor.php">
+        <sourceline coveredcount="0">&lt;?php</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">namespace Graeuler\Garden\Collect;</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0" startclass="1">class UplinkDataProcessor implements DataProcessorInterface</sourceline>
+        <sourceline coveredcount="0">{</sourceline>
+        <sourceline coveredcount="0">    const API_TOKEN_JSON_KEY = "api-token";</sourceline>
+        <sourceline coveredcount="0">    private function fail($message) {</sourceline>
+        <sourceline coveredcount="4">        throw new InvalidDataException('Data Processing Error: ' . $message);</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">    // Interface function</sourceline>
+        <sourceline coveredcount="0">    public function buildDataSet(array $jsonData, $source) {</sourceline>
+        <sourceline coveredcount="5">        if ( ! ("garden" == strtolower($source) ) )  {</sourceline>
+        <sourceline coveredcount="1">            $this-&gt;fail('Currently supports processing of garden data.'); }</sourceline>
+        <sourceline coveredcount="4">        $dataSet = new GardenDataSet();</sourceline>
+        <sourceline coveredcount="4">        foreach($jsonData as $key =&gt; $data) {</sourceline>
+        <sourceline coveredcount="4">            if ($key === self::API_TOKEN_JSON_KEY) {</sourceline>
+        <sourceline coveredcount="4">                continue; }</sourceline>
+        <sourceline coveredcount="4">            if ( ! is_array($data) ) {</sourceline>
+        <sourceline coveredcount="1">                $this-&gt;fail(sprintf('Value for type %s has to be an array.', $key)); }</sourceline>
+        <sourceline coveredcount="3">            foreach($data as $set) {</sourceline>
+        <sourceline coveredcount="3">                if ( ! isset($set['t'] ) ) $this-&gt;fail (sprintf('IsoDateTime (t) missing in %s', $key));</sourceline>
+        <sourceline coveredcount="2">                if ( ! isset($set['v'] ) ) $this-&gt;fail (sprintf('Value (v) missing in %s', $key));</sourceline>
+        <sourceline coveredcount="1">                $dataSet-&gt;addValue($source, $key,  $set['t'], $set['v']);</sourceline>
+        <sourceline coveredcount="1">            }</sourceline>
+        <sourceline coveredcount="1">        }</sourceline>
+        <sourceline coveredcount="1">        return $dataSet;</sourceline>
+        <sourceline coveredcount="0">    }</sourceline>
+        <sourceline coveredcount="0"></sourceline>
+        <sourceline coveredcount="0">}</sourceline>
+      </sourcefile>
+    </class>
+  </package>
+</snapshot>
