@@ -61,8 +61,8 @@ public interface AppConfig {
 		NET_TIME_UNIT       ("net.check.time.unit"               , TimeUnit.MINUTES        , new TimeUnitConverter(), null),
 		NET_VOL_CHG_THD     ("net.volume.change.threshold.bytes" , 102400                  , new IntegerConverter(), null),
 		
-		CURRENT_CHG_THD     ("voltage.change.threshold.mvolt"    , 1000                    , new IntegerConverter(), null),
-		VOLTAGE_CHG_THD     ("current.change.threshold.mamp"     , 10                      , new IntegerConverter(), null), 
+		CURRENT_CHG_THD     ("current.change.threshold.mamp"     , 10                      , new IntegerConverter(), null),
+		VOLTAGE_CHG_THD     ("voltage.change.threshold.mvolt"    , 1000                    , new IntegerConverter(), null), 
 		;
 
 		private Logger log = LoggerFactory.getLogger(Key.class);
