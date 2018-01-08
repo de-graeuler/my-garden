@@ -88,8 +88,7 @@ public class ApplicationModule extends AbstractModule {
 			InputStream inputStream  = new FileInputStream(filename);
 			properties.load(inputStream);
 		} catch (IOException e) {
-			log.error("Unable to load configuration file: {}", e.getMessage());
-			log.error("Property file {} required in {}", filename, new File("").getAbsolutePath());
+			log.warn("Property file {} not found in {}. Using default settings.", filename, new File("").getAbsolutePath());
 		}
 		return properties;
 	}
