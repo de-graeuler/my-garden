@@ -20,7 +20,7 @@ class CollectControllerTest extends TestCase
         // mock the Controller Depencendy Injection
         $this->dataProcessor = $this->createMock(UplinkDataProcessor::class);
         $this->apiToken = $this->createMock(ApiToken::class);
-        $this->dataStore = $this->createMock(DataFeedDataStore::class);
+        $this->dataStore = $this->createMock(DataFeedDatastore::class);
         
         $this->container = $this->createMock(ContainerInterface::class);
         $this->container->method('get')->will($this->returnValueMap([
