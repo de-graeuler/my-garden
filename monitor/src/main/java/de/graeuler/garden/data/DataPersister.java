@@ -5,12 +5,16 @@ import java.util.Collection;
 
 public interface DataPersister<T extends Serializable> {
 
-	Collection<T> readAll();
-
+	DataIterator<T> iterate();
+	
 	void write(T record);
 
-	int deleteAll();
+	long deleteAll();
 
-	int deleteAll(Collection<T> records);
+	long deleteAll(final Collection<T> records);
+
+	long countAll();
+
+	Collection<T> readFirst(int _blocksize);
 
 }

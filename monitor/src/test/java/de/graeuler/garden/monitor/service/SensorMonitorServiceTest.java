@@ -16,7 +16,7 @@ import com.tinkerforge.BrickletTemperature;
 import com.tinkerforge.IPConnection;
 
 import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 import de.graeuler.garden.monitor.sensor.TemperatureSensor;
 
 public class SensorMonitorServiceTest {
@@ -33,17 +33,17 @@ public class SensorMonitorServiceTest {
 	@Test
 	public final void testDeviceFoundAndChecked() {
 		SensorMonitorService service = new SensorMonitorService(this.brickDaemonManager, this.sensorHandlers, this.scheduler);
-		TFDevice devNull = null;
-		TFDevice devOk = new TFDevice();
+		TinkerforgeDevice devNull = null;
+		TinkerforgeDevice devOk = new TinkerforgeDevice();
 		devOk.setUid("123");
 		devOk.setDeviceClass(BrickletTemperature.class);
-		TFDevice devNotOk = new TFDevice();
+		TinkerforgeDevice devNotOk = new TinkerforgeDevice();
 		devOk.setUid("345");
 		devOk.setDeviceClass(BrickletTemperature.class);
 		SensorHandler sensorDevOk = mock(TemperatureSensor.class);
 		SensorHandler sensorDevNok = mock(TemperatureSensor.class);
-		when(sensorDevOk.isAccepted(devOk, connection)).thenReturn(true);
-		when(sensorDevNok.isAccepted(devNotOk, connection)).thenReturn(false);
+		when(sensorDevOk.doesAccept(devOk, connection)).thenReturn(true);
+		when(sensorDevNok.doesAccept(devNotOk, connection)).thenReturn(false);
 		sensorHandlers.add(sensorDevOk);
 		sensorHandlers.add(sensorDevNok);
 		
@@ -51,10 +51,10 @@ public class SensorMonitorServiceTest {
 		service.onDeviceFound(devNotOk, connection);
 		service.onDeviceFound(devNull, connection);
 		
-		verify(sensorDevOk, times(1)).isAccepted(devOk, connection);
-		verify(sensorDevNok, times(1)).isAccepted(devNotOk, connection);
-		verify(sensorDevOk, times(0)).isAccepted(devNull, connection);
-		verify(sensorDevNok, times(0)).isAccepted(devNull, connection);
+		verify(sensorDevOk, times(1)).doesAccept(devOk, connection);
+		verify(sensorDevNok, times(1)).doesAccept(devNotOk, connection);
+		verify(sensorDevOk, times(0)).doesAccept(devNull, connection);
+		verify(sensorDevNok, times(0)).doesAccept(devNull, connection);
 	}
 	
 }

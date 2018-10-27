@@ -38,7 +38,7 @@ public class TemperatureSensorTest extends SensorTest {
 	
 	@Test
 	public final void testTemperatureReached() {
-		assertTrue(tempSensor.isAccepted(device, ipCon));
+		assertTrue(tempSensor.doesAccept(device, ipCon));
 		tempSensor.temperatureReached((short)100);
 		verify(mockCollector).collect("outside-temperature", 1.0);
 	}

@@ -39,13 +39,13 @@ public class WaterLevelSensorTest extends SensorTest {
 		} catch (NotConnectedException | TimeoutException e) {
 			fail("Bricklet VoltageCurrent not successfully mocked: " + e.getMessage());
 		}
-		assertTrue(waterLvlSensor.isAccepted(device, ipCon));
+		assertTrue(waterLvlSensor.doesAccept(device, ipCon));
 		verify(mockCollector).collect(WATER_LVL_DISTANCE, 10.0);
 	}
 	
 	@Test
 	public final void testDistanceReached() {
-		waterLvlSensor.isAccepted(device, ipCon);
+		waterLvlSensor.doesAccept(device, ipCon);
 		waterLvlSensor.distanceReached(150);
 		verify(mockCollector).collect(WATER_LVL_DISTANCE, 15.0);
 	}

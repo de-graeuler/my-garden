@@ -14,7 +14,7 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
-import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 
 public class VoltageCurrentSensorTest extends SensorTest{
 
@@ -24,6 +24,8 @@ public class VoltageCurrentSensorTest extends SensorTest{
 	@Before
 	public void setUp() {
 		super.setUp();
+		config.set(ConfigurationKeys.CURRENT_CHG_THD, 100);
+		config.set(ConfigurationKeys.VOLTAGE_CHG_THD, 100);
 		vcSensor = new VoltageCurrentSensor(config, mockCollector) {
 			@Override
 			protected BrickletVoltageCurrent constructBrick(String uid, IPConnection conn) {
@@ -31,7 +33,7 @@ public class VoltageCurrentSensorTest extends SensorTest{
 			}
 		};
 		try {
-			when(brickletVoltageCurrent.getCurrent()).thenReturn(200);
+			when(brickletVoltageCurrent.getCurrent()).thenReturn(5000);
 			when(brickletVoltageCurrent.getVoltage()).thenReturn(5000);
 		} catch (NotConnectedException | TimeoutException e) {
 			fail("Bricklet VoltageCurrent not successfully mocked: " + e.getMessage());
@@ -41,16 +43,14 @@ public class VoltageCurrentSensorTest extends SensorTest{
 	
 	@Test
 	public final void testCurrentReached() {
-		assertTrue(vcSensor.isAccepted(device, ipCon));
-//		config.set(AppConfig.Key.CURRENT_CHG_THD, 100);
-		vcSensor.currentReached(101);
-		verify(mockCollector).collect("current", 0.101);
+		assertTrue(vcSensor.doesAccept(device, ipCon));
+		vcSensor.currentReached(5001);
+		verify(mockCollector).collect("current", 5.001);
 	}
 
 	@Test
 	public final void testVoltageReached() {
-		assertTrue(vcSensor.isAccepted(device, ipCon));
-		config.set(AppConfig.Key.VOLTAGE_CHG_THD, 100);
+		assertTrue(vcSensor.doesAccept(device, ipCon));
 		vcSensor.voltageReached(5251);
 		verify(mockCollector).collect("voltage", 5.251);
 	}

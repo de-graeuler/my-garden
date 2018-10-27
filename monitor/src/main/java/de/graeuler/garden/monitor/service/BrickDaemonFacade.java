@@ -11,18 +11,17 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.IPConnection.ConnectedListener;
-import com.tinkerforge.IPConnection.DisconnectedListener;
-import com.tinkerforge.IPConnection.EnumerateListener;
 import com.tinkerforge.NotConnectedException;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.monitor.model.ConnectReason;
 import de.graeuler.garden.monitor.model.ConnectionState;
 import de.graeuler.garden.monitor.model.DisconnectReason;
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 
-public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, DisconnectedListener {
+public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemListeners
+{
 
     private final Logger log = LoggerFactory.getLogger(this.getClass());
     
@@ -31,8 +30,7 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 	private String brickdaemonHost;
     private int brickdaemonPort;
 
-	
-	private DeviceListCallback deviceListCallback = null;
+	private NewDeviceCallback newDeviceCallback = null;
 
     private IPConnection connection;
 	private ScheduledExecutorService scheduler;
@@ -41,13 +39,19 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 
 
 	@Inject
-	public BrickDaemonFacade(AppConfig config, ScheduledExecutorService scheduler, IPConnection connection) {
+	BrickDaemonFacade(AppConfig config, ScheduledExecutorService scheduler, IPConnection connection) {
 		this.connection = connection;
     	this.scheduler = scheduler;
-    	this.brickdaemonHost = (String) AppConfig.Key.TF_DAEMON_HOST.from(config);
-    	this.brickdaemonPort = (Integer) AppConfig.Key.TF_DAEMON_PORT.from(config);
+    	this.brickdaemonHost = (String) ConfigurationKeys.TF_DAEMON_HOST.from(config);
+    	this.brickdaemonPort = (Integer) ConfigurationKeys.TF_DAEMON_PORT.from(config);
 	}
 	
+	@Override
+	public void setNewDeviceCallback(NewDeviceCallback callback) {
+		this.newDeviceCallback = callback;
+	}
+	
+	@Override
 	public void connect() {
 		connection.addConnectedListener(this);
 		connection.addEnumerateListener(this);
@@ -55,15 +59,11 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 		scheduleConnectionStatePrinter();
 		runBrickDaemonConnectionHandler();
     }
-    
+
+	@Override
 	public void disconnect() {
 		cancelConnStatePrinter();
 		cancelBrickDaemonConnectionManager();
-		try {
-			connection.disconnect();
-		} catch (NotConnectedException e) {
-			log.error(e.getMessage());
-		} 
 		try {
 			connection.close();
 		}
@@ -73,6 +73,22 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 		connection.removeDisconnectedListener(this);
 		connection.removeEnumerateListener(this);
 		connection.removeConnectedListener(this);
+	}
+
+	@Override
+	public void connected(short reason) {
+		log.info("Connected ({})", ConnectReason.by(reason).getOutput());
+		try {
+			connection.enumerate();
+		} catch (NotConnectedException e) {
+			log.error("Device enumeration triggered while disconnected.");
+		}
+	}
+
+	@Override
+	public void disconnected(short reason) {
+		log.info("Disconnected ({})", DisconnectReason.by(reason).getOutput());
+		newDeviceCallback.reset();
 	}
 
 	/**
@@ -87,36 +103,16 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 			log.error("Device with uid {} was disconnected.", uid);
 			return;
 		}
-		TFDevice device = TFDevice.create(uid, connectedUid, position, hwv, fwv, deviceIdentifier, enumerationType);
-		callDeviceListCallback(device);
+		TinkerforgeDevice device = TinkerforgeDevice.create(uid, connectedUid, position, hwv, fwv, deviceIdentifier, enumerationType);
+		callNewDeviceCallback(device);
 	}
 
-	private void callDeviceListCallback(TFDevice device) {
-		if ( null != deviceListCallback) {
-			deviceListCallback.onDeviceFound(device, connection);
+	private void callNewDeviceCallback(TinkerforgeDevice device) {
+		if ( null != newDeviceCallback) {
+			newDeviceCallback.onDeviceFound(device, connection);
 		}
 	}
 
-	@Override
-	public void connected(short reason) {
-		log.info("Connection caused by: {}", ConnectReason.by(reason).getOutput());
-		try {
-			connection.enumerate();
-		} catch (NotConnectedException e) {
-			log.error("Device enumeration triggered while disconnected.");
-		}
-	}
-
-	@Override
-	public void disconnected(short reason) {
-		log.info("Disconnect caused by: {}", DisconnectReason.by(reason).getOutput());
-		deviceListCallback.reset();
-	}
-
-	public void setDeviceListCallback(DeviceListCallback deviceListCallback) {
-		this.deviceListCallback = deviceListCallback;
-	}
-	
 	private void scheduleConnectionStatePrinter() {
 		this.connStatePrinterHandle = this.scheduler.scheduleWithFixedDelay(connStatePrinter, 1, 500, TimeUnit.MILLISECONDS);
 	}
@@ -158,7 +154,7 @@ public class BrickDaemonFacade implements EnumerateListener, ConnectedListener, 
 			short currentState = connection.getConnectionState();
 			if ( ! ConnectionState.by(currentState).equals(this.lastState)) {
 				this.lastState = ConnectionState.by(currentState);
-				log.info("Connection state: {}", lastState.getOutput());
+				log.debug("Connection state: {}", lastState.getOutput());
 			}
 		}
 	};

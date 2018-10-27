@@ -21,13 +21,13 @@ public class JsonDataConverterTest {
 	@Test
 	public void testConvert() {
 		JsonDataConverter converter = new JsonDataConverter(new StaticAppConfig());
-		List<DataRecord<?>> records = new ArrayList<>();
-		records.add(new DataRecord<String>("stringkey", "stringvalue1"));
-		records.add(new DataRecord<Double>("doublekey", 1.234));
-		records.add(new DataRecord<Boolean>("boolkey", false));
-		records.add(new DataRecord<String>("stringkey", "stringvalue2"));
-		records.add(new DataRecord<Double>("doublekey", 2.345));
-		records.add(new DataRecord<Boolean>("boolkey", true));
+		List<DataRecord> records = new ArrayList<>();
+		records.add(new DataRecord("stringkey", "stringvalue1"));
+		records.add(new DataRecord("doublekey", 1.234));
+		records.add(new DataRecord("boolkey", false));
+		records.add(new DataRecord("stringkey", "stringvalue2"));
+		records.add(new DataRecord("doublekey", 2.345));
+		records.add(new DataRecord("boolkey", true));
 		String testResult = converter.convert(records);
 		JsonReader jsonReader = Json.createReader(new StringReader(testResult));
 		JsonObject jsonObject = jsonReader.readObject();

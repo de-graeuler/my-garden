@@ -15,7 +15,7 @@ import com.tinkerforge.TinkerforgeException;
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 
 /**
  * @author bernhard
@@ -60,7 +60,7 @@ public abstract class AbstractSensorHandler<T extends Device> implements SensorH
 	protected abstract T constructBrick(String uid, IPConnection conn);
 
 	@Override
-	public boolean isAccepted(TFDevice device, IPConnection conn) {
+	public boolean doesAccept(TinkerforgeDevice device, IPConnection conn) {
 		if( device == null ) {
 			return false;
 		}

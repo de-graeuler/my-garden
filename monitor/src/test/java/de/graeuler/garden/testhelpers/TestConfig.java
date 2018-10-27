@@ -3,13 +3,15 @@ package de.graeuler.garden.testhelpers;
 import java.util.EnumMap;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigKey;
+import de.graeuler.garden.config.ConfigurationKeys;
 
 public class TestConfig implements AppConfig {
 
-	private EnumMap<AppConfig.Key, Object> config = new EnumMap<>(Key.class);
+	private EnumMap<ConfigurationKeys, Object> config = new EnumMap<>(ConfigurationKeys.class);
 	
 	@Override
-	public Object get(Key key) {
+	public Object get(ConfigKey key) {
 		if (config.containsKey(key))
 			return config.get(key);
 		else 
@@ -17,11 +19,11 @@ public class TestConfig implements AppConfig {
 	}
 
 	@Override
-	public Object get(Key key, Object defaultValue) {
+	public Object get(ConfigKey key, Object defaultValue) {
 		return this.config.getOrDefault(key, defaultValue);
 	}
 	
-	public void set(Key key, Object configValue) {
+	public void set(ConfigurationKeys key, Object configValue) {
 		config.put(key, configValue);
 	}
 
