@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.data.DataRecordTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:17" hostname="laptop-1" time="10.893">
+  <properties/>
+  <testcase name="testBoolean" classname="de.graeuler.garden.data.DataRecordTest" time="0.001"/>
+  <testcase name="testDouble" classname="de.graeuler.garden.data.DataRecordTest" time="0.002"/>
+  <testcase name="testObject" classname="de.graeuler.garden.data.DataRecordTest" time="0.001"/>
+  <testcase name="testString" classname="de.graeuler.garden.data.DataRecordTest" time="0.004"/>
+  <testcase name="testBoolean" classname="de.graeuler.garden.data.DataRecordTest" time="0.0"/>
+  <testcase name="testDouble" classname="de.graeuler.garden.data.DataRecordTest" time="0.0"/>
+  <testcase name="testObject" classname="de.graeuler.garden.data.DataRecordTest" time="0.0"/>
+  <testcase name="testString" classname="de.graeuler.garden.data.DataRecordTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

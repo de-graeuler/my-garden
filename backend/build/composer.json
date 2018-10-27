@@ -1,0 +1,12 @@
+{
+    "require": {
+        "slim/slim": "^3.0"
+    } ,
+    "autoload": {
+        "psr-4": {"Graeuler\\Garden\\Collect\\": "src/graeuler-garden-collect/"}
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4",
+        "phing/phing": "2.*"
+    }
+}

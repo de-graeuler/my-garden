@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.model.ConnectionStateTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:13" hostname="laptop-1" time="23.405">
+  <properties/>
+  <testcase name="testExistingByCall" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.0"/>
+  <testcase name="testNonExistingByCall" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.001"/>
+  <testcase name="testGetOutput" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.0"/>
+  <testcase name="testExistingByCall" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.0"/>
+  <testcase name="testNonExistingByCall" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.0"/>
+  <testcase name="testGetOutput" classname="de.graeuler.garden.monitor.model.ConnectionStateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

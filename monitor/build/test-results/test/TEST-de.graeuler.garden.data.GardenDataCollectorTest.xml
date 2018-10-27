@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.data.GardenDataCollectorTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:21" hostname="laptop-1" time="15.475">
+  <properties/>
+  <testcase name="testMultiThreadAccess" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="5.637"/>
+  <testcase name="testDataIsEmpty" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.0"/>
+  <testcase name="testRemoveDataset" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.001"/>
+  <testcase name="testCollect" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.001"/>
+  <testcase name="testGetCollectedDataset" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.0"/>
+  <testcase name="testMultiThreadAccess" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="5.686"/>
+  <testcase name="testDataIsEmpty" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.0"/>
+  <testcase name="testRemoveDataset" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.0"/>
+  <testcase name="testCollect" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.0"/>
+  <testcase name="testGetCollectedDataset" classname="de.graeuler.garden.data.GardenDataCollectorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

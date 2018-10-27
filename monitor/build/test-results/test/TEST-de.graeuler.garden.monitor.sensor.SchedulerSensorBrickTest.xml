@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:28" hostname="laptop-1" time="8.693">
+  <properties/>
+  <testcase name="testDataCollectorcall" classname="de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest" time="0.001"/>
+  <testcase name="testIsAccepted" classname="de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest" time="0.003"/>
+  <testcase name="testDataCollectorcall" classname="de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest" time="0.0"/>
+  <testcase name="testIsAccepted" classname="de.graeuler.garden.monitor.sensor.SchedulerSensorBrickTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

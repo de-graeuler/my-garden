@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.config.AppConfigKeyTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:11" hostname="laptop-1" time="17.363">
+  <properties/>
+  <testcase name="testFromAppConfigReturnsSetValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.05"/>
+  <testcase name="testFromAppConfigReturnsDefaultIfValidationFails" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigReturnsValidatedValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigStringListValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.01"/>
+  <testcase name="testFromAppConfigObjectReturnsGivenDefaultValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.01"/>
+  <testcase name="testFromAppConfigReturnsSetValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigReturnsDefaultIfValidationFails" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigReturnsValidatedValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigStringListValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <testcase name="testFromAppConfigObjectReturnsGivenDefaultValue" classname="de.graeuler.garden.config.AppConfigKeyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[[Test worker] WARN de.graeuler.garden.config.AppConfig$Key - Invalid configuration value provided for waterlevel.moving.average. Using the default.
+[Test worker] WARN de.graeuler.garden.config.AppConfig$Key - Invalid configuration value provided for waterlevel.moving.average. Using the default.
+]]></system-err>
+</testsuite>

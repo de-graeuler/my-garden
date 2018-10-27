@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.data.StreamHasherTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:37" hostname="laptop-1" time="0.0">
+  <properties/>
+  <testcase name="testHash" classname="de.graeuler.garden.data.StreamHasherTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

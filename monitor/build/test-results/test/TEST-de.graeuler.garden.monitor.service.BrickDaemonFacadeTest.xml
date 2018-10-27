@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:11" hostname="laptop-1" time="27.501">
+  <properties/>
+  <testcase name="testDisconnected" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.004"/>
+  <testcase name="testConnected" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.002"/>
+  <testcase name="testEnumerateDisconnectedDevice" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.001"/>
+  <testcase name="testEnumerate" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.012"/>
+  <testcase name="testConnectDisconnect" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="2.005"/>
+  <testcase name="testDisconnected" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.0"/>
+  <testcase name="testConnected" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.001"/>
+  <testcase name="testEnumerateDisconnectedDevice" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.0"/>
+  <testcase name="testEnumerate" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="0.001"/>
+  <testcase name="testConnectDisconnect" classname="de.graeuler.garden.monitor.service.BrickDaemonFacadeTest" time="2.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[[Test worker] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Disconnect caused by: request
+[Test worker] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Connection caused by: user request
+[Test worker] ERROR de.graeuler.garden.monitor.service.BrickDaemonFacade - Device with uid 123 was disconnected.
+[pool-5-thread-1] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Connection state: disconnected
+[Test worker] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Disconnect caused by: request
+[Test worker] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Connection caused by: user request
+[Test worker] ERROR de.graeuler.garden.monitor.service.BrickDaemonFacade - Device with uid 123 was disconnected.
+[pool-17-thread-1] INFO de.graeuler.garden.monitor.service.BrickDaemonFacade - Connection state: disconnected
+]]></system-err>
+</testsuite>

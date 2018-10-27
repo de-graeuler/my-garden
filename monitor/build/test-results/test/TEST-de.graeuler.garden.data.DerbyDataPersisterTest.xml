@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.data.DerbyDataPersisterTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:17" hostname="laptop-1" time="13.543">
+  <properties/>
+  <testcase name="testWrite" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="1.518"/>
+  <testcase name="testDeleteAll" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="0.372"/>
+  <testcase name="testReadAll" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="1.266"/>
+  <testcase name="testDeleteAllCollectionOfDataRecordOfSerializable" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="0.599"/>
+  <testcase name="testWrite" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="0.107"/>
+  <testcase name="testDeleteAll" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="0.132"/>
+  <testcase name="testReadAll" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="1.417"/>
+  <testcase name="testDeleteAllCollectionOfDataRecordOfSerializable" classname="de.graeuler.garden.data.DerbyDataPersisterTest" time="1.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database Initialization
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - Database ready
+[Test worker] INFO de.graeuler.garden.data.DerbyDataPersister - DB shutdown successfully
+]]></system-err>
+</testsuite>

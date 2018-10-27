@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.sensor.TemperatureSensorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:28" hostname="laptop-1" time="8.546">
+  <properties/>
+  <testcase name="testTemperatureReached" classname="de.graeuler.garden.monitor.sensor.TemperatureSensorTest" time="0.001"/>
+  <testcase name="testTemperatureReached" classname="de.graeuler.garden.monitor.sensor.TemperatureSensorTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[[Test worker] INFO de.graeuler.garden.monitor.sensor.TemperatureSensorTest$1 - Setting temperature threshold range to 152 - 252
+[Test worker] INFO de.graeuler.garden.monitor.sensor.TemperatureSensorTest$1 - Setting temperature threshold range to 50 - 150
+[Test worker] INFO de.graeuler.garden.monitor.sensor.TemperatureSensorTest$1 - Setting temperature threshold range to 152 - 252
+[Test worker] INFO de.graeuler.garden.monitor.sensor.TemperatureSensorTest$1 - Setting temperature threshold range to 50 - 150
+]]></system-err>
+</testsuite>

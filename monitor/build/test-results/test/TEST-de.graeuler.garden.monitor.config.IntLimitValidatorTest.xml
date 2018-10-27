@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.config.IntLimitValidatorTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:27" hostname="laptop-1" time="9.686">
+  <properties/>
+  <testcase name="testIsValidDetectsCorrectType" classname="de.graeuler.garden.monitor.config.IntLimitValidatorTest" time="0.0"/>
+  <testcase name="testIsValidDetectsCorrectRange" classname="de.graeuler.garden.monitor.config.IntLimitValidatorTest" time="0.0"/>
+  <testcase name="testIsValidDetectsCorrectType" classname="de.graeuler.garden.monitor.config.IntLimitValidatorTest" time="0.0"/>
+  <testcase name="testIsValidDetectsCorrectRange" classname="de.graeuler.garden.monitor.config.IntLimitValidatorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

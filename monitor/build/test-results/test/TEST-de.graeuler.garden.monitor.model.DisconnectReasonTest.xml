@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="de.graeuler.garden.monitor.model.DisconnectReasonTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2018-04-25T20:31:21" hostname="laptop-1" time="15.507">
+  <properties/>
+  <testcase name="invalidByReturnsNull" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <testcase name="getAnOutput" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <testcase name="validByReturnsReason" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <testcase name="invalidByReturnsNull" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <testcase name="getAnOutput" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <testcase name="validByReturnsReason" classname="de.graeuler.garden.monitor.model.DisconnectReasonTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
