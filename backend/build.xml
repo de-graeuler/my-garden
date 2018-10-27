@@ -28,7 +28,7 @@
         <copy toDir="build">
             <fileset refid="fsBuildCode" />
         </copy>
-		<autoloader />
+        <autoloader />
         <composer>
             <arg value="install" />
             <arg value="--no-dev" />
@@ -39,26 +39,13 @@
     </target>
     
     <target name="test" depends="build" description="Run unit tests. Fails, if not all units are tested sucessfully.">
+        <mkdir dir="build/reports" />
         <echo msg="Executing PHPUnit..." />
-		<mkdir dir="build/reports" />
-		<coverage-setup database="build/coverage.db">
-		  <fileset dir="src">
-			<include name="**/*.php"/>
-		  </fileset>
-		</coverage-setup>
-		<phpunit codecoverage="true" printsummary="true">
-			<formatter type="xml" todir="build" />
-			<batchtest>
-				<fileset dir="build/test" includes="**/*Test.php" />
-			</batchtest> 
-		</phpunit>
-		<phpunitreport infile="build/testsuites.xml" todir="build/reports" />
-		<coverage-report>
-			<report todir="build/reports" />
-		</coverage-report>
+        <exec executable="vendor/bin/phpunit"/>
+        <xslt file="build/reports/testresult.xml" tofile="build/reports/testresult.html" style="buildtools/phpunit.xslt"/>
     </target>
     
-    <target name="dist" depends="test,build" description="Create distributable packages after the build.">
+    <target name="dist" depends="build,test" description="Create distributable packages after the build.">
         <mkdir dir="dist" />
         <zip destfile="dist/garden-backend.zip">
             <fileset refid="fsDistCode" />
