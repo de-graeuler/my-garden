@@ -11,16 +11,16 @@ import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.graeuler.garden.data.DataRecord;
-
 public class ObjectSerializationUtil {
 
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final static Logger log = LoggerFactory.getLogger(ObjectSerializationUtil.class);
+	
+	private final static int CHUNK_SIZE = 4096;
 
-	public DataRecord<Serializable> deserializeFromByteStream(InputStream stream) throws ClassCastException{
+	public static <T extends Serializable> T deserializeFromByteStream(InputStream stream, Class<T> genericType) throws ClassCastException{
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
-			byte[] chunk = new byte[4096];
+			byte[] chunk = new byte[CHUNK_SIZE];
 			int nRead;
 			bos.reset();
 			while ((nRead = stream.read(chunk)) != -1){
@@ -30,11 +30,9 @@ public class ObjectSerializationUtil {
 			byte [] buf = bos.toByteArray();
 			ByteArrayInputStream bis = new ByteArrayInputStream(buf);
 			ObjectInputStream ois = new ObjectInputStream(bis);
-			Object o = ois.readObject();
-			if (o instanceof DataRecord) {
-				@SuppressWarnings("unchecked")
-				DataRecord<Serializable> dr =  (DataRecord<Serializable>) o;
-				return dr;
+			Object object = ois.readObject();
+			if (genericType.isAssignableFrom(object.getClass())) {
+				return genericType.cast(object);
 			} else {
 				throw new ClassCastException("Deserialized object is not an instance of DataRecord.");
 			}
@@ -51,21 +49,21 @@ public class ObjectSerializationUtil {
 		return null;
 	}
 
-	public InputStream serializeToByteStream(DataRecord<Serializable> record) {
+	public static byte[] serializeToByteArray(Serializable serializable) {
 		
 		ByteArrayOutputStream bos = new ByteArrayOutputStream(4096);
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(bos);
-			oos.writeObject(record);
+			oos.writeObject(serializable);
 			oos.flush();
 			byte[] recordAsByteArray = bos.toByteArray();
 			oos.close();
 			bos.close();
 		
-			return new ByteArrayInputStream(recordAsByteArray);
+			return recordAsByteArray;
 		}
 		catch (IOException e) {
-			log.error("Unable to write serialized object to stream.", e);
+			log.error("Unable to serialize object", e);
 		}
 		return null;
 	}

@@ -3,7 +3,7 @@ package de.graeuler.garden.data;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-public class DataRecord<T extends Serializable> implements Serializable {
+public class DataRecord implements Serializable {
 
 	private static final long serialVersionUID = -2801357326272785940L;
 
@@ -13,10 +13,10 @@ public class DataRecord<T extends Serializable> implements Serializable {
 	
 	private ZonedDateTime timestamp;
 	private String key;
-	private T value;
+	private Serializable value;
 	private ValueType valueType;
 	
-	public DataRecord(String key, T value) {
+	public DataRecord(String key, Serializable value) {
 		this.timestamp = ZonedDateTime.now();
 		this.key = key;
 		this.value = value;
@@ -46,10 +46,10 @@ public class DataRecord<T extends Serializable> implements Serializable {
 	public void setKey(String key) {
 		this.key = key;
 	}
-	public T getValue() {
+	public Serializable getValue() {
 		return value;
 	}
-	public void setValue(T value) {
+	public void setValue(Serializable value) {
 		this.value = value;
 	}
 	public ValueType getValueType() {

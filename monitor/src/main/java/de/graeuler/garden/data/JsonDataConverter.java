@@ -1,8 +1,8 @@
 package de.graeuler.garden.data;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.json.Json;
@@ -13,16 +13,17 @@ import javax.json.JsonObjectBuilder;
 import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.monitor.util.ApiToken;
 
-public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, String> {
+public class JsonDataConverter implements DataConverter<Collection<DataRecord>, String> {
 
 	private String apiToken;
 
 	@Inject
 	JsonDataConverter(AppConfig config) {
-		this.apiToken = (String) AppConfig.Key.API_TOKEN.from(config);
+		this.apiToken = (String) ConfigurationKeys.API_TOKEN.from(config);
 	}
 	
 	DateTimeFormatter isoFormat = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -56,7 +57,7 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 	 *
 	 */
 	@Override
-	public String convert(List<DataRecord<?>> input) {
+	public String convert(Collection<DataRecord> input) {
 		JsonObjectBuilder jsonObjectBuilder;
 		Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap = new HashMap<>();
 		input.stream()
@@ -64,7 +65,7 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 				.distinct()
 				.forEach(k -> jsonKeyGroupArrayBuilderMap.put(k, Json.createArrayBuilder()));
 
-		for(DataRecord<?> record : input) {
+		for(DataRecord record : input) {
 			addJsonObjectToMap(jsonKeyGroupArrayBuilderMap, record);
 		
 		}
@@ -79,7 +80,7 @@ public class JsonDataConverter implements DataConverter<List<DataRecord<?>>, Str
 		return result.toString();
 	}
 
-	private void addJsonObjectToMap(Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap, DataRecord<?> record) {
+	private void addJsonObjectToMap(Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap, DataRecord record) {
 		JsonObjectBuilder jsonObjectBuilder;
 		jsonObjectBuilder = Json.createObjectBuilder();
 		jsonObjectBuilder.add("t", record.getTimestamp().format(isoFormat));

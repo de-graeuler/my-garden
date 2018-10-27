@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.monitor.util.Bytes;
@@ -32,16 +34,17 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 	private double upperTrafficThreshold = 0.0;
 	private double lowerTrafficThreshold = 0.0;
 	
-	private final String vnstatOnelineCommand;
+	private final List<String> vnstatOnelineCommand;
 	private final String vnstat_language_tag;
 
+	@SuppressWarnings("unchecked")
 	@Inject
 	public NetworkTrafficMonitorService(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
-		this.vnstatOnelineCommand = (String) AppConfig.Key.NETWORK_VNSTAT_CMD.from(config);
-		this.vnstat_language_tag = (String) AppConfig.Key.NETWORK_VNSTAT_LANG_TAG.from(config);
-		this.netCheckTimeRate = (Integer) AppConfig.Key.NET_TIME_RATE.from(config);
-		this.netCheckTimeUnit = (TimeUnit) AppConfig.Key.NET_TIME_UNIT.from(config);
-		this.bytesThreshold   = (Integer) AppConfig.Key.NET_VOL_CHG_THD.from(config);
+		this.vnstatOnelineCommand = (List<String>) ConfigurationKeys.NETWORK_VNSTAT_CMD.from(config);
+		this.vnstat_language_tag = (String) ConfigurationKeys.NETWORK_VNSTAT_LANG_TAG.from(config);
+		this.netCheckTimeRate = (Integer) ConfigurationKeys.NET_TIME_RATE.from(config);
+		this.netCheckTimeUnit = (TimeUnit) ConfigurationKeys.NET_TIME_UNIT.from(config);
+		this.bytesThreshold   = (Integer) ConfigurationKeys.NET_VOL_CHG_THD.from(config);
 		this.dataCollector = dataCollector;
 		this.scheduler = scheduler;
 	}
@@ -84,7 +87,7 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		}
 	}
 
-	private boolean hasLeftThresholds(double bytes) {
+	protected boolean hasLeftThresholds(double bytes) {
 		return bytes > this.upperTrafficThreshold || bytes < this.lowerTrafficThreshold;
 	}
 

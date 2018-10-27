@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.tinkerforge.IPConnection;
 
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 
 public interface SensorHandler {
 
@@ -16,7 +16,7 @@ public interface SensorHandler {
 	 * @param conn
 	 * @return
 	 */
-	boolean isAccepted(TFDevice device, IPConnection conn);
+	boolean doesAccept(TinkerforgeDevice device, IPConnection conn);
 
 	/**
 	 * Classes implementing this interface should be able to send serializable data to a 

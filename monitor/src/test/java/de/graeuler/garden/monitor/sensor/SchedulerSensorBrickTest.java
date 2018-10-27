@@ -19,7 +19,7 @@ import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.DataCollector;
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
 import de.graeuler.garden.testhelpers.TestConfig;
 
@@ -58,17 +58,17 @@ public class SchedulerSensorBrickTest {
 
 	@Test
 	public void testIsAccepted() {
-		TFDevice okDevice = TFDevice.create("123", "0", 'A', new short[] {1,2,3}, new short[] {2,3,4},
+		TinkerforgeDevice okDevice = TinkerforgeDevice.create("123", "0", 'A', new short[] {1,2,3}, new short[] {2,3,4},
 				BrickletTemperature.DEVICE_IDENTIFIER, (short) 0);
-		TFDevice nokDevice = TFDevice.create("123", "0", 'A', new short[] {1,2,3}, new short[] {2,3,4},
+		TinkerforgeDevice nokDevice = TinkerforgeDevice.create("123", "0", 'A', new short[] {1,2,3}, new short[] {2,3,4},
 				BrickletAccelerometer.DEVICE_IDENTIFIER, (short) 0);
 		this.conn.setConnected(false);
-		assertFalse(schedulerSensorBrick.isAccepted(nokDevice, conn));
-		assertFalse(schedulerSensorBrick.isAccepted(okDevice, conn));
+		assertFalse(schedulerSensorBrick.doesAccept(nokDevice, conn));
+		assertFalse(schedulerSensorBrick.doesAccept(okDevice, conn));
 		this.conn.setConnected(true);
-		assertFalse(schedulerSensorBrick.isAccepted(nokDevice, conn));
-		assertTrue(schedulerSensorBrick.isAccepted(okDevice, conn));
-		assertFalse(schedulerSensorBrick.isAccepted(null, conn));
+		assertFalse(schedulerSensorBrick.doesAccept(nokDevice, conn));
+		assertTrue(schedulerSensorBrick.doesAccept(okDevice, conn));
+		assertFalse(schedulerSensorBrick.doesAccept(null, conn));
 	}
 
 	@Test

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 
 public class HttpUplinkService implements Uplink<String> {
 
@@ -26,8 +27,8 @@ public class HttpUplinkService implements Uplink<String> {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Inject
-	public HttpUplinkService(AppConfig config, CloseableHttpClient httpclient) {
-		this.uplink = (String) AppConfig.Key.UPLINK_ADRESS.from(config);
+	HttpUplinkService(AppConfig config, CloseableHttpClient httpclient) {
+		this.uplink = (String) ConfigurationKeys.UPLINK_ADRESS.from(config);
 		this.httpclient = httpclient;
 	}
 	

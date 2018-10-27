@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -14,14 +14,12 @@ import de.graeuler.garden.data.DataRecord;
 
 public class ObjectSerializationUtilTest {
 
-	ObjectSerializationUtil objectSerializationUtil = new ObjectSerializationUtil();
-	
 	@Test
 	public final void testDeSerialize() {
-		DataRecord<Serializable> drd = new DataRecord<>("double", new Double(1.452));
-		InputStream stream = objectSerializationUtil.serializeToByteStream(drd);
-		assertNotNull(stream);
-		DataRecord<Serializable> result = objectSerializationUtil.deserializeFromByteStream(stream);
+		DataRecord drd = new DataRecord("double", new Double(1.452));
+		byte [] stream = ObjectSerializationUtil.serializeToByteArray(drd);
+		assertTrue(stream.length > 0);
+		DataRecord result = ObjectSerializationUtil.deserializeFromByteStream(new ByteArrayInputStream(stream), DataRecord.class);
 		assertNotNull(result);
 		Serializable sdrd = drd.getValue();
 		Serializable sres = result.getValue();
@@ -42,10 +40,10 @@ public class ObjectSerializationUtilTest {
 			}
 			listOfByte.add(bytes);
 		}
-		DataRecord<Serializable> drLoB = new DataRecord<>("lob", listOfByte);
-		InputStream stream = objectSerializationUtil.serializeToByteStream(drLoB);
-		assertNotNull(stream);
-		DataRecord<Serializable> drResult = objectSerializationUtil.deserializeFromByteStream(stream);
+		DataRecord drLoB = new DataRecord("lob", listOfByte);
+		byte[] serializedObject = ObjectSerializationUtil.serializeToByteArray(drLoB);
+		assertTrue(serializedObject.length > 0);
+		DataRecord drResult = ObjectSerializationUtil.deserializeFromByteStream(new ByteArrayInputStream(serializedObject), DataRecord.class);
 		assertNotNull(drResult);
 	}
 

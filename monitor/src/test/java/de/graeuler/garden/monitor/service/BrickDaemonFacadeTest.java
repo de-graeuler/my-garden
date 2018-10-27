@@ -19,22 +19,22 @@ import org.mockito.ArgumentCaptor;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 
-import de.graeuler.garden.config.AppConfig;
-import de.graeuler.garden.monitor.model.TFDevice;
+import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.TestConfig;
 
 public class BrickDaemonFacadeTest {
 
 	IPConnection connection = mock(IPConnection.class);
-	DeviceListCallback deviceListCallback = mock(DeviceListCallback.class);
+	NewDeviceCallback deviceListCallback = mock(NewDeviceCallback.class);
 	TestConfig config = new TestConfig();
 	ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
 	private BrickDaemonFacade daemonManager;
 	
 	@Before
-	public void lenov() throws Exception {
+	public void setup() throws Exception {
 		daemonManager = new BrickDaemonFacade(config, scheduler, connection);
-		daemonManager.setDeviceListCallback(deviceListCallback);
+		daemonManager.setNewDeviceCallback(deviceListCallback);
 	}
 
 	@Test
@@ -43,11 +43,11 @@ public class BrickDaemonFacadeTest {
 		try {
 			TimeUnit.SECONDS.sleep(2);
 			verify(connection, times(1)).connect(
-					(String) AppConfig.Key.TF_DAEMON_HOST.from(config), 
-					(Integer) AppConfig.Key.TF_DAEMON_PORT.from(config)
+					(String) ConfigurationKeys.TF_DAEMON_HOST.from(config), 
+					(Integer) ConfigurationKeys.TF_DAEMON_PORT.from(config)
 					);
 			daemonManager.disconnect();
-			verify(connection, times(1)).disconnect();
+			verify(connection, times(1)).close();
 		} catch (Exception e) {
 			// connect and disconnect are mocked and should not fail...
 			fail(e.getMessage());
@@ -59,7 +59,7 @@ public class BrickDaemonFacadeTest {
 		short[] hwv = {1, 2, 3};
 		short[] fwv = hwv;
 		daemonManager.enumerate("123", "234", '2', hwv, fwv, 15, IPConnection.ENUMERATION_TYPE_CONNECTED);
-		ArgumentCaptor<TFDevice> deviceArgCaptor = ArgumentCaptor.forClass(TFDevice.class);
+		ArgumentCaptor<TinkerforgeDevice> deviceArgCaptor = ArgumentCaptor.forClass(TinkerforgeDevice.class);
 		verify(deviceListCallback).onDeviceFound(deviceArgCaptor.capture(), eq(connection));
 		assertEquals("123", deviceArgCaptor.getValue().getUid());
 	}

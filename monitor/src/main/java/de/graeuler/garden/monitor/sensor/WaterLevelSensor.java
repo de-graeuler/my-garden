@@ -11,6 +11,7 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.interfaces.DataCollector;
 
 public class WaterLevelSensor extends AbstractSensorHandler<BrickletDistanceUS> implements DistanceReachedListener {
@@ -23,10 +24,10 @@ public class WaterLevelSensor extends AbstractSensorHandler<BrickletDistanceUS> 
 	@Inject
 	WaterLevelSensor(AppConfig config,DataCollector dataCollector) {
 		super(config, dataCollector);
-		this.thresholdCm = (int) AppConfig.Key.WATERLVL_CHG_THD.from(config);
-		int ma = (int) AppConfig.Key.WATERLVL_MOVING_AVG.from(config);
+		this.thresholdCm = (int) ConfigurationKeys.WATERLVL_CHG_THD.from(config);
+		int ma = (int) ConfigurationKeys.WATERLVL_MOVING_AVG.from(config);
 		this.movingAverage = (short) ma;
-		this.debouncePeriodMs = (int) AppConfig.Key.WATERLVL_DEBOUNCE.from(config);
+		this.debouncePeriodMs = (int) ConfigurationKeys.WATERLVL_DEBOUNCE.from(config);
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.interfaces.DataCollector;
 
 public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature> implements TemperatureReachedListener {
@@ -22,8 +23,8 @@ public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature
 	@Inject
 	TemperatureSensor(AppConfig config, DataCollector dataCollector) {
 		super(config, dataCollector);
-		this.thresholdDegC    = (int) AppConfig.Key.TEMP_CHG_THD.from(config);
-		this.debouncePeriodMs = (int) AppConfig.Key.TEMP_DEBOUNCE.from(config);
+		this.thresholdDegC    = (int) ConfigurationKeys.TEMP_CHG_THD.from(config);
+		this.debouncePeriodMs = (int) ConfigurationKeys.TEMP_DEBOUNCE.from(config);
 	}
 
 	@Override

@@ -7,7 +7,10 @@ import org.junit.runners.Suite.SuiteClasses;
 import de.graeuler.garden.config.AppConfigKeyTest;
 import de.graeuler.garden.data.DataRecordTest;
 import de.graeuler.garden.data.DerbyDataPersisterTest;
+import de.graeuler.garden.data.GardenDataCollectorTest;
 import de.graeuler.garden.data.JsonDataConverterTest;
+import de.graeuler.garden.data.SqliteDataPersisterTest;
+import de.graeuler.garden.data.SerializableHasherTest;
 import de.graeuler.garden.monitor.config.IntLimitValidatorTest;
 import de.graeuler.garden.monitor.model.ConnectReasonTest;
 import de.graeuler.garden.monitor.model.ConnectionStateTest;
@@ -34,14 +37,17 @@ import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 		ConnectReasonTest.class, 
 		DataCollectionMonitorTest.class,
 		DataRecordTest.class, 
-		DerbyDataPersisterTest.class, 
+		DerbyDataPersisterTest.class,
 		DisconnectReasonTest.class,
+		GardenDataCollectorTest.class,
 		HttpUplinkServiceTest.class, 
 		IntLimitValidatorTest.class, 
 		JsonDataConverterTest.class, 
 		ObjectSerializationUtilTest.class, 
 		SchedulerSensorBrickTest.class, 
 		SensorMonitorServiceTest.class, 
+		SerializableHasherTest.class,
+		SqliteDataPersisterTest.class,
 		TemperatureSensorTest.class, 
 		TFDeviceTest.class, 
 		VnStatPosTest.class,
