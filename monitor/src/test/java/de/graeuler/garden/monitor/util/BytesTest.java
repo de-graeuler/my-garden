@@ -46,7 +46,7 @@ public class BytesTest {
 	@Test
 	public final void testFormat() {
 		char ds = DecimalFormatSymbols.getInstance().getDecimalSeparator();
-		assertEquals("1"+ds+"00 MiB", Bytes.format(1024*1024));
+		assertEquals("1"+ds+"00 MiB", Bytes.formatIEC(1024*1024));
 	}
 
 }

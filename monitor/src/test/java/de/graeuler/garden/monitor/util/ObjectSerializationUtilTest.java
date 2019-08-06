@@ -2,6 +2,7 @@ package de.graeuler.garden.monitor.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -19,6 +20,8 @@ public class ObjectSerializationUtilTest {
 		DataRecord drd = new DataRecord("double", new Double(1.452));
 		byte [] stream = ObjectSerializationUtil.serializeToByteArray(drd);
 		assertTrue(stream.length > 0);
+		Long fail = ObjectSerializationUtil.deserializeFromByteStream(new ByteArrayInputStream(stream), Long.class);
+		assertNull(fail);
 		DataRecord result = ObjectSerializationUtil.deserializeFromByteStream(new ByteArrayInputStream(stream), DataRecord.class);
 		assertNotNull(result);
 		Serializable sdrd = drd.getValue();

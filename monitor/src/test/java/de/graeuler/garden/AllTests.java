@@ -9,8 +9,8 @@ import de.graeuler.garden.data.DataRecordTest;
 import de.graeuler.garden.data.DerbyDataPersisterTest;
 import de.graeuler.garden.data.GardenDataCollectorTest;
 import de.graeuler.garden.data.JsonDataConverterTest;
-import de.graeuler.garden.data.SqliteDataPersisterTest;
 import de.graeuler.garden.data.SerializableHasherTest;
+import de.graeuler.garden.data.SqliteDataPersisterTest;
 import de.graeuler.garden.monitor.config.IntLimitValidatorTest;
 import de.graeuler.garden.monitor.model.ConnectReasonTest;
 import de.graeuler.garden.monitor.model.ConnectionStateTest;
@@ -21,6 +21,7 @@ import de.graeuler.garden.monitor.sensor.TemperatureSensorTest;
 import de.graeuler.garden.monitor.sensor.VoltageCurrentSensorTest;
 import de.graeuler.garden.monitor.sensor.WaterLevelSensorTest;
 import de.graeuler.garden.monitor.service.BrickDaemonFacadeTest;
+import de.graeuler.garden.monitor.service.NetworkTrafficMonitorServiceTest;
 import de.graeuler.garden.monitor.service.SensorMonitorServiceTest;
 import de.graeuler.garden.monitor.util.BytesTest;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtilTest;
@@ -39,10 +40,12 @@ import de.graeuler.garden.uplink.HttpUplinkServiceTest;
 		DataRecordTest.class, 
 		DerbyDataPersisterTest.class,
 		DisconnectReasonTest.class,
+//		FileBasedDerbyPersisterTest.class, // real world db test, other db tests run in memory 
 		GardenDataCollectorTest.class,
 		HttpUplinkServiceTest.class, 
 		IntLimitValidatorTest.class, 
-		JsonDataConverterTest.class, 
+		JsonDataConverterTest.class,
+		NetworkTrafficMonitorServiceTest.class,
 		ObjectSerializationUtilTest.class, 
 		SchedulerSensorBrickTest.class, 
 		SensorMonitorServiceTest.class, 

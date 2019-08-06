@@ -1,8 +1,6 @@
 package de.graeuler.garden.monitor.service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -16,14 +14,17 @@ import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.MonitorService;
 import de.graeuler.garden.monitor.util.Bytes;
+import de.graeuler.garden.monitor.util.CommandLineReader;
 import de.graeuler.garden.monitor.util.VnStatPos;
 
 public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 
-	private DataCollector dataCollector;
+	private static final String DATA_KEY = "month-total-traffic";
+	private DataCollector<DataRecord> dataCollector;
 	private ScheduledExecutorService scheduler;
 	private ScheduledFuture<?> scheduledConsumptionCheckHandle;
 	
@@ -35,18 +36,20 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 	private double lowerTrafficThreshold = 0.0;
 	
 	private final List<String> vnstatOnelineCommand;
-	private final String vnstat_language_tag;
+	private final String vnStatLanguageTag;
+	private CommandLineReader commandLineReader;
 
 	@SuppressWarnings("unchecked")
 	@Inject
-	public NetworkTrafficMonitorService(AppConfig config, DataCollector dataCollector, ScheduledExecutorService scheduler) {
+	public NetworkTrafficMonitorService(AppConfig config, DataCollector<DataRecord> dataCollector, ScheduledExecutorService scheduler, CommandLineReader commandLineReader) {
 		this.vnstatOnelineCommand = (List<String>) ConfigurationKeys.NETWORK_VNSTAT_CMD.from(config);
-		this.vnstat_language_tag = (String) ConfigurationKeys.NETWORK_VNSTAT_LANG_TAG.from(config);
+		this.vnStatLanguageTag = (String) ConfigurationKeys.NETWORK_VNSTAT_LANG_TAG.from(config);
 		this.netCheckTimeRate = (Integer) ConfigurationKeys.NET_TIME_RATE.from(config);
 		this.netCheckTimeUnit = (TimeUnit) ConfigurationKeys.NET_TIME_UNIT.from(config);
 		this.bytesThreshold   = (Integer) ConfigurationKeys.NET_VOL_CHG_THD.from(config);
 		this.dataCollector = dataCollector;
 		this.scheduler = scheduler;
+		this.commandLineReader = commandLineReader;
 	}
 	
 	@Override
@@ -65,7 +68,7 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		if (0 < bytes) {
 			setNewThresholds(bytes); 
 			log.info ("Network threshold initialized: {} to {}", 
-					Bytes.format(this.lowerTrafficThreshold), Bytes.format(this.upperTrafficThreshold));
+					Bytes.formatSI(this.lowerTrafficThreshold), Bytes.formatSI(this.upperTrafficThreshold));
 		}
 	}
 
@@ -79,9 +82,9 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 		double bytes = readTrafficBytes();
 		if (bytes > 0) {
 			if(hasLeftThresholds(bytes)) {
-				log.info("Monthly network traffic {} left threshold range of {} to {}", Bytes.format(bytes), 
-						Bytes.format(this.lowerTrafficThreshold), Bytes.format(this.upperTrafficThreshold));
-				dataCollector.collect("month-total-traffic", bytes);
+				log.info("Monthly network traffic {} left threshold range of {} to {}", Bytes.formatSI(bytes), 
+						Bytes.formatSI(this.lowerTrafficThreshold), Bytes.formatSI(this.upperTrafficThreshold));
+				dataCollector.collect(DATA_KEY, bytes);
 				setNewThresholds(bytes); 
 			}
 		}
@@ -92,35 +95,15 @@ public class NetworkTrafficMonitorService implements MonitorService, Runnable {
 	}
 
 	protected double readTrafficBytes() {
-		String output = readVnStatOneLineOutput();
 		try {
-			return VnStatPos.MONTH_TOTAL.fromVnStatResult(output, this.vnstat_language_tag);
+			String output = commandLineReader.readFromCommand(vnstatOnelineCommand);
+			return VnStatPos.MONTH_TOTAL.fromVnStatResult(output, this.vnStatLanguageTag);
+		} catch (IOException e) {
+			log.error("Unable to execute vnstat. {} ", e.getMessage());
 		} catch (ParseException ex) {
 			log.error("Unable to parse vnStat result: {}", ex.getMessage());
 		}
 		return -1;
-	}
-
-	private String readVnStatOneLineOutput() {
-		try {
-			ProcessBuilder processBuilder = new ProcessBuilder(vnstatOnelineCommand);
-			Process p = processBuilder.start();
-			try(BufferedReader stdInput = new BufferedReader(new 
-			         InputStreamReader(p.getInputStream()))) {
-				String output = stdInput.readLine();
-				p.waitFor(5, TimeUnit.SECONDS);
-				if (p.isAlive()) {
-					p.destroyForcibly();
-					log.warn("VnStat needed to be killed forcefully.");
-				}
-				return output;
-			}
-		} catch (IOException e) {
-			log.error("Unable to execute vnstat. {} ", e.getMessage());
-		} catch (InterruptedException e) {
-			log.error("Waiting for vnstat to terminate was interrupted.");
-		}
-		return null;
 	}
 	
 	private void scheduleBandwidthConsumptionCheck() {

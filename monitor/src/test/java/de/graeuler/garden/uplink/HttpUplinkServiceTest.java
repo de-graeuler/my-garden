@@ -5,6 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,15 +28,20 @@ import de.graeuler.garden.config.StaticAppConfig;
 public class HttpUplinkServiceTest {
 
 	AppConfig config = new StaticAppConfig();
-    
 //	@Before public void initMocks() {
 //        MockitoAnnotations.initMocks(this);
 //    }
 	
 	@Test
 	public final void testPushData() throws ClientProtocolException, IOException {
+		
+		JsonObjectBuilder jsonBuilder = Json.createObjectBuilder();
+		jsonBuilder.add("value", "Test");
+	    JsonValue jsonTestValue = jsonBuilder.build();
+		
+		
 		byte[] compressedTest = {
-				31, -117, 8, 0, 0, 0, 0, 0, 0, 0, 11, 73, 45, 46, 1, 0, 50, -47, 77, 120, 4, 0, 0, 0
+				31, -117, 8, 0, 0, 0, 0, 0, 0, 0, -85, 86, 42, 75, -52, 41, 77, 85, -78, 82, 10, 73, 45, 46, 81, -86, 5, 0, 124, 76, -1, -104, 16, 0, 0, 0
 		};
 		
 		StatusLine statusLine = Mockito.mock(StatusLine.class);
@@ -54,9 +63,9 @@ public class HttpUplinkServiceTest {
 		});
 		
 		HttpUplinkService uplinkService = new HttpUplinkService(config, httpClient);
-		assertTrue(uplinkService.pushData("Test"));
-		assertTrue(uplinkService.pushData("Test"));
-		assertFalse(uplinkService.pushData("Test"));
+		assertTrue(uplinkService.pushData(jsonTestValue)); // status code 200
+		assertTrue(uplinkService.pushData(jsonTestValue)); // status code 201
+		assertFalse(uplinkService.pushData(jsonTestValue)); // status code 500 (see statusLine above)
 	}
 
 }

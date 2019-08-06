@@ -3,16 +3,16 @@ package de.graeuler.garden.monitor.sensor;
 import org.junit.Before;
 import org.mockito.Mockito;
 
-import de.graeuler.garden.interfaces.DataCollector;
+import de.graeuler.garden.data.GardenDataCollector;
 import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
 import de.graeuler.garden.testhelpers.TestConfig;
 
-public class SensorTest {
+public abstract class SensorTest {
 
 	TestConfig config = new TestConfig();
 	
-	protected DataCollector mockCollector = Mockito.mock(DataCollector.class);
+	protected GardenDataCollector mockCollector = Mockito.mock(GardenDataCollector.class);
 	protected TinkerforgeDevice device = new TinkerforgeDevice();
 	protected MockIPConnection ipCon = new MockIPConnection();
 

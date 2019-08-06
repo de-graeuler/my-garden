@@ -11,6 +11,7 @@ import java.util.List;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 import org.junit.Test;
 
@@ -28,8 +29,8 @@ public class JsonDataConverterTest {
 		records.add(new DataRecord("stringkey", "stringvalue2"));
 		records.add(new DataRecord("doublekey", 2.345));
 		records.add(new DataRecord("boolkey", true));
-		String testResult = converter.convert(records);
-		JsonReader jsonReader = Json.createReader(new StringReader(testResult));
+		JsonValue testResult = converter.convert(records);
+		JsonReader jsonReader = Json.createReader(new StringReader(testResult.toString()));
 		JsonObject jsonObject = jsonReader.readObject();
 		assertTrue(jsonObject.containsKey("stringkey"));
 		assertTrue(jsonObject.containsKey("doublekey"));

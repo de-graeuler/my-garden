@@ -38,13 +38,13 @@ public class ObjectSerializationUtil {
 			}
 		}
 		catch (IOException e) {
-			log.error("Unable to read bytes from stream", e);
+			log.error("Unable to read bytes from stream: {}", e.getMessage());
 		}
 		catch (ClassCastException e) {
-			log.error("Unable to cast deserialized object back to original type.", e);
+			log.error("Unable to cast deserialized object back to original type: {}", e.getMessage());
 		}
 		catch (ClassNotFoundException e) {
-			log.error("Unable to read serialized object from stream.", e);
+			log.error("Unable to read serialized object from stream: {}", e.getMessage());
 		}
 		return null;
 	}

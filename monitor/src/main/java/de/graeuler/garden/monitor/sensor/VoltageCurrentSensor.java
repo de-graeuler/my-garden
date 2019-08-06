@@ -13,6 +13,7 @@ import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 
 public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageCurrent>
@@ -27,7 +28,7 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Inject
-	VoltageCurrentSensor(AppConfig config, DataCollector dataCollector) {
+	VoltageCurrentSensor(AppConfig config, DataCollector<DataRecord> dataCollector) {
 		super(config, dataCollector);
 		this.currentThreshold = (int) ConfigurationKeys.CURRENT_CHG_THD.from(config);
 		this.voltageThreshold = (int) ConfigurationKeys.VOLTAGE_CHG_THD.from(config);

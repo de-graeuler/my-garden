@@ -65,7 +65,7 @@ public enum Bytes {
 	 * Find the best scaled Bytes instance.
 	 * 
 	 * @param bytes Used to filter the given 
-	 * @param set Take Bytes.SI or Bytes.IEC here, or build oyur own.
+	 * @param set Take Bytes.SI or Bytes.IEC here, or build your own.
 	 * @return A Bytes instance. Bytes.b by default, if set does not contain a better match.
 	 */
 	public static Bytes bestFit(double bytes, EnumSet<Bytes> set) {
@@ -85,9 +85,26 @@ public enum Bytes {
 	 * @param bytes Amount of bytes.
 	 * @return A nicely looking String value presentation.
 	 */
-	public static String format(double bytes) {
-		Bytes b = Bytes.bestFit(bytes, IEC);
-		return String.format("%#.2f %s", b.convertBytes(bytes), b.unit);
+	public static String formatIEC(double bytes) {
+		return format(bytes,IEC);
+	}
+	
+	/**
+	 * Converts the best fitting SI Byte converted to a string. 
+	 * Example: Bytes.format(1024) == 1.00KiB (decimal separator depending on system locale)
+	 * @param bytes Amount of bytes.
+	 * @return A nicely looking String value presentation.
+	 */
+	public static String formatSI(double bytes) {
+		return format(bytes, SI);
+	}
+	
+	protected static String format(double bytes, EnumSet<Bytes> spec) {
+		return Bytes.bestFit(bytes, spec).format(bytes);
+	}
+
+	public String format(double bytes) {
+		return String.format("%#.2f %s", convertBytes(bytes), unit);
 	}
 	
 

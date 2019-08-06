@@ -37,7 +37,7 @@ public enum VnStatPos {
 			String unit = Character.toString(resultValueParts[1].charAt(0));
 			NumberFormat decFormat = DecimalFormat.getNumberInstance(Locale.forLanguageTag(vnStatLanguageTag));
 			double bytes = Bytes.valueOf(unit).getBytes(decFormat.parse(resultValueParts[0]).doubleValue());
-			log.debug("{} transferred on {}.", Bytes.format(bytes), vnStatResult[1]);
+			log.debug("{} transferred on {}.", Bytes.formatSI(bytes), vnStatResult[1]);
 			return bytes;
 		} else {
 			log.error("Unable to read result of process execution for {}", vnStatOneLineResult);

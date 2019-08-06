@@ -12,10 +12,8 @@ import com.google.inject.grapher.graphviz.GraphvizModule;
 public class GuiceGrapher {
 
 	public static void main(String[] args) {
-		Injector appInjector = Guice.createInjector(
-				new ApplicationModule()
-		);
-		
+		Injector appInjector = Guice.createInjector(new ApplicationModule());
+
 		try {
 			graph("garden-monitor.dot", appInjector);
 		} catch (IOException e) {
@@ -24,16 +22,15 @@ public class GuiceGrapher {
 		}
 		System.out.println("Done.");
 	}
-	
-	public static void graph(String filename, Injector injector) throws IOException {
-		PrintWriter out = new PrintWriter(new File(filename), "UTF-8");
 
-		Injector graphInjector = Guice.createInjector(new GraphvizModule());
-		GraphvizGrapher grapher = graphInjector.getInstance(GraphvizGrapher.class);
-		grapher.setOut(out);
-		grapher.setRankdir("TB");
-		grapher.graph(injector);
-		out.close();
+	public static void graph(String filename, Injector injector) throws IOException {
+		try (PrintWriter out = new PrintWriter(new File(filename), "UTF-8")) {
+			Injector graphInjector = Guice.createInjector(new GraphvizModule());
+			GraphvizGrapher grapher = graphInjector.getInstance(GraphvizGrapher.class);
+			grapher.setOut(out);
+			grapher.setRankdir("TB");
+			grapher.graph(injector);
+		}
 	}
 
 }

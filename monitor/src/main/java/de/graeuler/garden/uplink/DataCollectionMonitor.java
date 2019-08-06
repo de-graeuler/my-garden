@@ -5,6 +5,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.json.Json;
+import javax.json.JsonValue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +16,6 @@ import com.google.inject.Inject;
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.data.DataRecordProcessor;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.interfaces.MonitorService;
@@ -21,9 +23,9 @@ import de.graeuler.garden.interfaces.MonitorService;
 public class DataCollectionMonitor implements Runnable, MonitorService {
 
 	private ScheduledExecutorService scheduler;
-	private DataConverter<Collection<DataRecord>, String> converter;
-	private Uplink<String> uplink;
-	private DataCollector dataCollector;
+	private DataConverter<Collection<DataRecord>, JsonValue> converter;
+	private Uplink<JsonValue> uplink;
+	private DataCollector<DataRecord> dataCollector;
 
 	private int collectTimeRate;
 	private TimeUnit collectTimeUnit;
@@ -33,7 +35,7 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 	private ScheduledFuture<?> dataUploaderHandle;
 
 	@Inject
-	DataCollectionMonitor(AppConfig config, DataCollector dataCollector, DataConverter<Collection<DataRecord>, String> converter, Uplink<String> uplink,
+	DataCollectionMonitor(AppConfig config, DataCollector<DataRecord> dataCollector, DataConverter<Collection<DataRecord>, JsonValue> converter, Uplink<JsonValue> uplink,
 			ScheduledExecutorService scheduler) {
 		this.uplink = uplink;
 		this.scheduler = scheduler;
@@ -48,20 +50,28 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 		
 	@Override
 	public void run() {
-			
-		this.dataCollector.processCollectedRecords(new DataRecordProcessor<DataRecord>() {
-			@Override
-			public boolean call(Collection<DataRecord> dataset) {
-				String jsonDataString = converter.convert(dataset);
-				boolean dataPushed = uplink.pushData(jsonDataString);
-				if ( ! dataPushed ) {
-					log.error("Unable to push dataset of {} records to the uplink.", dataset.size());
-					return false;
-				}
-				return true;
-			}
-		}, collectBlockSize);
+		switch(uplink.getConnectionState()) {
+		case ONLINE:
+			uploadData();
+			break;
+		case UNAVAILABLE:
+			log.warn("Backend service does not respond correctly on status request.");
+			break;
+		case UNREACHABLE:
+			return;
+		}
+	}
 
+	protected void uploadData() {
+		this.dataCollector.processCollectedRecords(dataset -> {
+			JsonValue jsonDataString = converter.convert(dataset);
+			boolean dataPushed = uplink.pushData(jsonDataString);
+			if (!dataPushed) {
+				log.error("Unable to push dataset of {} records to the uplink.", dataset.size());
+				return false;
+			}
+			return true;
+		}, collectBlockSize);
 	}
 
 	@Override

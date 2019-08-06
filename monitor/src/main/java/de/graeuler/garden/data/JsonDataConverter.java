@@ -9,6 +9,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
 
 import com.google.inject.Inject;
 
@@ -17,7 +18,7 @@ import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.monitor.util.ApiToken;
 
-public class JsonDataConverter implements DataConverter<Collection<DataRecord>, String> {
+public class JsonDataConverter implements DataConverter<Collection<DataRecord>, JsonValue> {
 
 	private String apiToken;
 
@@ -57,7 +58,7 @@ public class JsonDataConverter implements DataConverter<Collection<DataRecord>, 
 	 *
 	 */
 	@Override
-	public String convert(Collection<DataRecord> input) {
+	public JsonValue convert(Collection<DataRecord> input) {
 		JsonObjectBuilder jsonObjectBuilder;
 		Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap = new HashMap<>();
 		input.stream()
@@ -77,7 +78,7 @@ public class JsonDataConverter implements DataConverter<Collection<DataRecord>, 
 		}
 		
 		JsonObject result = jsonObjectBuilder.build();
-		return result.toString();
+		return result;
 	}
 
 	private void addJsonObjectToMap(Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap, DataRecord record) {

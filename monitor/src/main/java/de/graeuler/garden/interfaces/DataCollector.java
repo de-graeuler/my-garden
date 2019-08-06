@@ -3,15 +3,14 @@ package de.graeuler.garden.interfaces;
 import java.io.Serializable;
 import java.util.Collection;
 
-import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.data.DataRecordProcessor;
+import de.graeuler.garden.data.DataProcessor;
 
-public interface DataCollector {
+public interface DataCollector<T extends Serializable> {
 
 	public void collect(String dataKey, Serializable valueOf);
 	
-	long processCollectedRecords(DataRecordProcessor<DataRecord> recordProcessor, long blockSize);
+	long processCollectedRecords(DataProcessor<T> recordProcessor, long blockSize);
 
-	public void removeDataset(Collection<DataRecord> dataset);
+	public void removeDataset(Collection<T> dataset);
 
 }

@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.interfaces.SerializableHashDelegate;
@@ -22,6 +23,7 @@ import de.graeuler.garden.interfaces.SerializableHashDelegate;
  *
  * @author media
  */
+@Singleton
 public class DerbyDataPersister extends AbstractDataPersister {
 	
 	Logger log = LoggerFactory.getLogger(this.getClass());

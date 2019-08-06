@@ -13,6 +13,7 @@ import com.tinkerforge.TimeoutException;
 import com.tinkerforge.TinkerforgeException;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.interfaces.SensorHandler;
 import de.graeuler.garden.monitor.model.TinkerforgeDevice;
@@ -26,10 +27,10 @@ public abstract class AbstractSensorHandler<T extends Device> implements SensorH
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private T brick = null;
-	private DataCollector dataCollector;
+	private DataCollector<DataRecord> dataCollector;
 		
 	@Inject
-	AbstractSensorHandler(AppConfig config, DataCollector dataCollector) {
+	AbstractSensorHandler(AppConfig config, DataCollector<DataRecord> dataCollector) {
 		this.dataCollector = dataCollector;
 	}
 
