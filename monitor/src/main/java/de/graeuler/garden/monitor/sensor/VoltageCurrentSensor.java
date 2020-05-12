@@ -8,8 +8,7 @@ import com.tinkerforge.BrickletVoltageCurrent;
 import com.tinkerforge.BrickletVoltageCurrent.CurrentReachedListener;
 import com.tinkerforge.BrickletVoltageCurrent.VoltageReachedListener;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
@@ -40,7 +39,7 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 	}
 
 	@Override
-	protected void initBrick() throws TimeoutException, NotConnectedException {
+	protected void initBrick() throws TinkerforgeException {
 		BrickletVoltageCurrent b = getBrick();
 		int current = b.getCurrent();
 		int voltage = b.getVoltage();
@@ -86,7 +85,7 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 		log.info("{} mA: Setting current threshold range to {} - {}", current, lwrLimit, uprLimit);
 		try {
 			getBrick().setCurrentCallbackThreshold(BrickletVoltageCurrent.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
-		} catch (TimeoutException | NotConnectedException e) {
+		} catch (TinkerforgeException e) {
 			super.logError(e);
 		}
 	}
@@ -98,7 +97,7 @@ public class VoltageCurrentSensor extends AbstractSensorHandler<BrickletVoltageC
 			int uprLimit = voltage + (voltageThreshold / 2);
 			b.setVoltageCallbackThreshold(BrickletVoltageCurrent.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
 			log.info("{} mV: Setting voltage threshold range to {} - {}", voltage, lwrLimit, uprLimit);
-		} catch (TimeoutException | NotConnectedException e) {
+		} catch (TinkerforgeException e) {
 			logError(e);
 		}
 	}

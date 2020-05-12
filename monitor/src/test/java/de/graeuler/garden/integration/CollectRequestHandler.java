@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -41,8 +45,9 @@ public class CollectRequestHandler implements HttpRequestHandler {
 		return requestCounter.get();
 	}
 	
-	public int getReceivedRecords(String key) {
-		return requestContent.stream().filter(o -> o.containsKey(key)).mapToInt(o -> o.getJsonArray(key).size()).sum();
+	public List<JsonArray> getReceivedRecords(String key) {
+		return requestContent.stream().filter(o -> o.containsKey(key)).map(o -> o.getJsonArray(key)).collect(Collectors.toList());
+//		return requestContent.stream().filter(o -> o.containsKey(key)).mapToInt(o -> o.getJsonArray(key).size()).sum();
 	}
 
 	public void reset() {

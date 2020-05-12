@@ -11,8 +11,7 @@ import org.junit.Test;
 
 import com.tinkerforge.BrickletTemperature;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 public class TemperatureSensorTest extends SensorTest {
 
@@ -30,7 +29,7 @@ public class TemperatureSensorTest extends SensorTest {
 		};
 		try {
 			when(brickletTemperature.getTemperature()).thenReturn((short) 202);
-		}catch (NotConnectedException | TimeoutException e) {
+		} catch (TinkerforgeException e) {
 			fail("Bricklet Temperature not successfully mocked: " + e.getMessage());
 		}
 		device.setDeviceClass(BrickletTemperature.class);

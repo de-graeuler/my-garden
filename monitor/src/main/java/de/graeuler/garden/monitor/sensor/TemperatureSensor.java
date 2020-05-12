@@ -7,8 +7,7 @@ import com.google.inject.Inject;
 import com.tinkerforge.BrickletTemperature;
 import com.tinkerforge.BrickletTemperature.TemperatureReachedListener;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
@@ -34,7 +33,7 @@ public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature
 	}
 	
 	@Override
-	protected void initBrick() throws TimeoutException, NotConnectedException {
+	protected void initBrick() throws TinkerforgeException  {
 		BrickletTemperature b = getBrick();
 		short temperature = b.getTemperature();
 		b.setDebouncePeriod(this.debouncePeriodMs);
@@ -53,7 +52,7 @@ public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature
 		log.info("Setting temperature threshold range to {} - {}", lwrLimit, uprLimit);
 		try {
 			getBrick().setTemperatureCallbackThreshold(BrickletTemperature.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
-		} catch (TimeoutException | NotConnectedException e) {
+		} catch (TinkerforgeException e) {
 			// This very unlikely, because a connectivity issue must have occurred immediately after this 
 			// method was called. For this reason a proper exception handling is quite hard to do. So: 
 			log.error("Unable to set new temperature threshold.", e);

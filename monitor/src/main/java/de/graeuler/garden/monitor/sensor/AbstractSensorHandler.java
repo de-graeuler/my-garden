@@ -50,7 +50,7 @@ public abstract class AbstractSensorHandler<T extends Device> implements SensorH
 	 * @throws TimeoutException
 	 * @throws NotConnectedException
 	 */
-	protected abstract void initBrick() throws TimeoutException, NotConnectedException;
+	protected abstract void initBrick() throws TinkerforgeException ;
 
 	/**
 	 * Returns an instance of the generic type T. 
@@ -77,7 +77,7 @@ public abstract class AbstractSensorHandler<T extends Device> implements SensorH
 			}
 			this.brick = constructBrick(device.getUid(), conn);
 			initBrick();
-		} catch (TimeoutException | NotConnectedException e) {
+		} catch (TinkerforgeException e) {
 			logError(e);
 		}
 		return true;

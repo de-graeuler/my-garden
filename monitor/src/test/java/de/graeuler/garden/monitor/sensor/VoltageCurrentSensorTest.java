@@ -11,8 +11,7 @@ import org.junit.Test;
 
 import com.tinkerforge.BrickletVoltageCurrent;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 import de.graeuler.garden.config.ConfigurationKeys;
 
@@ -35,7 +34,7 @@ public class VoltageCurrentSensorTest extends SensorTest{
 		try {
 			when(brickletVoltageCurrent.getCurrent()).thenReturn(5000);
 			when(brickletVoltageCurrent.getVoltage()).thenReturn(5000);
-		} catch (NotConnectedException | TimeoutException e) {
+		} catch (TinkerforgeException e) {
 			fail("Bricklet VoltageCurrent not successfully mocked: " + e.getMessage());
 		}
 		device.setDeviceClass(BrickletVoltageCurrent.class);

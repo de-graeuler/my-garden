@@ -11,8 +11,7 @@ import org.junit.Test;
 
 import com.tinkerforge.BrickletDistanceUS;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 public class WaterLevelSensorTest extends SensorTest {
 
@@ -36,7 +35,7 @@ public class WaterLevelSensorTest extends SensorTest {
 	public final void testIsAccepted() {
 		try {
 			when(brickletDistanceUS.getDistanceValue()).thenReturn(100);
-		} catch (NotConnectedException | TimeoutException e) {
+		} catch (TinkerforgeException e) {
 			fail("Bricklet VoltageCurrent not successfully mocked: " + e.getMessage());
 		}
 		assertTrue(waterLvlSensor.doesAccept(device, ipCon));

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.IPConnection;
+import com.tinkerforge.NetworkException;
 import com.tinkerforge.NotConnectedException;
 
 import de.graeuler.garden.config.AppConfig;
@@ -136,7 +137,7 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 				break;
 			} catch (AlreadyConnectedException e) {
 				log.warn("Already connected: {}", e.getMessage());
-			} catch (IOException e) {
+			} catch (NetworkException e) {
 				log.warn("Brick daemon not available: {}. Retrying in 10s...", e.getMessage());
 				try {
 					TimeUnit.SECONDS.sleep(CONNECT_RETRY_WAIT_TIME);

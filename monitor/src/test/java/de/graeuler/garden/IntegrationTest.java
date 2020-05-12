@@ -24,6 +24,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 		getSensorHandlers().iterator().next().sendToCollector("simpleKey", new Double(1));
 		waitForAllDataPushed(5000);
 		assertEquals(1, getRequestHandler().getHandledRequests());
+		assertEquals(1d, getRequestHandler().getReceivedRecords("simpleKey").get(0).getJsonObject(0).getJsonNumber("v").doubleValue(), 0);
 		assertEquals(0, dataPersisterInstance().countAll());
 	}
 
@@ -55,7 +56,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 	}
 
 	protected boolean isAllDataProcessed(final int valuesToSentPerSensor, final String datakey) {
-		return valuesToSentPerSensor * getSensorHandlers().size() == getRequestHandler().getReceivedRecords(datakey);
+		return valuesToSentPerSensor * getSensorHandlers().size() == getRequestHandler().getReceivedRecords(datakey).stream().mapToInt(a -> a.size()).sum();
 	}
 
 	private void simulateSensorData(int valuesToSentPerSensor, final String datakey) {

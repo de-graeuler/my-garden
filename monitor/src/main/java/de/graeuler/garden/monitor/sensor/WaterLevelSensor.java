@@ -7,8 +7,7 @@ import com.google.inject.Inject;
 import com.tinkerforge.BrickletDistanceUS;
 import com.tinkerforge.BrickletDistanceUS.DistanceReachedListener;
 import com.tinkerforge.IPConnection;
-import com.tinkerforge.NotConnectedException;
-import com.tinkerforge.TimeoutException;
+import com.tinkerforge.TinkerforgeException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
@@ -37,7 +36,7 @@ public class WaterLevelSensor extends AbstractSensorHandler<BrickletDistanceUS> 
 	}
 
 	@Override
-	protected void initBrick() throws TimeoutException, NotConnectedException {
+	protected void initBrick() throws TinkerforgeException {
 		BrickletDistanceUS b = getBrick();
 		b.setDebouncePeriod(this.debouncePeriodMs);
 		b.setMovingAverage(this.movingAverage);
@@ -54,7 +53,7 @@ public class WaterLevelSensor extends AbstractSensorHandler<BrickletDistanceUS> 
 		log.info("Setting threshold range to {} - {}", lwrLimit, uprLimit);
 		try {
 			getBrick().setDistanceCallbackThreshold(BrickletDistanceUS.THRESHOLD_OPTION_OUTSIDE, lwrLimit, uprLimit);
-		} catch (TimeoutException | NotConnectedException e) {
+		} catch (TinkerforgeException e) {
 			// This is very unlikely, because a connectivity issue must have occurred immediately after this 
 			// method was called. For this reason a proper exception handling is quite hard to do. So: 
 			super.logError(e);
