@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.interfaces.SerializableHashDelegate;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtil;
 
 public abstract class AbstractDataPersister implements DataPersister<DataRecord> {
@@ -92,7 +91,7 @@ public abstract class AbstractDataPersister implements DataPersister<DataRecord>
 			PreparedStatement deleteOnePersistedRecord = preparedStatements.get(Statements.DeleteOnePersistedRecord);
 			StringBuffer hash = new StringBuffer();
 			for(DataRecord r : records) {
-				hashService.hash(r, hash);
+				hashService.serializeAndHash(r, hash);
 
 				deleteOnePersistedRecord.setString(1, r.getClass().getCanonicalName());
 				deleteOnePersistedRecord.setString(2, hash.toString());
@@ -124,7 +123,7 @@ public abstract class AbstractDataPersister implements DataPersister<DataRecord>
 
 	protected void setInsertRecordValues(DataRecord r, PreparedStatement insertPersistedRecords) throws SQLException {
 		StringBuffer hash = new StringBuffer();
-		byte[] serializedObject = hashService.hash(r, hash);
+		byte[] serializedObject = hashService.serializeAndHash(r, hash);
 		
 		insertPersistedRecords.setString(1, r.getClass().getCanonicalName());
 		insertPersistedRecords.setString(2, hash.toString());

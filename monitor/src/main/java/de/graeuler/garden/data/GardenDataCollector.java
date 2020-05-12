@@ -7,8 +7,6 @@ import java.util.Collection;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import de.graeuler.garden.interfaces.DataCollector;
-
 @Singleton
 public class GardenDataCollector implements DataCollector<DataRecord>{
 	

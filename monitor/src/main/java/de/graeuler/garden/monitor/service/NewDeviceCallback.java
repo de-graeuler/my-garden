@@ -2,7 +2,7 @@ package de.graeuler.garden.monitor.service;
 
 import com.tinkerforge.IPConnection;
 
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public interface NewDeviceCallback {
 

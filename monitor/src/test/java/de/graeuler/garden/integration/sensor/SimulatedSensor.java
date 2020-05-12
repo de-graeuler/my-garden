@@ -6,10 +6,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.google.inject.Inject;
 import com.tinkerforge.IPConnection;
 
+import de.graeuler.garden.data.DataCollector;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.DataCollector;
-import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.service.SensorHandler;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public class SimulatedSensor implements SensorHandler {
 

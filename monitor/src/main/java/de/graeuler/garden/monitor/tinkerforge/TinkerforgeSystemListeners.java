@@ -1,4 +1,4 @@
-package de.graeuler.garden.monitor.service;
+package de.graeuler.garden.monitor.tinkerforge;
 
 import com.tinkerforge.IPConnection.ConnectedListener;
 import com.tinkerforge.IPConnection.DisconnectedListener;

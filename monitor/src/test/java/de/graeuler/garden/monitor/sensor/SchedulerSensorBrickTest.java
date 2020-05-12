@@ -18,9 +18,9 @@ import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
+import de.graeuler.garden.data.DataCollector;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.DataCollector;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
 import de.graeuler.garden.testhelpers.TestConfig;
 

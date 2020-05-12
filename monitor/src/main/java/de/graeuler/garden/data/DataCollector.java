@@ -1,9 +1,7 @@
-package de.graeuler.garden.interfaces;
+package de.graeuler.garden.data;
 
 import java.io.Serializable;
 import java.util.Collection;
-
-import de.graeuler.garden.data.DataProcessor;
 
 public interface DataCollector<T extends Serializable> {
 

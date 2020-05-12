@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public class DeviceListPrinter implements Runnable {
 

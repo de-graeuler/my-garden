@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.mockito.Mockito;
 
 import de.graeuler.garden.data.GardenDataCollector;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.MockIPConnection;
 import de.graeuler.garden.testhelpers.TestConfig;
 

@@ -1,4 +1,4 @@
-package de.graeuler.garden.monitor.service;
+package de.graeuler.garden.monitor.tinkerforge;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,42 +15,38 @@ import com.tinkerforge.NotConnectedException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.monitor.model.ConnectReason;
-import de.graeuler.garden.monitor.model.ConnectionState;
-import de.graeuler.garden.monitor.model.DisconnectReason;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.service.NewDeviceCallback;
+import de.graeuler.garden.monitor.service.SensorSystemAccess;
 
-public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemListeners
-{
+public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemListeners {
 
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
-    
-    private final long CONNECT_RETRY_WAIT_TIME = 5;
-    
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+	private final long CONNECT_RETRY_WAIT_TIME = 5;
+
 	private String brickdaemonHost;
-    private int brickdaemonPort;
+	private int brickdaemonPort;
 
 	private NewDeviceCallback newDeviceCallback = null;
 
-    private IPConnection connection;
+	private IPConnection connection;
 	private ScheduledExecutorService scheduler;
 	private ScheduledFuture<?> connStatePrinterHandle;
 	private ScheduledFuture<?> brickDaemonConnectionManagerHandle;
 
-
 	@Inject
 	BrickDaemonFacade(AppConfig config, ScheduledExecutorService scheduler, IPConnection connection) {
 		this.connection = connection;
-    	this.scheduler = scheduler;
-    	this.brickdaemonHost = (String) ConfigurationKeys.TF_DAEMON_HOST.from(config);
-    	this.brickdaemonPort = (Integer) ConfigurationKeys.TF_DAEMON_PORT.from(config);
+		this.scheduler = scheduler;
+		this.brickdaemonHost = (String) ConfigurationKeys.TF_DAEMON_HOST.from(config);
+		this.brickdaemonPort = (Integer) ConfigurationKeys.TF_DAEMON_PORT.from(config);
 	}
-	
+
 	@Override
 	public void setNewDeviceCallback(NewDeviceCallback callback) {
 		this.newDeviceCallback = callback;
 	}
-	
+
 	@Override
 	public void connect() {
 		connection.addConnectedListener(this);
@@ -58,7 +54,7 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 		connection.addDisconnectedListener(this);
 		scheduleConnectionStatePrinter();
 		runBrickDaemonConnectionHandler();
-    }
+	}
 
 	@Override
 	public void disconnect() {
@@ -66,10 +62,9 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 		cancelBrickDaemonConnectionManager();
 		try {
 			connection.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			log.error(e.getMessage());
-		} 
+		}
 		connection.removeDisconnectedListener(this);
 		connection.removeEnumerateListener(this);
 		connection.removeConnectedListener(this);
@@ -92,37 +87,42 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 	}
 
 	/**
-	 * This is triggered by the connection.enumerate() call. The method is called for each device responding to the enumerate trigger.
+	 * This is triggered by the connection.enumerate() call. The method is called
+	 * for each device responding to the enumerate trigger.
 	 * 
-	 * @see com.tinkerforge.IPConnection.EnumerateListener#enumerate(java.lang.String, java.lang.String, char, short[], short[], int, short)
+	 * @see com.tinkerforge.IPConnection.EnumerateListener#enumerate(java.lang.String,
+	 *      java.lang.String, char, short[], short[], int, short)
 	 */
 	@Override
-	public void enumerate(String uid, String connectedUid, char position, short[] hwv,
-			short[] fwv, int deviceIdentifier, short enumerationType) {
+	public void enumerate(String uid, String connectedUid, char position, short[] hwv, short[] fwv,
+			int deviceIdentifier, short enumerationType) {
 		if (enumerationType == IPConnection.ENUMERATION_TYPE_DISCONNECTED) {
 			log.error("Device with uid {} was disconnected.", uid);
 			return;
 		}
-		TinkerforgeDevice device = TinkerforgeDevice.create(uid, connectedUid, position, hwv, fwv, deviceIdentifier, enumerationType);
+		TinkerforgeDevice device = TinkerforgeDevice.create(uid, connectedUid, position, hwv, fwv, deviceIdentifier,
+				enumerationType);
 		callNewDeviceCallback(device);
 	}
 
 	private void callNewDeviceCallback(TinkerforgeDevice device) {
-		if ( null != newDeviceCallback) {
+		if (null != newDeviceCallback) {
 			newDeviceCallback.onDeviceFound(device, connection);
 		}
 	}
 
 	private void scheduleConnectionStatePrinter() {
-		this.connStatePrinterHandle = this.scheduler.scheduleWithFixedDelay(connStatePrinter, 1, 500, TimeUnit.MILLISECONDS);
+		this.connStatePrinterHandle = this.scheduler.scheduleWithFixedDelay(connStatePrinter, 1, 500,
+				TimeUnit.MILLISECONDS);
 	}
 
 	private void cancelConnStatePrinter() {
 		this.connStatePrinterHandle.cancel(false);
 	}
-	
+
 	private void runBrickDaemonConnectionHandler() {
-		this.brickDaemonConnectionManagerHandle = this.scheduler.schedule(brickDaemonConnectionManager, 0, TimeUnit.SECONDS);
+		this.brickDaemonConnectionManagerHandle = this.scheduler.schedule(brickDaemonConnectionManager, 0,
+				TimeUnit.SECONDS);
 	}
 
 	private void cancelBrickDaemonConnectionManager() {
@@ -130,7 +130,7 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 	}
 
 	private Runnable brickDaemonConnectionManager = () -> {
-		while(true) {
+		while (true) {
 			try {
 				connection.connect(brickdaemonHost, brickdaemonPort);
 				break;
@@ -146,18 +146,18 @@ public class BrickDaemonFacade implements SensorSystemAccess, TinkerforgeSystemL
 			}
 		}
 	};
-	
+
 	private Runnable connStatePrinter = new Runnable() {
 		ConnectionState lastState = null;
+
 		@Override
 		public void run() {
 			short currentState = connection.getConnectionState();
-			if ( ! ConnectionState.by(currentState).equals(this.lastState)) {
+			if (!ConnectionState.by(currentState).equals(this.lastState)) {
 				this.lastState = ConnectionState.by(currentState);
 				log.debug("Connection state: {}", lastState.getOutput());
 			}
 		}
 	};
-
 
 }

@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.interfaces.SerializableHashDelegate;
 import de.graeuler.garden.monitor.util.Bytes;
 import de.graeuler.garden.testhelpers.TestConfig;
 

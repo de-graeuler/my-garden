@@ -1,4 +1,4 @@
-package de.graeuler.garden.monitor.model;
+package de.graeuler.garden.monitor.tinkerforge;
 
 import java.util.EnumMap;
 

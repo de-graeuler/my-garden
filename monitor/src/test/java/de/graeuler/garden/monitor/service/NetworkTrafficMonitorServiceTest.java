@@ -14,8 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataCollector;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.DataCollector;
 import de.graeuler.garden.monitor.util.Bytes;
 import de.graeuler.garden.monitor.util.CommandLineReader;
 import de.graeuler.garden.testhelpers.TestConfig;

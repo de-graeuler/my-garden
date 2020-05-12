@@ -28,11 +28,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataCollector;
 import de.graeuler.garden.data.DataProcessor;
 import de.graeuler.garden.data.DataRecord;
 import de.graeuler.garden.data.JsonDataConverter;
-import de.graeuler.garden.interfaces.DataCollector;
-import de.graeuler.garden.interfaces.MonitorService;
+import de.graeuler.garden.monitor.service.MonitorService;
 import de.graeuler.garden.testhelpers.TestConfig;
 
 public class DataCollectionMonitorTest {

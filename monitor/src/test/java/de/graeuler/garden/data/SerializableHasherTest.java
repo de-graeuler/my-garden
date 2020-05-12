@@ -29,7 +29,7 @@ public class SerializableHasherTest {
 		String referenceValue = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String referenceHash = "d6ec6898de87ddac6e5b3611708a7aa1c2d298293349cc1a6c299a1db7149d38";
 		StringBuffer hash = new StringBuffer();
-		testee.hash(referenceValue.getBytes(), hash);
+		testee.serializeAndHash(referenceValue.getBytes(), hash);
 		assertEquals(referenceHash, hash.toString());
 	}
 
@@ -60,7 +60,7 @@ public class SerializableHasherTest {
 	private Function<? super DataRecord, ? extends String> calculateHash() {
 		return record -> {
 			StringBuffer hash = new StringBuffer();
-			testee.hash(record, hash);
+			testee.serializeAndHash(record, hash);
 			return hash.toString();
 		};
 	}

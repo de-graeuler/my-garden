@@ -1,4 +1,4 @@
-package de.graeuler.garden.interfaces;
+package de.graeuler.garden.monitor.service;
 
 public interface MonitorService {
 

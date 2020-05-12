@@ -17,7 +17,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import de.graeuler.garden.config.AppConfig;
-import de.graeuler.garden.interfaces.SerializableHashDelegate;
 
 /**
  *

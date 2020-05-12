@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.Inject;
 import com.tinkerforge.IPConnection;
 
-import de.graeuler.garden.interfaces.MonitorService;
-import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 /**
  * @author bernhard.graeuler

@@ -28,7 +28,7 @@ import com.google.inject.TypeLiteral;
 import de.graeuler.garden.GardenMonitor;
 import de.graeuler.garden.data.DataPersister;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.SensorHandler;
+import de.graeuler.garden.monitor.service.SensorHandler;
 
 public abstract class AbstractIntegrationTest {
 
@@ -89,7 +89,7 @@ public abstract class AbstractIntegrationTest {
 		return injector.getInstance(Key.get(new TypeLiteral<DataPersister<DataRecord>>(){}));
 	}
 
-	protected <T> void waitForCondition(long millis, Supplier<T> supplier, Predicate<T> condition) throws InterruptedException {
+	protected <T> void waitForCondition(long maxWaitMilliseconds, Supplier<T> supplier, Predicate<T> condition) throws InterruptedException {
 		final long startTimeMillis = System.currentTimeMillis();
 		Thread conditionTester = new Thread(() -> {
 			try {
@@ -101,9 +101,9 @@ public abstract class AbstractIntegrationTest {
 			}
 		});
 		conditionTester.start();
-		conditionTester.join(millis+100);
+		conditionTester.join(maxWaitMilliseconds+100);
 		long currentTimeMillis = System.currentTimeMillis();
-		assertThat("Wait time exceeded.", currentTimeMillis - startTimeMillis, lessThan(millis));
+		assertThat("Wait time exceeded.", currentTimeMillis - startTimeMillis, lessThan(maxWaitMilliseconds));
 	}
 
 	public static Set<SensorHandler> getSensorHandlers() {

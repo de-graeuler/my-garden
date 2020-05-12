@@ -5,7 +5,7 @@ import com.google.inject.multibindings.Multibinder;
 import de.graeuler.garden.ApplicationModule;
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.integration.sensor.SimulatedSensor;
-import de.graeuler.garden.interfaces.SensorHandler;
+import de.graeuler.garden.monitor.service.SensorHandler;
 import de.graeuler.garden.monitor.util.CommandLineReader;
 
 public class IntegrationModule extends ApplicationModule {

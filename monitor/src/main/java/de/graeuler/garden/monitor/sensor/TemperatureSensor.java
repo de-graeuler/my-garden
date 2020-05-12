@@ -12,8 +12,8 @@ import com.tinkerforge.TimeoutException;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataCollector;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.DataCollector;
 
 public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature> implements TemperatureReachedListener {
 
@@ -56,7 +56,7 @@ public class TemperatureSensor extends AbstractSensorHandler<BrickletTemperature
 		} catch (TimeoutException | NotConnectedException e) {
 			// This very unlikely, because a connectivity issue must have occurred immediately after this 
 			// method was called. For this reason a proper exception handling is quite hard to do. So: 
-			super.logError(e);
+			log.error("Unable to set new temperature threshold.", e);
 		}
 	}
 

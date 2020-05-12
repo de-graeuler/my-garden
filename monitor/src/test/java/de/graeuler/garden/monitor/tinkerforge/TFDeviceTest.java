@@ -1,4 +1,4 @@
-package de.graeuler.garden.monitor.model;
+package de.graeuler.garden.monitor.tinkerforge;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import com.tinkerforge.BrickMaster;
 import com.tinkerforge.BrickRED;
+
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public class TFDeviceTest {
 	

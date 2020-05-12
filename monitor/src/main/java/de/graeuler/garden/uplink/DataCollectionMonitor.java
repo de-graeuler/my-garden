@@ -14,10 +14,10 @@ import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
+import de.graeuler.garden.data.DataCollector;
+import de.graeuler.garden.data.DataConverter;
 import de.graeuler.garden.data.DataRecord;
-import de.graeuler.garden.interfaces.DataCollector;
-import de.graeuler.garden.interfaces.DataConverter;
-import de.graeuler.garden.interfaces.MonitorService;
+import de.graeuler.garden.monitor.service.MonitorService;
 
 public class DataCollectionMonitor implements Runnable, MonitorService {
 

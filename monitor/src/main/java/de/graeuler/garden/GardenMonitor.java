@@ -11,7 +11,7 @@ import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.interfaces.MonitorService;
+import de.graeuler.garden.monitor.service.MonitorService;
 
 public class GardenMonitor {
 

@@ -1,4 +1,4 @@
-package de.graeuler.garden.monitor.service;
+package de.graeuler.garden.monitor.tinkerforge;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -20,7 +20,9 @@ import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.service.NewDeviceCallback;
+import de.graeuler.garden.monitor.tinkerforge.BrickDaemonFacade;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.TestConfig;
 
 public class BrickDaemonFacadeTest {

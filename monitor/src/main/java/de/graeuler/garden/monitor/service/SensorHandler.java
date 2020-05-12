@@ -1,10 +1,10 @@
-package de.graeuler.garden.interfaces;
+package de.graeuler.garden.monitor.service;
 
 import java.io.Serializable;
 
 import com.tinkerforge.IPConnection;
 
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public interface SensorHandler {
 

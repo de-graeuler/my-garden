@@ -15,9 +15,9 @@ import org.junit.Test;
 import com.tinkerforge.BrickletTemperature;
 import com.tinkerforge.IPConnection;
 
-import de.graeuler.garden.interfaces.SensorHandler;
-import de.graeuler.garden.monitor.model.TinkerforgeDevice;
 import de.graeuler.garden.monitor.sensor.TemperatureSensor;
+import de.graeuler.garden.monitor.tinkerforge.BrickDaemonFacade;
+import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 
 public class SensorMonitorServiceTest {
 

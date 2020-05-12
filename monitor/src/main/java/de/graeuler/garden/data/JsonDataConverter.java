@@ -15,7 +15,6 @@ import com.google.inject.Inject;
 
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
-import de.graeuler.garden.interfaces.DataConverter;
 import de.graeuler.garden.monitor.util.ApiToken;
 
 public class JsonDataConverter implements DataConverter<Collection<DataRecord>, JsonValue> {

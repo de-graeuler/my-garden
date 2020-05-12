@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import de.graeuler.garden.config.AppConfig;
-import de.graeuler.garden.interfaces.SerializableHashDelegate;
 
 public class SqliteDataPersister extends AbstractDataPersister {
 

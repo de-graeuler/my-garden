@@ -6,10 +6,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.graeuler.garden.interfaces.SerializableHashDelegate;
 import de.graeuler.garden.monitor.util.ObjectSerializationUtil;
 
 public class SerializableToSha256 implements SerializableHashDelegate {
@@ -17,7 +18,7 @@ public class SerializableToSha256 implements SerializableHashDelegate {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Override
-	public byte[] hash(Serializable serializableObject, StringBuffer hash) {
+	public byte[] serializeAndHash(Serializable serializableObject, StringBuffer hash) {
 		if(null == serializableObject || null == hash) {
 			return null;
 		}

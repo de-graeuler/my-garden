@@ -69,8 +69,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
 		log.info("All sensor values generated in {}ms", System.currentTimeMillis() - starttime);
 	}
 	
-	protected void waitForAllDataPushed(long millis) throws InterruptedException {
-		waitForCondition(millis, this::dataPersisterInstance, persister -> persister.countAll() == 0);
+	protected void waitForAllDataPushed(long maxWaitMilliseconds) throws InterruptedException {
+		waitForCondition(maxWaitMilliseconds, this::dataPersisterInstance, persister -> persister.countAll() == 0);
 	}
 
 }
