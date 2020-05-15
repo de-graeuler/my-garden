@@ -54,7 +54,7 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 			uploadData();
 			break;
 		case UNAVAILABLE:
-			log.warn("Backend service does not respond correctly on status request.");
+			log.warn("Backend service did not respond correctly on status request.");
 			break;
 		case UNREACHABLE:
 			return;
