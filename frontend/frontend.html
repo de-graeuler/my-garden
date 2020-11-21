@@ -1,149 +1,96 @@
-<!DOCTYPE html>
-<html lang="de">
+<!doctype html>
+
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
 
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+  <title>Sonnenwinkel Wetterinfo</title>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-    <script type="text/javascript">
-        
-        var backendUrl = "./fetch.garden/";
-        var dataKeys   = [ { 'key': 'outside-temperature', 'name': 'Temperature' },
-                           { 'key': 'water-lvl-distance' , 'name': 'Water Level' },
-                           { 'key': 'month-total-traffic', 'name': 'Network Traffic' } ];
-                           
-        var MAX_WATER_VOLUME  = 600;  // liters 
-        var WATER_LEVEL_WHEN_FULL = 21.0; // water level distance
-        var WATER_VOLUME_FACTOR = 8.7; 
-        // 20 liters = 24.4 - 22.1  <= measured values
-        //           = 20/2.3 = 8.7 liters / measured distance unit
-
-        google.charts.load('current', {'packages': ['corechart', 'controls'], 'language': 'de'});
-        
-        google.charts.setOnLoadCallback(drawDashboard);
-
-        var dataTable;
-        var dateRangeSlider;
-        
-        function calcWaterVolume ( waterLevel ) {
-            return MAX_WATER_VOLUME - (waterLevel - WATER_LEVEL_WHEN_FULL) * WATER_VOLUME_FACTOR;
-        }
-        
-        function drawDashboard() {
-            dashboard = new google.visualization.Dashboard($("#garden-dashboard").get(0));
-            dataTable = new google.visualization.DataTable();
-
-            dateRangeSlider = new google.visualization.ControlWrapper({
-                'controlType': 'DateRangeFilter',
-                'containerId': 'date-range-filter',
-                'options': {
-                    'filterColumnLabel': 'Date',
-                    'ui': {
-                        'format': { 'pattern': 'dd.MM.yyyy' },
-                        'label': 'Datum'
-                    } 
-                }
-            });
-			
-            var startDate = new Date();
-            startDate.setDate(startDate.getDate() - 1);
-            var chartRangeFilter = new google.visualization.ControlWrapper({
-                'controlType': 'ChartRangeFilter',
-                'containerId': 'chart-range-filter',
-                'state': {
-                    'range': {
-                        'start': startDate
-                    }
-                },
-                'options': {
-                    'filterColumnLabel': 'Date'
-                }
-            });
-
-            var temperatureChart = new google.visualization.ChartWrapper({
-                'chartType':'LineChart',
-                'containerId': "linechart-outside-temperature",
-                'options': {
-                    'title': 'Sonnenwinkel',
-                    'curveType': 'function',
-                    'animation': {'startup': true,'duration': 1000, 'easing': 'out'},
-                    'chartArea': {'width': '80%', 'height': '80%'},
-                    'legend': { 'position': 'bottom' },
-                    'series': {
-                        0: {targetAxisIndex: 0},
-                        1: {targetAxisIndex: 1}
-                    }
-                }
-            });
-            
-            dataTable.addColumn('datetime', 'Date');
-            dataTable.addColumn('number',   'Temperature');
-            dataTable.addColumn('number',   'Water Level');
-
-//            dashboard.bind(dateRangeSlider,chartRangeFilter);
-//            dashboard.bind([dateRangeSlider,chartRangeFilter], temperatureChart);
-            dashboard.bind(dateRangeSlider, temperatureChart);
-
-//            dashboard.draw(dataTable);
-                        
-            $.getJSON(backendUrl + "outside-temperature", 
-            function addTemperaturesToDataTable( data ) {
-                $.each(
-                    data, 
-                    function newTRow( key, value ) {
-                        dataTable.addRow([
-                            new Date(value.isodatetime),
-                            value.value,
-                            null
-                        ]);
-                    }
-                );
-                dashboard.draw(dataTable);
-            }).fail(function() {alert('no-data');});
-
-            $.getJSON(backendUrl + "water-lvl-distance", 
-            function addWaterLevelsToDataTable( data ) {
-                $.each(
-                    data, 
-                    function newWLRows ( key, value ) {
-                        dataTable.addRow([
-                            new Date(value.isodatetime),
-                            null, 
-                            calcWaterVolume(value.value)
-                            ]);
-                    }
-                );
-                dashboard.draw(dataTable);
-            }).fail(function() {alert('no-data');});
-        }
-
-        function setRange(startDiffFromToday, endDiffFromToday) {
-            var lowDate = new Date();
-            lowDate.setDate(lowDate.getDate() - startDiffFromToday);
-            var highDate = new Date();
-            highDate.setDate(highDate.getDate() - endDiffFromToday);
-            dateRangeSlider.setState({'lowValue': lowDate, 'highValue': highDate});
-            dateRangeSlider.draw();
-        }
-    </script>
+  <link rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
-<body>
-    <div data-role="page">
-    <div role="main" class="ui-content">
-        <button data-mini="true" class="ui-btn ui-btn-inline ui-corner-all" onClick="setRange(0,0)">heute</button>
-        <button data-mini="true" class="ui-btn ui-btn-inline ui-corner-all" onClick="setRange(7,0)">letzte 7 Tage</button>
 
-        <div id="garden-dashboard">
-            <div id="date-range-filter"></div>
-            <div id="linechart-outside-temperature" style="width:800px;height:420px;"></div>
-            <div id="chart-range-filter" style="width:800px;height:60px;"></div>
-        </div>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <h4 id="rangeText"></h4>
+        <p><canvas id="gardenChart"></canvas></p>
+      </div>
     </div>
+    <div class="row">
+      <div class="col s12">
+        <a class="btn-small" onClick="viewRange.extend(-1)">< + 1 Tag</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(1, 'days'), moment())">heute</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(7, 'days'), moment())">letzte 7 Tage</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(14, 'days'), moment())">letzte 14 Tage</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(31, 'days'), moment())">letzte 31 Tage</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(1, 'weeks').startOf('week').add(1, 'day'), moment().subtract(1, 'weeks').endOf('week').add(1, 'day'))">letzte Woche</a>
+        <a class="btn-small" onClick="viewRange.update(moment().subtract(1, 'months').startOf('month'), moment().subtract(1, 'months').endOf('month'))">letzter Monat</a>
+      </div>
     </div>
+  </div>
+  
+  <script src="js/jquery-3.5.1.min.js"></script>
+  <script src="js/events.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/materialize.min.js"></script>
+  <script src="js/Chart.min.js"></script>
+
+  <script src="app/data-loader.js"></script>
+  <script src="app/data-cache.js"></script>
+  <script src="app/date-range.js"></script>
+  <script src="app/diagram-controller.js"></script>
+
+  <script>
+    var backendUrl = "https://cloud.fernhost.de/report/v01/fetch/garden/";
+    var dataKeys   = new Map([
+                       ['outside-temperature', 'Temperature'],
+                       ['water-lvl-distance' , 'Water Level'],
+                       ['month-total-traffic', 'Network Traffic']
+                      ]);
+    
+    var dataLoader = new DataLoader(backendUrl, Array.from(dataKeys.keys()))
+    var dataCache = new DataCache();
+    var diagramController = new DiagramController('gardenChart', dataCache);
+    var viewRange = new DateRange();
+
+    function updateRangeText(range) {
+      $('#rangeText').text(range.start.format('DD. MMM YYYY') + " - " + range.end.format('DD. MMM YYYY'));
+    }
+
+    // logging
+    // events.subscribe('date-range/changed', (data) => console.log("date-range/changed", moment(data.start).format(), moment(data.end).format()));
+    // events.subscribe('data-cache/request', (data) => console.log("data-cache/request: ", data));
+    // events.subscribe('data-loader/before', (data) => console.log("data-loader/before: ", data));
+    // events.subscribe('data-loader/complete', (data) => console.log("data-loader/complete: ", data));
+    // events.subscribe('data-cache/stale', (data) => console.log("date-cache/stale"));
+    // events.subscribe('data-cache/uptodate', (data) => console.log("data-cache/uptodate"));
+
+    // event wiring
+    viewRange.onDateRangeChanged = (start, end) => events.publish("date-range/changed", {start, end});
+    events.subscribe('date-range/changed', (newRange) => diagramController.onRangeChanged(newRange));
+    events.subscribe('date-range/changed', (newRange) => dataCache.updateDateRange(newRange));
+    events.subscribe('date-range/changed', (newRange) => updateRangeText(newRange));
+    dataCache.onDataRequest = (channel, rangeStart, rangeEnd) => 
+      events.publish('data-cache/request', {
+        responseChannel: channel,
+        start: rangeStart, 
+        end: rangeEnd
+      });
+    dataCache.onCacheStale = () => events.publish('data-cache/stale');
+    events.subscribe('data-cache/request', (payload) => dataLoader.load(payload));
+    dataLoader.onLoadComplete = (payload, key) => events.publish('data-loader/complete', {request: payload, key: key});
+    dataCache.onCacheUpToDate = () => events.publish('data-cache/uptodate');
+    events.subscribe('data-cache/uptodate', () => diagramController.updateChart()); 
+    events.subscribe('data-cache/stale', () => $(".btn-small").toggleClass("disabled"));
+    events.subscribe('data-cache/uptodate', () => $(".btn-small").toggleClass("disabled"));
+
+    viewRange.publish()
+
+  </script>
 </body>
+
 </html>
