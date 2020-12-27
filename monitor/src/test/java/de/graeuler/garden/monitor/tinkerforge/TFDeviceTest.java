@@ -12,8 +12,6 @@ import org.junit.Test;
 import com.tinkerforge.BrickMaster;
 import com.tinkerforge.BrickRED;
 
-import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
-
 public class TFDeviceTest {
 	
 	private EnumMap<TinkerforgeDevice.Version, Short> buildVersionMap(int major, int minor, int release) {

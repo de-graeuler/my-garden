@@ -21,7 +21,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 	
 	@Test
 	public void testSimpleValue() throws InterruptedException {
-		getSensorHandlers().iterator().next().sendToCollector("simpleKey", new Double(1));
+		getSensorHandlers().iterator().next().sendToCollector("simpleKey", Double.valueOf(1d));
 		waitForAllDataPushed(5000);
 		assertEquals(1, getRequestHandler().getHandledRequests());
 		assertEquals(1d, getRequestHandler().getReceivedRecords("simpleKey").get(0).getJsonObject(0).getJsonNumber("v").doubleValue(), 0);
@@ -63,7 +63,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 		long starttime = System.currentTimeMillis();
 		log.info("Sensor value generation started.");
 		getSensorHandlers().parallelStream().forEach(handler -> 
-			Stream.generate(() -> new Double(Math.random()))
+			Stream.generate(() -> Double.valueOf(Math.random()))
 				.limit(valuesToSentPerSensor)
 				.forEach(d -> handler.sendToCollector(datakey,  d))
 		);

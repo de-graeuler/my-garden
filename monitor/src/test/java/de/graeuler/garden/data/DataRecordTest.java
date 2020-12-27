@@ -1,12 +1,10 @@
 package de.graeuler.garden.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
 import org.junit.Test;
-
-import de.graeuler.garden.data.DataRecord;
 
 public class DataRecordTest {
 	

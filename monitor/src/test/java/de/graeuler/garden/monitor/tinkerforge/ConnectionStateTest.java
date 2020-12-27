@@ -1,12 +1,11 @@
 package de.graeuler.garden.monitor.tinkerforge;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import com.tinkerforge.IPConnection;
-
-import de.graeuler.garden.monitor.tinkerforge.ConnectionState;
 
 public class ConnectionStateTest {
 

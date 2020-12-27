@@ -1,13 +1,10 @@
 package de.graeuler.garden.monitor.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
 
 import org.junit.Test;
-
-import de.graeuler.garden.monitor.util.Bytes;
-import de.graeuler.garden.monitor.util.VnStatPos;
 
 public class VnStatPosTest {
 

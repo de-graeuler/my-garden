@@ -16,10 +16,10 @@ public class SimulatedSensor implements SensorHandler {
 	@Inject DataCollector<DataRecord> dataCollector;
 	@Inject ScheduledExecutorService executorService;
 
-	private String dataIdentifier;
-	private int minValue;
-	private int maxValue;
-	private String unit;
+	public String dataIdentifier;
+	public int minValue;
+	public int maxValue;
+	public String unit;
 
 	public SimulatedSensor(String dataIdentifier, int min, int max, String unit) {
 		this.dataIdentifier = dataIdentifier;

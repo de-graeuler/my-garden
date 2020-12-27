@@ -17,7 +17,7 @@ public class ObjectSerializationUtilTest {
 
 	@Test
 	public final void testDeSerialize() {
-		DataRecord drd = new DataRecord("double", new Double(1.452));
+		DataRecord drd = new DataRecord("double", Double.valueOf(1.452d));
 		byte [] stream = ObjectSerializationUtil.serializeToByteArray(drd);
 		assertTrue(stream.length > 0);
 		Long fail = ObjectSerializationUtil.deserializeFromByteStream(new ByteArrayInputStream(stream), Long.class);
@@ -39,7 +39,7 @@ public class ObjectSerializationUtilTest {
 		for(int i = 0; i < listSize; i++) {
 			Byte[] bytes = new Byte[byteArraySize];
 			for( int j = 0; j < byteArraySize; j++) {
-				bytes[j] = new Byte((byte)(Math.random()*255));
+				bytes[j] = Byte.valueOf((byte)(Math.random()*255));
 			}
 			listOfByte.add(bytes);
 		}

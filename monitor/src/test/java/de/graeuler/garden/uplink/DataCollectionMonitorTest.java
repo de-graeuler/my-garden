@@ -7,7 +7,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class DataCollectionMonitorTest {
 	public final void testEmptyDataCollector() {
 		dataCollectionMonitor.monitor();
 		wait(2, TimeUnit.SECONDS); // should not interact with converter or when no data was collected.
-		verifyZeroInteractions(dataConverter);
+		verifyNoInteractions(dataConverter);
 		verify(uplink).getConnectionState();
 	}
 	

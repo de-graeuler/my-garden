@@ -5,6 +5,7 @@
  */
 package de.graeuler.garden.data;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,8 +36,8 @@ public class DerbyDataPersister extends AbstractDataPersister {
 	@Override
 	protected void startUpEmbeddedDatabase(AppConfig config) throws WrappedDatabaseException {
 		try {
-			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
-		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").getConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new WrappedDatabaseException(e);
 		}
 	}

@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,8 +21,6 @@ import com.tinkerforge.NotConnectedException;
 
 import de.graeuler.garden.config.ConfigurationKeys;
 import de.graeuler.garden.monitor.service.NewDeviceCallback;
-import de.graeuler.garden.monitor.tinkerforge.BrickDaemonFacade;
-import de.graeuler.garden.monitor.tinkerforge.TinkerforgeDevice;
 import de.graeuler.garden.testhelpers.TestConfig;
 
 public class BrickDaemonFacadeTest {
@@ -71,7 +69,7 @@ public class BrickDaemonFacadeTest {
 		short[] hwv = {1, 2, 3};
 		short[] fwv = hwv;
 		daemonManager.enumerate("123", "234", '2', hwv, fwv, 15, IPConnection.ENUMERATION_TYPE_DISCONNECTED);
-		verifyZeroInteractions(deviceListCallback);
+		verifyNoInteractions(deviceListCallback);
 	}
 
 	@Test

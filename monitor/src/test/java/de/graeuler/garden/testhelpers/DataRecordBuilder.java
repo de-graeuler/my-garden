@@ -32,7 +32,7 @@ public class DataRecordBuilder {
 			differentKeys = 100;
 		}
 		ThreadLocalRandom random = ThreadLocalRandom.current();
-		return new DataRecord(keyset100[random.nextInt(differentKeys)], new Double(random.nextDouble()));
+		return new DataRecord(keyset100[random.nextInt(differentKeys)], Double.valueOf(random.nextDouble()));
 	}
 
 	public static Stream<DataRecord> stream(int loadSize) {
