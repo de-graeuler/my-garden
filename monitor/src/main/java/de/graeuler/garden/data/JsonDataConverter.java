@@ -32,21 +32,15 @@ public class JsonDataConverter implements DataConverter<Collection<DataRecord>, 
 	 *  
 	 *  example for combined result: 
 	 *  { 
-	 *  	"api-token": "0b0c023edeef60cb4b3197934d79755e20001136:feWeF"
-	 *  	"key1" : 
-	 *  	[ 
-	 *  		{
+	 *  	"api-token": "0b0c023edeef60cb4b3197934d79755e20001136:feWeF",
+	 *  	"key1" : [ {
 	 *  			"t": "isodatetime",
 	 *      		"v": "value" // or number
-	 *      	}, 
-	 *      	{
+	 *      	}, {
 	 *      		"t": "isodatetime",
 	 *      		"v": "value" // or number
-	 *      	} 
-	 *      ],
-	 *     	"key2": 
-	 *     	[ 
-	 *     		{
+	 *      	} ],
+	 *  "key2": [ {
 	 *  			"t": "isodatetime",
 	 *      		"v": "value" // or number
 	 *      	}, {
@@ -58,41 +52,32 @@ public class JsonDataConverter implements DataConverter<Collection<DataRecord>, 
 	 */
 	@Override
 	public JsonValue convert(Collection<DataRecord> input) {
-		JsonObjectBuilder jsonObjectBuilder;
-		Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap = new HashMap<>();
-		input.stream()
-				.map(k -> k.getKey())
-				.distinct()
-				.forEach(k -> jsonKeyGroupArrayBuilderMap.put(k, Json.createArrayBuilder()));
-
+		Map<String, JsonArrayBuilder> timeValueArrayBuilders = new HashMap<>();
 		for(DataRecord record : input) {
-			addJsonObjectToMap(jsonKeyGroupArrayBuilderMap, record);
-		
+			addJsonObjectToMap(timeValueArrayBuilders, record);
 		}
 		
-		jsonObjectBuilder = Json.createObjectBuilder();
+		JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
 		jsonObjectBuilder.add("api-token", ApiToken.buildApiToken(this.apiToken));
-		for(String jsonGroupKey : jsonKeyGroupArrayBuilderMap.keySet()) {
-			jsonObjectBuilder.add(jsonGroupKey, jsonKeyGroupArrayBuilderMap.get(jsonGroupKey));
+		for(String jsonGroupKey : timeValueArrayBuilders.keySet()) {
+			jsonObjectBuilder.add(jsonGroupKey, timeValueArrayBuilders.get(jsonGroupKey));
 		}
 		
 		JsonObject result = jsonObjectBuilder.build();
 		return result;
 	}
 
-	private void addJsonObjectToMap(Map<String, JsonArrayBuilder> jsonKeyGroupArrayBuilderMap, DataRecord record) {
-		JsonObjectBuilder jsonObjectBuilder;
-		jsonObjectBuilder = Json.createObjectBuilder();
-		jsonObjectBuilder.add("t", record.getTimestamp().format(isoFormat));
+	private void addJsonObjectToMap(Map<String, JsonArrayBuilder> timeValueArrayBuilders, DataRecord record) {
+		JsonObjectBuilder timeValueObject = Json.createObjectBuilder();
+		timeValueObject.add("t", record.getTimestamp().format(isoFormat));
 		switch (record.getValueType()) {
-			case STRING:   jsonObjectBuilder.add("v", (String) record.getValue()); break;
-			case NUMBER:   jsonObjectBuilder.add("v", (Double) record.getValue()); break;
-			case OBJECT:   jsonObjectBuilder.add("v", (String) record.getValue().toString()); break;
-			case BOOLEAN:  jsonObjectBuilder.add("v", (Boolean) record.getValue()); break;
+			case STRING:   timeValueObject.add("v", (String) record.getValue()); break;
+			case NUMBER:   timeValueObject.add("v", (Double) record.getValue()); break;
+			case OBJECT:   timeValueObject.add("v", (String) record.getValue().toString()); break;
+			case BOOLEAN:  timeValueObject.add("v", (Boolean) record.getValue()); break;
 			default: break;
 		}
-
-		jsonKeyGroupArrayBuilderMap.get(record.getKey()).add(jsonObjectBuilder.build());
+		timeValueArrayBuilders.computeIfAbsent(record.getKey(), (k) -> Json.createArrayBuilder()).add(timeValueObject.build());
 	}
 	
 }

@@ -22,14 +22,11 @@ public class DataRecord implements Serializable {
 		this.value = value;
 		if(value instanceof String) {
 			this.valueType = ValueType.STRING;
-		} 
-		else if (value instanceof Number) {
+		} else if (value instanceof Number) {
 			this.valueType = ValueType.NUMBER;
-		}
-		else if (value instanceof Boolean) {
+		} else if (value instanceof Boolean) {
 			this.valueType = ValueType.BOOLEAN;
-		}
-		else {
+		} else {
 			this.valueType = ValueType.OBJECT;
 		}
 	}

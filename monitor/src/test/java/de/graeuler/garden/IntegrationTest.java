@@ -15,9 +15,7 @@ import de.graeuler.garden.integration.AbstractIntegrationTest;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
-
 	private static Logger log = LoggerFactory.getLogger(IntegrationTest.class);
-
 	
 	@Test
 	public void testSimpleValue() throws InterruptedException {

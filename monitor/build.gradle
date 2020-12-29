@@ -12,6 +12,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 apply plugin: 'jacoco'
+apply plugin: 'project-report'
 
 mainClassName = "de.graeuler.garden.Application"
 
@@ -26,6 +27,7 @@ test {
 // 	excludes ['**/*Test'] as Set
 //	include 'de/graeuler/garden/AllTests.class'
 	include 'de/graeuler/garden/**'
+	maxHeapSize = "2048m"
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -39,29 +41,29 @@ repositories {
 dependencies {
 
     // The production code uses the SLF4J logging API at compile time
-    compile group: 'org.slf4j', name: 'slf4j-api',    version: '1.7.30'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
 
 	// Guice the app
-	compile group: 'com.google.inject', name: 'guice', version: '4.2.3'
-	compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.2.3'
+	implementation group: 'com.google.inject', name: 'guice', version: '4.2.3' //, classifier: 'no_aop'
+	implementation group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.2.3'
 
 	// Tinker the app
 	// https://search.maven.org/artifact/com.tinkerforge/tinkerforge
-	compile group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.26'
+	implementation group: 'com.tinkerforge', name: 'tinkerforge', version: '2.1.26'
 
 	// Tool the app
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
-    compile group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
-    compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.31.1'
-    compile group: 'org.apache.derby', name: 'derby', version: '10.14.2.0'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
+    implementation group: 'org.glassfish', name: 'javax.json', version: '1.1.4'
+    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.31.1'
+    implementation group: 'org.apache.derby', name: 'derby', version: '10.14.2.0'
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
     // 'test.useTestNG()' to your build script.
-    testCompile group: 'junit', name: 'junit', version: '4.13'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
-    testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
-    testCompile group: 'com.google.inject.extensions', name: 'guice-grapher', version: '4.2.3'
+    testImplementation group: 'junit', name: 'junit', version: '4.13'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.3.3'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
+    testImplementation group: 'com.google.inject.extensions', name: 'guice-grapher', version: '4.2.3'
 }

@@ -36,7 +36,7 @@ public class DerbyDataPersister extends AbstractDataPersister {
 	@Override
 	protected void startUpEmbeddedDatabase(AppConfig config) throws WrappedDatabaseException {
 		try {
-			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").getConstructor().newInstance();
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver").getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			throw new WrappedDatabaseException(e);
 		}

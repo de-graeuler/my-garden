@@ -44,7 +44,6 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 		this.collectTimeUnit  = (TimeUnit) ConfigurationKeys.COLLECT_TIME_UNIT.from(config);
 		this.collectTimeRate  = (Integer)  ConfigurationKeys.COLLECT_TIME_RATE.from(config);
 		this.collectBlockSize = (Integer)  ConfigurationKeys.COLLECT_BLOCK_SIZE.from(config); 
-
 	}
 		
 	@Override
