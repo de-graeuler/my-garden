@@ -50,6 +50,7 @@ public class JsonDataConverterTest {
 	public void testFileConversion() throws IOException {
 		JsonDataConverter converter = new JsonDataConverter(new StaticAppConfig());
 		File tempFile = File.createTempFile("myGardenTest", ".dat");
+		String expectedResult = tempFile.getName() + ":" + "VGVzdCBDb250ZW50IGZvciBKU09OIEJhc2U2NCBFbmNvZGluZw==";
 		tempFile.deleteOnExit();
 		Files.writeString(Paths.get(tempFile.getAbsolutePath()), "Test Content for JSON Base64 Encoding", StandardOpenOption.WRITE);
 		List<DataRecord> records = new ArrayList<>();
@@ -60,7 +61,7 @@ public class JsonDataConverterTest {
 		JsonReader jsonReader = Json.createReader(new StringReader(testResult.toString()));
 		JsonObject jsonObject = jsonReader.readObject();
 		assertTrue(jsonObject.containsKey("file"));
-		assertEquals("VGVzdCBDb250ZW50IGZvciBKU09OIEJhc2U2NCBFbmNvZGluZw==", jsonObject.getJsonArray("file").getJsonObject(0).getString("v"));
+		assertEquals(expectedResult, jsonObject.getJsonArray("file").getJsonObject(0).getString("v"));
 	}
 
 }

@@ -9,6 +9,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -86,14 +87,21 @@ public class JsonDataConverter implements DataConverter<Collection<DataRecord>, 
 			case STRING:   timeValueObject.add("v", (String) record.getValue()); break;
 			case NUMBER:   timeValueObject.add("v", (Double) record.getValue()); break;
 			case BOOLEAN:  timeValueObject.add("v", (Boolean) record.getValue()); break;
-			case FILE:     timeValueObject.add("v", toBase64String((File) record.getValue())); break;
+			case FILE:     timeValueObject.add("v", encodeFile((File) record.getValue())); break;
 			case OBJECT:   timeValueObject.add("v", (String) record.getValue().toString()); break;
 			default: break;
 		}
 		timeValueArrayBuilders.computeIfAbsent(record.getKey(), (k) -> Json.createArrayBuilder()).add(timeValueObject.build());
 	}
 
-	private String toBase64String(File value) throws ConversionException {
+	private String encodeFile(File file) throws ConversionException {
+		StringJoiner stringJoiner = new StringJoiner(":");
+		stringJoiner.add(file.getName());
+		stringJoiner.add(convertToBase64(file)); 
+		return stringJoiner.toString();
+	}
+
+	private String convertToBase64(File value) throws ConversionException {
 		byte[] fileData;
 		try {
 			fileData = Files.readAllBytes(Paths.get(value.getAbsolutePath()));
