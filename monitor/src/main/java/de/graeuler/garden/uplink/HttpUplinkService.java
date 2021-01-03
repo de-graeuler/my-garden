@@ -23,7 +23,7 @@ import com.google.inject.Inject;
 import de.graeuler.garden.config.AppConfig;
 import de.graeuler.garden.config.ConfigurationKeys;
 
-public class HttpUplinkService implements Uplink<JsonValue> {
+public class HttpUplinkService implements JsonUplink {
 
 	private String uplink;
 	private String uplinkStatus;

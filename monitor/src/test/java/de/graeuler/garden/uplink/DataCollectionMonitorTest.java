@@ -43,7 +43,7 @@ public class DataCollectionMonitorTest {
 	private DataCollector<DataRecord> dataCollector = (DataCollector<DataRecord>) mock(DataCollector.class);
 	private JsonDataConverter dataConverter = mock(JsonDataConverter.class);
 	private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-	private Uplink<JsonValue> uplink = mock(HttpUplinkService.class);
+	private JsonUplink uplink = mock(HttpUplinkService.class);
 	private List<DataRecord> sample = new ArrayList<>();
 	private MonitorService dataCollectionMonitor;
 	private JsonValue jsonValue1234;

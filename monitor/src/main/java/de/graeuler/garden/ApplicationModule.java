@@ -44,7 +44,7 @@ import de.graeuler.garden.monitor.util.CommandLineReader;
 import de.graeuler.garden.monitor.util.VnStatReader;
 import de.graeuler.garden.uplink.DataCollectionMonitor;
 import de.graeuler.garden.uplink.HttpUplinkService;
-import de.graeuler.garden.uplink.Uplink;
+import de.graeuler.garden.uplink.JsonUplink;
 
 public class ApplicationModule extends AbstractModule {
 
@@ -67,7 +67,7 @@ public class ApplicationModule extends AbstractModule {
 		bind(new TypeLiteral<DataCollector<DataRecord>>(){}).to(GardenDataCollector.class);
 
 		bind(CloseableHttpClient.class).toInstance(HttpClients.createDefault());
-		bind(new TypeLiteral<Uplink<JsonValue>>(){}).to(HttpUplinkService.class);
+		bind(JsonUplink.class).to(HttpUplinkService.class);
 		bind(new TypeLiteral<DataPersister<DataRecord>>(){}).to(DerbyDataPersister.class);
 		
 		bind(CommandLineReader.class).to(getCommandLineReaderType());
@@ -102,10 +102,9 @@ public class ApplicationModule extends AbstractModule {
 	}
 
 	private Properties buildProperties() {
+		log.info("Loading configuration from {}", filename);
 		Properties properties = new Properties();
-		try {
-			log.info("Loading configuration from {}", filename);
-			InputStream inputStream  = new FileInputStream(filename);
+		try (InputStream inputStream  = new FileInputStream(filename)){
 			properties.load(inputStream);
 		} catch (IOException e) {
 			log.warn("Property file {} not found in {}. Using default settings.", filename, new File("").getAbsolutePath());

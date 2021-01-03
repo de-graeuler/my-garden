@@ -23,7 +23,7 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 
 	private ScheduledExecutorService scheduler;
 	private DataConverter<Collection<DataRecord>, JsonValue> converter;
-	private Uplink<JsonValue> uplink;
+	private JsonUplink uplink;
 	private DataCollector<DataRecord> dataCollector;
 
 	private int collectTimeRate;
@@ -34,7 +34,7 @@ public class DataCollectionMonitor implements Runnable, MonitorService {
 	private ScheduledFuture<?> dataUploaderHandle;
 
 	@Inject
-	DataCollectionMonitor(AppConfig config, DataCollector<DataRecord> dataCollector, DataConverter<Collection<DataRecord>, JsonValue> converter, Uplink<JsonValue> uplink,
+	DataCollectionMonitor(AppConfig config, DataCollector<DataRecord> dataCollector, DataConverter<Collection<DataRecord>, JsonValue> converter, JsonUplink uplink,
 			ScheduledExecutorService scheduler) {
 		this.uplink = uplink;
 		this.scheduler = scheduler;
